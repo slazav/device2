@@ -30,7 +30,7 @@ struct DevInfo {
 struct DevManager {
 
   // mutext for dev_map locks (avoid races when opening devices)
-  MHD_mutex_ mutex;
+  Lock main_lock;
 
   // All known drivers: driver name -> driver class
   std::map<std::string, std::shared_ptr<Driver> > drv_info;
@@ -42,15 +42,9 @@ struct DevManager {
   // Opened devices.
   std::map<std::string, std::shared_ptr<Driver> > dev_map;
 
-  // Resources for locking. Driver should add a mutex for
-  // locking its connection. Key is desource name: unix device name, url, etc.
-  std::map<std::string, MHD_mutex_> connections;
-
   /******/
 
   DevManager();
-
-  ~DevManager();
 
   std::string run(const std::string & url);
 

@@ -11,17 +11,9 @@
              "</head><body>libmicrohttpd demo</body></html>"
 
 /*************************************************/
-DevManager::DevManager(){
-  // Initalize mutex.
-  MHD_mutex_init_(&mutex);
-
+DevManager::DevManager(): main_lock(""){
   // Fill drv_info:
   drv_info.emplace("dummy", new Driver_dummy);
-}
-
-/*************************************************/
-DevManager::~DevManager(){
-  MHD_mutex_destroy_(&mutex);
 }
 
 /*************************************************/
@@ -48,7 +40,9 @@ DevManager::run(const std::string & url){
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
+
   // Do we know this device?
+  if (dev == "") throw Err() << "empty device";
   if (dev_info.count(dev) == 0)
     throw Err() << "unknown device:" << dev;
   auto & info = dev_info.find(dev)->second;
@@ -61,21 +55,21 @@ DevManager::run(const std::string & url){
 
   // Open device if needed
   if (dev_map.count(dev) == 0){
-    MHD_mutex_lock_(&mutex);
+    main_lock.lock();
     dev_map.emplace(dev, drv.get());
-    MHD_mutex_unlock_(&mutex);
+    main_lock.unlock();
   }
 
   // TESTING
   std::cerr << "recieved request: " << url << "\n";
-  MHD_mutex_lock_(&mutex);
-
+  Lock l("r1");
+  l.lock();
 
   std::cerr << "start processing request: " << url << "\n";
   sleep(5);
   std::cerr << "stop processing request: " << url << "\n";
 
-  MHD_mutex_unlock_(&mutex);
+  l.unlock();
   std::cerr << "sending answer: " << url << "\n";
   return PAGE;
 }
@@ -112,6 +106,9 @@ DevManager::read_conf(const std::string & file){
       if (drv_info.count(drv) == 0) throw Err()
         << "unknown driver: " << drv;
 
+      // do not allow empty devices
+      if (dev == "") throw Err() << "empty device";
+
       // does this device exists
       if (ret.count(dev)>0) throw Err()
         << "duplicated device name: " << dev;
@@ -124,8 +121,8 @@ DevManager::read_conf(const std::string & file){
     throw Err() << "dev_server: bad configuration file "
                 << file << " at line " << line_num[0] << ": " << e.str();
   }
-  MHD_mutex_lock_(&mutex);
+  main_lock.lock();
   dev_info = ret; // replace configuration only if no errors found.
-  MHD_mutex_unlock_(&mutex);
+  main_lock.unlock();
 }
 
