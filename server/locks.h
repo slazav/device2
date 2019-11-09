@@ -22,6 +22,7 @@ class Lock {
 
 public:
 
+  // Get a lock for a given resource name.
   Lock(const std::string & name);
   ~Lock();
 

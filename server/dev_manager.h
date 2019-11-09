@@ -46,6 +46,7 @@ struct DevManager {
 
   DevManager();
 
+  // process a request form HTTP server (given as 'URL').
   std::string run(const std::string & url);
 
   // Read configuration file, return DevName->DevInfo map.
