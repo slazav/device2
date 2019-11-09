@@ -1,5 +1,5 @@
-#ifndef DEVICE_MANGR_H
-#define DEVICE_MANGR_H
+#ifndef DEV_MANGR_H
+#define DEV_MANGR_H
 
 #include <microhttpd.h>
 #include <cstdlib>
@@ -27,7 +27,7 @@ struct DevInfo {
 
 /*************************************************/
 
-struct DeviceManager {
+struct DevManager {
 
   // mutext for dev_map locks (avoid races when opening devices)
   MHD_mutex_ mutex;
@@ -48,9 +48,9 @@ struct DeviceManager {
 
   /******/
 
-  DeviceManager();
+  DevManager();
 
-  ~DeviceManager();
+  ~DevManager();
 
   std::string run(const std::string & url);
 

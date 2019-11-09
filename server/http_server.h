@@ -2,11 +2,11 @@
 #define HTTP_SERVER_H
 
 #include <microhttpd.h>
-#include "device_manager.h"
+#include "dev_manager.h"
 
 /*************************************************/
 // Microhttpd-related functions.
-// Requests from users are transferred into DeviceManager.
+// Requests from users are transferred into DevManager.
 // Each connection in a separate thread.
 
 class HTTP_Server{
@@ -14,7 +14,7 @@ class HTTP_Server{
 public:
   HTTP_Server(
       const int port,
-      DeviceManager & dm);
+      DevManager & dm);
 
   ~HTTP_Server();
 };

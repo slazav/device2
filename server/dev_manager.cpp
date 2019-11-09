@@ -5,13 +5,13 @@
 #include "read_words/read_words.h"
 #include "locks.h"
 #include "drivers.h"
-#include "device_manager.h"
+#include "dev_manager.h"
 
 #define PAGE "<html><head><title>libmicrohttpd demo</title>"\
              "</head><body>libmicrohttpd demo</body></html>"
 
 /*************************************************/
-DeviceManager::DeviceManager(){
+DevManager::DevManager(){
   // Initalize mutex.
   MHD_mutex_init_(&mutex);
 
@@ -20,13 +20,13 @@ DeviceManager::DeviceManager(){
 }
 
 /*************************************************/
-DeviceManager::~DeviceManager(){
+DevManager::~DevManager(){
   MHD_mutex_destroy_(&mutex);
 }
 
 /*************************************************/
 std::vector<std::string>
-DeviceManager::parse_url(const std::string & url){
+DevManager::parse_url(const std::string & url){
   std::vector<std::string> ret(3);
   size_t p1(0), i(0);
   for (i=0; i<2; ++i){
@@ -41,7 +41,7 @@ DeviceManager::parse_url(const std::string & url){
 
 /*************************************************/
 std::string
-DeviceManager::run(const std::string & url){
+DevManager::run(const std::string & url){
 
   auto vs = parse_url(url);
   std::string dev = vs[0];
@@ -82,7 +82,7 @@ DeviceManager::run(const std::string & url){
 
 /*************************************************/
 void
-DeviceManager::read_conf(const std::string & file){
+DevManager::read_conf(const std::string & file){
   std::map<std::string, DevInfo> ret;
   int line_num[2] = {0,0};
   std::ifstream ff(file);

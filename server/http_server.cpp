@@ -19,7 +19,7 @@ int ProcessRequest(void * cls,
                     void ** ptr) {
 
   static int dummy;
-  DeviceManager * dm = (DeviceManager*)cls;
+  DevManager * dm = (DevManager*)cls;
   struct MHD_Response * response;
   int ret;
 
@@ -51,7 +51,7 @@ int ProcessRequest(void * cls,
 
 HTTP_Server::HTTP_Server(
       const int port,
-      DeviceManager & dm){
+      DevManager & dm){
 
   d = MHD_start_daemon(
         MHD_USE_THREAD_PER_CONNECTION,

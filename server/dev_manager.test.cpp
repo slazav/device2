@@ -1,6 +1,6 @@
 ///\cond HIDDEN (do not show this in Doxyden)
 
-#include "device_manager.h"
+#include "dev_manager.h"
 #include "err/assert_err.h"
 #include <cassert>
 
@@ -12,34 +12,34 @@ main(){
 
     /********************************************/
     // parsing URL
-    assert(DeviceManager::parse_url("") ==
+    assert(DevManager::parse_url("") ==
       vector<string>({"", "", ""}));
 
-    assert(DeviceManager::parse_url("a") ==
+    assert(DevManager::parse_url("a") ==
       vector<string>({"a", "", ""}));
 
-    assert(DeviceManager::parse_url("/a") ==
+    assert(DevManager::parse_url("/a") ==
       vector<string>({"", "a", ""}));
 
-    assert(DeviceManager::parse_url("a/b") ==
+    assert(DevManager::parse_url("a/b") ==
       vector<string>({"a", "b", ""}));
 
-    assert(DeviceManager::parse_url("/a/b") ==
+    assert(DevManager::parse_url("/a/b") ==
       vector<string>({"", "a", "b"}));
 
-    assert(DeviceManager::parse_url("a/b/c") ==
+    assert(DevManager::parse_url("a/b/c") ==
       vector<string>({"a", "b", "c"}));
 
-    assert(DeviceManager::parse_url("a//c") ==
+    assert(DevManager::parse_url("a//c") ==
       vector<string>({"a", "", "c"}));
 
-    assert(DeviceManager::parse_url("a/b/c/d") ==
+    assert(DevManager::parse_url("a/b/c/d") ==
       vector<string>({"a", "b", "c/d"}));
 
     /********************************************/
     // reading configuration file
 
-    DeviceManager dm;
+    DevManager dm;
 
     assert_err(dm.read_conf("test_data/e0.txt"), // missing file
       "dev_server: can't open configuration: test_data/e0.txt");

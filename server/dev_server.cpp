@@ -8,7 +8,7 @@
 
 #include "getopt/getopt.h"
 #include "err/err.h"
-#include "device_manager.h"
+#include "dev_manager.h"
 #include "http_server.h"
 
 
@@ -162,7 +162,7 @@ main(int argc, char ** argv) {
     }
 
     // create device manager
-    DeviceManager dm;
+    DevManager dm;
 
     // read configuration file
     dm.read_conf(devfile);
