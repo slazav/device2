@@ -3,6 +3,7 @@ MOD_HEADERS := http_server.h dev_manager.h driver.h mhd_locks.h locks.h
 MOD_SOURCES := http_server.cpp dev_manager.cpp
 
 SIMPLE_TESTS := dev_manager
+OTHER_TESTS := dev_server.test1
 
 PKG_CONFIG := libmicrohttpd
 
