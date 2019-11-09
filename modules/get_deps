@@ -1,0 +1,233 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+# get_deps -- print a part of Makefile with module dependencies.
+#
+# Usage:
+#   get_deps <lib directory> <module directory>
+#
+# Module contains following components:
+# * headers -- from MOD_HEADERS variable
+# * sources -- from MOD_SOURCES variable
+# * program sources -- from PROGRAMS variable
+# * test sources -- from SIMPLE_TESTS, SCRIPT_TESTS variable
+# * pkg-config names -- from PKG_CONFIG variable
+#
+# We build following dependencies:
+# 1. For each source all included h-files (local and module) are extracted recursively
+# 2. For all headers and sources recursive sorted module list is built
+#   based on h-files. It is used to build all modules and link executables
+# 3. For the same module list a library list for pkg-config is built.
+
+# Program takes two arguments: root directory for all modules; build directory
+
+# read options
+my $lib_dir = shift @ARGV || '..';
+my $mod_dir = shift @ARGV;
+
+die "Usage: get_deps <lib directory> <module directory>\n"
+  unless defined $mod_dir;
+
+######################################################################
+# Read all variables from a module Makefile.
+
+sub read_make ($) {
+  my $fname = shift;
+  my %info;
+  open F, $fname or die "can't read $fname file: $fname: $!";
+  while (my $line = <F>){
+    next unless $line =~ /^\s*([A-Za-z0-9_]+)\s*:?=\s*(.*)/;
+    my $key = $1;
+    $line = $2;
+    # join lines with \ at the end, remove extra spaces
+    $line .= <F> while $line =~ s/\\$//;
+    $line =~ s/\s+/ /g;
+    $info{$key} = $line;
+  }
+  close F;
+  return %info;
+}
+
+######################################################################
+# extract sources from module information
+sub extract_src($$) {
+  my $info = shift;
+  my $add_h = shift;
+  my @files;
+  push @files, $_
+    foreach (split /\s+/, ($info->{MOD_SOURCES}||''));
+  push @files, "$_.cpp"
+    foreach (split /\s+/, ($info->{PROGRAMS}||''));
+  push @files, "$_.test.cpp"
+    foreach (split /\s+/, ($info->{SIMPLE_TESTS}||''));
+  push @files, "$_.test.cpp"
+    foreach (split /\s+/, ($info->{SCRIPT_TESTS}||''));
+  if ($add_h){
+    push @files, $_
+      foreach (split /\s+/, ($info->{MOD_HEADERS}||''));
+  }
+  return @files;
+}
+
+######################################################################
+# Read files, extract h-dependencies.
+# mode 0: Read only #include "<name>/<file>" records
+#         return non-recursive module set
+# mode 1: Recursively find all "<name>/<file>"
+#         and "<file>" h-dependensies
+
+sub get_hdeps {
+  my $dir = shift;
+  my $files = shift;
+  my $mode = shift || 0;
+  my %deps;
+  foreach my $f (@{$files}) {
+    my $ff;
+    unless(open $ff, "$dir/$f"){
+      warn "can't open $dir/$f: $!";
+      next;
+    }
+    while (my $l=<$ff>) {
+      next unless $l=~/^#/;
+
+      if ($l=~m|^#\s*include\s+"([^"/]+)/([^"/]+)"|) {
+        die "Can't find file \"$1/$2\" included in \"$f\"\n"
+          unless -f "$lib_dir/$1/$2";
+        if ($mode == 0) {
+          $deps{"$1"} = 1;
+        }
+        else {
+          my $file = "$lib_dir/$1/$2";
+          next if exists $deps{$file};
+          $deps{$file} = 1;
+          my %rec = get_hdeps("$lib_dir/$1", [$2], $mode);
+          %deps = (%deps, %rec);
+        }
+      }
+
+      if ($l=~m|^#\s*include\s+"([^"/]+)"|) {
+        die "Can't find file \"$1\" included in \"$f\"\n"
+          unless -f "$dir/$1";
+        if ($mode!=0){
+          my $file = "$dir/$1";
+          next if exists $deps{$file};
+          $deps{$file} = 1;
+          my %rec = get_hdeps($dir, [$1], $mode);
+          %deps = (%deps, %rec);
+        }
+      }
+    }
+    close $ff;
+  }
+
+  return %deps;
+}
+
+
+######################################################################
+# recursively go through all modules, collect their module dependencies
+
+sub add_mod_dep {
+  my $mods = shift;
+  my $mod = shift;
+  my %info = read_make "$lib_dir/$mod/Makefile";
+  my @files = extract_src(\%info, 1);
+  my %mdeps = get_hdeps("$lib_dir/$mod", \@files);
+  $mods->{$mod} = [keys %mdeps] unless exists($mods->{$mod});
+  add_mod_dep($mods, $_) foreach (keys %mdeps);
+}
+
+######################################################################
+# Build an ordered dependencie list.
+
+sub optimize_deps {
+  my $mods = shift;
+  my @ret;
+  while (keys %{$mods} >0) {
+    # find module with no deps
+    my $m0 = '';
+    foreach my $m (keys %{$mods}) {
+      next unless $#{$mods->{$m}}==-1;
+      $m0 = $m;
+      last;
+    }
+    $m0 ne '' or die "Dependency calculation faild: no independent modules";
+    # add it to build list, remove from dep list
+    push @ret, $m0;
+    delete $mods->{$m0};
+    foreach my $m (keys %{$mods}) {
+      my @ii = grep { ${$mods->{$m}}[$_] eq $m0 } 0..$#{$mods->{$m}};
+      splice(@{$mods->{$m}}, $_, 1) foreach (@ii);
+    }
+  }
+  return @ret;
+}
+
+######################################################################
+# Read library deps for a given Makefile.
+sub add_lib_dep {
+  my $libs = shift;
+  my $mfile = shift;
+  my %info = read_make $mfile;
+  my @libs = split /\s+/, ($info{PKG_CONFIG}||'');
+  $libs->{$_} = 1 foreach @libs;
+}
+
+######################################################################
+######################################################################
+## Main
+
+# 1st step -- module source dependencies
+
+# find all module c-files and h-files
+my @files;
+
+die "Can't find $mod_dir/Makefile\n" unless -f "$mod_dir/Makefile";
+my %info = read_make "$mod_dir/Makefile";
+@files = extract_src(\%info, 0);
+
+print "### This file is generated by get_deps program.\n\n";
+print "# 1. module source dependencies (recoursive h-file includes):\n\n";
+
+# for each file find dependencies recursively
+foreach my $file (@files) {
+  my $f = "$mod_dir/$file"; # copy for modification
+  my $dir = ".";
+  if ($f =~ m|(.*)/(.*)|){
+    $dir = $1; $f = $2;
+  }
+  my %deps = get_hdeps($dir, [$f], 1);
+  $f =~ s/(.cpp|.c)$/.o/;
+  print "$f: ", join(" ", keys %deps), "\n\n";
+}
+
+# second step -- module deps
+
+# find modue dependency structure: mod1->[mod2,mod3...]
+# Here we use not only c-files, but h-files also
+@files = extract_src(\%info, 1);
+my %mods;
+
+my %mdeps = get_hdeps($mod_dir, \@files, 0);
+add_mod_dep(\%mods, $_) foreach (keys %mdeps);
+
+# optimize dependencies, get list of modules in the correct order.
+my @list = optimize_deps(\%mods);
+
+print "# 2. sorted module dependencies\n\n";
+print "MDEPS := ", join(" ", @list), "\n\n";
+
+print "# 3. a-file list for linking (reverse order)\n\n";
+print "ADEPS :=";
+print " $lib_dir/$_/$_.a" foreach reverse(@list);
+print "\n\n";
+
+
+print "# 4. library dependencies\n\n";
+my %libs;
+add_lib_dep(\%libs, "$mod_dir/Makefile");
+add_lib_dep(\%libs, "$lib_dir/$_/Makefile") foreach (@list);
+print "LDEPS := ", join(" ", keys %libs), "\n\n";
+
+
