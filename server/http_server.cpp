@@ -36,15 +36,21 @@ int ProcessRequest(void * cls,
     return MHD_NO; /* upload data in a GET!? */
   *ptr = NULL; /* clear context pointer */
 
-  std::string msg = dm->run(url);
-
-  response = MHD_create_response_from_buffer(
+  try {
+    std::string msg = dm->run(url);
+    response = MHD_create_response_from_buffer(
         msg.length(), (void*)msg.data(), MHD_RESPMEM_MUST_COPY);
+    ret = MHD_queue_response(connection, 200, response);
+    MHD_destroy_response(response);
+  }
+  catch (Err e) {
+    response = MHD_create_response_from_buffer(
+        e.str().length(), (void*)e.str().data(), MHD_RESPMEM_MUST_COPY);
+    MHD_add_response_header(response, "Error", e.str().c_str());
+    ret = MHD_queue_response(connection, 400, response);
+    MHD_destroy_response(response);
+  }
 
-  ret = MHD_queue_response(connection,
-      MHD_HTTP_OK,
-      response);
-  MHD_destroy_response(response);
   return ret;
 }
 
