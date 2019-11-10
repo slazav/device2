@@ -42,7 +42,7 @@ DevManager::run(const std::string & url){
   // Do we know this device?
   if (dev == "") throw Err() << "empty device";
   if (devices.count(dev) == 0)
-    throw Err() << "unknown device:" << dev;
+    throw Err() << "unknown device: " << dev;
 
   Device d = devices.find(dev)->second;
 
@@ -53,18 +53,9 @@ DevManager::run(const std::string & url){
     main_lock.unlock();
   }
 
-  // TESTING
-  std::cerr << "recieved request: " << url << "\n";
-  Lock l("r1");
-  l.lock();
+  if (cmd == "cmd") return d->cmd(arg);
 
-  std::cerr << "start processing request: " << url << "\n";
-  sleep(5);
-  std::cerr << "stop processing request: " << url << "\n";
-
-  l.unlock();
-  std::cerr << "sending answer: " << url << "\n";
-  return PAGE;
+  throw Err() << "unknown command: " << cmd;
 }
 
 /*************************************************/

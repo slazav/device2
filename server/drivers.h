@@ -19,9 +19,9 @@ public:
   static std::shared_ptr<Driver> create(
     const std::string & name, const Opt & args);
 
-  virtual void open() = 0;
+  virtual void open()  = 0;
   virtual void close() = 0;
-  virtual std::string command(const std::string & cmd) = 0;
+  virtual std::string cmd(const std::string & cmd) = 0;
 
   bool is_opened() {return opened;}
 };
@@ -31,7 +31,7 @@ public:
 struct Driver_dummy: Driver {
   void open() override {}
   void close() override {}
-  std::string command(const std::string & cmd) override {return cmd;};
+  std::string cmd(const std::string & cmd) override {return cmd;};
 };
 
 #endif

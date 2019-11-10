@@ -1,0 +1,25 @@
+#!/bin/sh -efu
+
+. ./test_lib.sh
+
+# try to stop the server
+./dev_server --stop --pidfile pid.tmp &>/dev/null ||:
+
+assert "wget localhost:8082/b/cmd/text -nv -S"\
+  "failed: Connection refused." 4
+
+
+# run the server
+assert "./dev_server --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --daemon" "" 0
+
+a=$(wget localhost:8082/x/cmd/text -O - -nv -S 2>&1 | grep Error)
+assert "echo $a" "Error: unknown device: x" 0
+
+a=$(wget localhost:8082/b/x/text -O - -nv -S 2>&1 | grep Error)
+assert "echo $a" "Error: unknown command: x" 0
+
+a=$(wget localhost:8082/b/cmd/text -O - -q)
+assert "echo $a" "text" 0
+
+# stop the server
+assert "./dev_server --stop --pidfile pid.tmp" "" 0

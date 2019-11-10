@@ -15,6 +15,10 @@ assert "./dev_server -p a"\
   "Error: can't parse value: \"a\"" 1
 
 #####################
+# try to stop the server
+./dev_server --stop --pidfile pid.tmp &>/dev/null ||:
+
+#####################
 # run server in normal mode (background)
 ./dev_server --pidfile pid.tmp --config test_data/n1.txt &
 
