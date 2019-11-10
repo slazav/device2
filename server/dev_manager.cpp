@@ -11,7 +11,7 @@
              "</head><body>libmicrohttpd demo</body></html>"
 
 /*************************************************/
-DevManager::DevManager(): main_lock(""){ }
+DevManager::DevManager(): Lock("manager"){ }
 
 /*************************************************/
 std::vector<std::string>
@@ -47,13 +47,16 @@ DevManager::run(const std::string & url){
   Device d = devices.find(dev)->second;
 
   // Open device if needed
-  if (d->is_opened() == 0){
-    main_lock.lock();
-    d->open();
-    main_lock.unlock();
-  }
+  d.lock();
+  if (d->is_opened() == 0) d->open();
+  d.unlock();
 
-  if (cmd == "cmd") return d->cmd(arg);
+  if (cmd == "cmd"){
+    d.lock();
+    std::string ret = d->cmd(arg);
+    d.unlock();
+    return ret;
+  }
 
   throw Err() << "unknown command: " << cmd;
 }
@@ -94,15 +97,15 @@ DevManager::read_conf(const std::string & file){
         << "duplicated device name: " << dev;
 
       // add device information
-      ret.emplace(dev, Device(drv, opt));
+      ret.emplace(dev, Device(dev, drv, opt));
 
     }
   } catch (Err e){
     throw Err() << "dev_server: bad configuration file "
                 << file << " at line " << line_num[0] << ": " << e.str();
   }
-  main_lock.lock();
+  lock();
   devices = ret; // apply the configuration only if no errors have found.
-  main_lock.unlock();
+  unlock();
 }
 

@@ -16,20 +16,19 @@
 
 /*************************************************/
 
-struct Device : public std::shared_ptr<Driver>{
+struct Device : public std::shared_ptr<Driver>, public Lock{
 
   // Constructor
-  Device(const std::string & drv_name,
+  Device( const std::string & dev_name,
+          const std::string & drv_name,
           const Opt & drv_args):
-    std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)) {}
+    std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)),
+    Lock("device:" + dev_name) {}
 };
 
 /*************************************************/
 
-struct DevManager {
-
-  // mutext for dev_map locks (avoid races when opening devices)
-  Lock main_lock;
+struct DevManager : public Lock {
 
   // All devices (from configuration file):
   std::map<std::string, Device> devices;
