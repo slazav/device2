@@ -11,6 +11,7 @@
 
 class HTTP_Server{
   void *d;
+
 public:
   HTTP_Server(
       const int port,

@@ -30,8 +30,19 @@ DevManager::parse_url(const std::string & url){
 }
 
 /*************************************************/
+// open connection callback:
+void
+DevManager::conn_open(const uint64_t conn){
+}
+
+// close connection callback:
+void
+DevManager::conn_close(const uint64_t conn){
+}
+
+/*************************************************/
 std::string
-DevManager::run(const std::string & url){
+DevManager::run(const std::string & url, const uint64_t conn){
 
   auto vs = parse_url(url);
   std::string dev = vs[0];

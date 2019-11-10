@@ -38,7 +38,14 @@ struct DevManager : public Lock {
   DevManager();
 
   // process a request form HTTP server (given as 'URL').
-  std::string run(const std::string & url);
+  // conn parameter is the connection ID
+  std::string run(const std::string & url, const uint64_t conn);
+
+  // open connection callback:
+  void conn_open(const uint64_t conn);
+
+  // close connection callback:
+  void conn_close(const uint64_t conn);
 
   // Read configuration file, return DevName->Device map.
   // Throw exception on errors.

@@ -18,11 +18,13 @@ int ProcessRequest(void * cls,
       size_t * upload_data_size,
                     void ** ptr) {
 
-  static int dummy;
-  DevManager * dm = (DevManager*)cls;
-  struct MHD_Response * response;
-  int ret;
 
+  //get connection number
+  auto info = MHD_get_connection_info(
+    connection, MHD_CONNECTION_INFO_SOCKET_CONTEXT);
+  uint64_t cnum = *(uint64_t*)info->socket_context;
+
+  static int dummy;
   if (0 != strcmp(method, "GET"))
     return MHD_NO; /* unexpected method */
   if (&dummy != *ptr)
@@ -36,8 +38,11 @@ int ProcessRequest(void * cls,
     return MHD_NO; /* upload data in a GET!? */
   *ptr = NULL; /* clear context pointer */
 
+  DevManager * dm = (DevManager*)cls;
+  struct MHD_Response * response;
+  int ret;
   try {
-    std::string msg = dm->run(url);
+    std::string msg = dm->run(url, cnum);
     response = MHD_create_response_from_buffer(
         msg.length(), (void*)msg.data(), MHD_RESPMEM_MUST_COPY);
     ret = MHD_queue_response(connection, 200, response);
@@ -54,14 +59,39 @@ int ProcessRequest(void * cls,
   return ret;
 }
 
+// global connection counter
+uint64_t cmax = 0;
+
+// Callback for opening/closing a connection
+void ConnFunc (void *cls,
+               struct MHD_Connection *connection,
+               void **socket_context,
+               enum MHD_ConnectionNotificationCode toe){
+
+  DevManager * dm = (DevManager*)cls;
+
+  switch (toe){
+  case MHD_CONNECTION_NOTIFY_STARTED:
+    MHD_set_connection_option(connection, MHD_CONNECTION_OPTION_TIMEOUT, 10);
+    *socket_context = new uint64_t;
+    *(uint64_t*)*socket_context = cmax++; // set connection number
+    dm->conn_open(*(uint64_t*)*socket_context);
+    break;
+  case MHD_CONNECTION_NOTIFY_CLOSED:
+    dm->conn_close(*(uint64_t*)*socket_context);
+    delete (uint64_t*)*socket_context;
+    break;
+  }
+}
 
 HTTP_Server::HTTP_Server(
       const int port,
-      DevManager & dm){
+      DevManager & dm) {
 
   d = MHD_start_daemon(
         MHD_USE_THREAD_PER_CONNECTION,
         port, NULL, NULL, &ProcessRequest, &dm,
+        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, NULL,
         MHD_OPTION_END);
 
   if (d == NULL)
