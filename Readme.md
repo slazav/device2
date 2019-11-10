@@ -1,19 +1,19 @@
 ## Device server
 ---
 
-This is a server for accessing devices and programs in complicated
-experimental setups. Previously I used a tcl library (
-https://github.com/slazav/tcl-device ), put that approach had a few
+This is a server for accessing devices and programs in sophisticated
+experimental setups. Previous version was a tcl library (
+https://github.com/slazav/tcl-device ), but that approach had a few
 limitations.
 
 All operations are done using "devices". They can be physical devices
 connected via some interface, or programs (which can use other
 devices if needed).
 
-The server has a configuration file "/etc/device_server.txt" which lists
-all avalible devices. For example, line "generator gpib -board 0 -address
-6" says that communication with device "generator" is done using driver
-gpib with parameters -board 0 -address 6.
+The server has a configuration file `/etc/device_server.txt` which lists
+all avalible devices. For example, line `generator gpib -board 0 -address
+6` says that communication with device `generator` is done using driver
+gpib with parameters `-board 0 -address 6`.
 
 The server does not know anything about commands used by certain device,
 it just provides connection. For the next layer see DeviceRole library.
@@ -29,15 +29,22 @@ Library provides logging of all device communications: if there is a file
 <name> is appended to this file. This allows to start/stop logging
 without restarting and modifing programs.
 
+## TODO
+
+- device and resource locks
+- lock timeouts
+- logging
+- session-based device management
+- grabbing devices
+- authorisation
 
 ### HTTP server
 
 Users communicate with the server using GET requests of HTTP protocol.
 URLs with three-components are used: `<device>`, `<command>`,
-`<argument>`. For example, a request with "url" "`generator/cmd/FREQ?`"
-sends command `FREQ?` to the device `generator` and returns answer.
-
-
+`<argument>`. For example, a request to
+`http://<server>:<port>/generator/cmd/FREQ?`" sends command `FREQ?` to
+the device `generator` and returns answer.
 
 ### Configuration file
 
