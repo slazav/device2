@@ -16,13 +16,12 @@
 
 /*************************************************/
 
-struct DevInfo {
-  std::string drv_name;
-  Opt drv_args;
+struct Device : public std::shared_ptr<Driver>{
 
-  DevInfo(const std::string & drv_name,
+  // Constructor
+  Device(const std::string & drv_name,
           const Opt & drv_args):
-    drv_name(drv_name), drv_args(drv_args) {}
+    std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)) {}
 };
 
 /*************************************************/
@@ -32,15 +31,8 @@ struct DevManager {
   // mutext for dev_map locks (avoid races when opening devices)
   Lock main_lock;
 
-  // All known drivers: driver name -> driver class
-  std::map<std::string, std::shared_ptr<Driver> > drv_info;
-
-  // All known devices (from configuration file):
-  // device name -> driver name, driver parameters.
-  std::map<std::string, DevInfo> dev_info;
-
-  // Opened devices.
-  std::map<std::string, std::shared_ptr<Driver> > dev_map;
+  // All devices (from configuration file):
+  std::map<std::string, Device> devices;
 
   /******/
 
@@ -49,7 +41,7 @@ struct DevManager {
   // process a request form HTTP server (given as 'URL').
   std::string run(const std::string & url);
 
-  // Read configuration file, return DevName->DevInfo map.
+  // Read configuration file, return DevName->Device map.
   // Throw exception on errors.
   // This is a static function. I plan to use it in the constructor,
   // and make an additional command to rereading configuration.

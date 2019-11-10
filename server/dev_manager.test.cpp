@@ -44,9 +44,9 @@ main(){
     assert_err(dm.read_conf("test_data/e0.txt"), // missing file
       "dev_server: can't open configuration: test_data/e0.txt");
 
-    assert_eq(dm.dev_info.size(), 0);
+    assert_eq(dm.devices.size(), 0);
     dm.read_conf("test_data/n1.txt"); // empty file
-    assert_eq(dm.dev_info.size(), 0);
+    assert_eq(dm.devices.size(), 0);
 
     assert_err(dm.read_conf("test_data/e1.txt"),
       "dev_server: bad configuration file test_data/e1.txt at line 1: "
@@ -72,16 +72,16 @@ main(){
       "dev_server: bad configuration file test_data/e6.txt at line 2: "
       "duplicated device name: a");
 
-    assert_eq(dm.dev_info.size(), 0);
+    assert_eq(dm.devices.size(), 0);
     dm.read_conf("test_data/n2.txt");
-    assert_eq(dm.dev_info.size(), 2);
+    assert_eq(dm.devices.size(), 2);
 
     assert_err(dm.read_conf("test_data/e7.txt"), // missing file
       "dev_server: bad configuration file test_data/e7.txt at line 3: "
       "duplicated device name: a");
 
     // error does not change configuration
-    assert_eq(dm.dev_info.size(), 2);
+    assert_eq(dm.devices.size(), 2);
 
   }
   catch (Err e) {

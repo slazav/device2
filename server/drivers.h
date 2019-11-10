@@ -1,26 +1,35 @@
 #ifndef DRIVERS_H
 #define DRIVERS_H
 
+#include <string>
+#include <map>
+#include <memory>
 #include <cstring>
+
+#include "opt/opt.h"
 
 /*************************************************/
 // base class
 
-struct Driver {
-  // driver can lock some resource (unix device name,
-  // ip address, etc.)
-  // Should be valid when driver is opened.
-//  virtual void get_lock_name() = 0;
+class Driver {
+  bool opened;
+public:
 
-  virtual void open(const std::string & pars) = 0;
+  // create and return a device driver (static function)
+  static std::shared_ptr<Driver> create(
+    const std::string & name, const Opt & args);
+
+  virtual void open() = 0;
   virtual void close() = 0;
   virtual std::string command(const std::string & cmd) = 0;
+
+  bool is_opened() {return opened;}
 };
 /*************************************************/
 // dummy driver
 
 struct Driver_dummy: Driver {
-  void open(const std::string & pars) override {}
+  void open() override {}
   void close() override {}
   std::string command(const std::string & cmd) override {return cmd;};
 };

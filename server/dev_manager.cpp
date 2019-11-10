@@ -11,10 +11,7 @@
              "</head><body>libmicrohttpd demo</body></html>"
 
 /*************************************************/
-DevManager::DevManager(): main_lock(""){
-  // Fill drv_info:
-  drv_info.emplace("dummy", new Driver_dummy);
-}
+DevManager::DevManager(): main_lock(""){ }
 
 /*************************************************/
 std::vector<std::string>
@@ -43,20 +40,15 @@ DevManager::run(const std::string & url){
 
   // Do we know this device?
   if (dev == "") throw Err() << "empty device";
-  if (dev_info.count(dev) == 0)
+  if (devices.count(dev) == 0)
     throw Err() << "unknown device:" << dev;
-  auto & info = dev_info.find(dev)->second;
 
-  // Do we know this driver? (this should be already
-  // checked in read_conf).
-  if (drv_info.count(info.drv_name) == 0)
-    throw Err() << "unknown driver:" << dev;
-  auto & drv = drv_info.find(info.drv_name)->second;
+  Device d = devices.find(dev)->second;
 
   // Open device if needed
-  if (dev_map.count(dev) == 0){
+  if (d->is_opened() == 0){
     main_lock.lock();
-    dev_map.emplace(dev, drv.get());
+    d->open();
     main_lock.unlock();
   }
 
@@ -77,7 +69,7 @@ DevManager::run(const std::string & url){
 /*************************************************/
 void
 DevManager::read_conf(const std::string & file){
-  std::map<std::string, DevInfo> ret;
+  std::map<std::string, Device> ret;
   int line_num[2] = {0,0};
   std::ifstream ff(file);
   if (!ff.good()) throw Err()
@@ -102,10 +94,6 @@ DevManager::read_conf(const std::string & file){
         opt.put(vs[i], vs[i+1]);
       }
 
-      // do we know the driver?
-      if (drv_info.count(drv) == 0) throw Err()
-        << "unknown driver: " << drv;
-
       // do not allow empty devices
       if (dev == "") throw Err() << "empty device";
 
@@ -114,7 +102,7 @@ DevManager::read_conf(const std::string & file){
         << "duplicated device name: " << dev;
 
       // add device information
-      ret.emplace(dev, DevInfo(drv, opt));
+      ret.emplace(dev, Device(drv, opt));
 
     }
   } catch (Err e){
@@ -122,7 +110,7 @@ DevManager::read_conf(const std::string & file){
                 << file << " at line " << line_num[0] << ": " << e.str();
   }
   main_lock.lock();
-  dev_info = ret; // replace configuration only if no errors found.
+  devices = ret; // apply the configuration only if no errors have found.
   main_lock.unlock();
 }
 
