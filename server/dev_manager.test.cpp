@@ -19,21 +19,36 @@ main(){
       vector<string>({"a", "", ""}));
 
     assert(DevManager::parse_url("/a") ==
+      vector<string>({"a", "", ""}));
+
+    assert(DevManager::parse_url("//a") ==
       vector<string>({"", "a", ""}));
 
     assert(DevManager::parse_url("a/b") ==
       vector<string>({"a", "b", ""}));
 
     assert(DevManager::parse_url("/a/b") ==
+      vector<string>({"a", "b", ""}));
+
+    assert(DevManager::parse_url("//a/b") ==
       vector<string>({"", "a", "b"}));
 
     assert(DevManager::parse_url("a/b/c") ==
       vector<string>({"a", "b", "c"}));
 
+    assert(DevManager::parse_url("/a/b/c") ==
+      vector<string>({"a", "b", "c"}));
+
     assert(DevManager::parse_url("a//c") ==
       vector<string>({"a", "", "c"}));
 
+    assert(DevManager::parse_url("/a//c") ==
+      vector<string>({"a", "", "c"}));
+
     assert(DevManager::parse_url("a/b/c/d") ==
+      vector<string>({"a", "b", "c/d"}));
+
+    assert(DevManager::parse_url("/a/b/c/d") ==
       vector<string>({"a", "b", "c/d"}));
 
     /********************************************/

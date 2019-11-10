@@ -18,6 +18,7 @@ std::vector<std::string>
 DevManager::parse_url(const std::string & url){
   std::vector<std::string> ret(3);
   size_t p1(0), i(0);
+  if (url.size()>0 && url[0]=='/') p1++; // skip leading /
   for (i=0; i<2; ++i){
     size_t p2 = url.find('/', p1);
     if (p2 == std::string::npos) break;
