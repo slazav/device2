@@ -46,6 +46,10 @@ URLs with three-components are used: `<device>`, `<command>`,
 `http://<server>:<port>/generator/cmd/FREQ?`" sends command `FREQ?` to
 the device `generator` and returns answer.
 
+On success a response with code 200 and answer of the device in the
+message body is returned. On error a response with code 400 is returned.
+Error description is written in `Error` header.
+
 ### Configuration file
 
 Configuration file contains one line per device. Empty lines and
