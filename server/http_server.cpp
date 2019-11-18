@@ -70,6 +70,7 @@ void ConnFunc (void *cls,
 
   DevManager * dm = (DevManager*)cls;
 
+  dm->lock();
   switch (toe){
   case MHD_CONNECTION_NOTIFY_STARTED:
     MHD_set_connection_option(connection, MHD_CONNECTION_OPTION_TIMEOUT, 10);
@@ -82,6 +83,7 @@ void ConnFunc (void *cls,
     delete (uint64_t*)*socket_context;
     break;
   }
+  dm->unlock();
 }
 
 HTTP_Server::HTTP_Server(

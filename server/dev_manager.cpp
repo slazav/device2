@@ -7,9 +7,6 @@
 #include "drivers.h"
 #include "dev_manager.h"
 
-#define PAGE "<html><head><title>libmicrohttpd demo</title>"\
-             "</head><body>libmicrohttpd demo</body></html>"
-
 /*************************************************/
 DevManager::DevManager(): Lock("manager"){ }
 
@@ -30,44 +27,33 @@ DevManager::parse_url(const std::string & url){
 }
 
 /*************************************************/
-// open connection callback:
 void
 DevManager::conn_open(const uint64_t conn){
 }
 
-// close connection callback:
 void
 DevManager::conn_close(const uint64_t conn){
+  // go through all devices, close ones which are not needed
+  for (auto & d:devices){ d.second.close(conn); }
 }
 
 /*************************************************/
 std::string
 DevManager::run(const std::string & url, const uint64_t conn){
-
   auto vs = parse_url(url);
   std::string dev = vs[0];
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
-
   // Do we know this device?
   if (dev == "") throw Err() << "empty device";
+
   if (devices.count(dev) == 0)
     throw Err() << "unknown device: " << dev;
+  Device & d = devices.find(dev)->second;
+  d.open(conn);
 
-  Device d = devices.find(dev)->second;
-
-  // Open device if needed
-  d.lock();
-  if (d->is_opened() == 0) d->open();
-  d.unlock();
-
-  if (cmd == "cmd"){
-    d.lock();
-    std::string ret = d->cmd(arg);
-    d.unlock();
-    return ret;
-  }
+  if (cmd == "cmd") return d->cmd(arg);
 
   throw Err() << "unknown command: " << cmd;
 }
@@ -108,7 +94,7 @@ DevManager::read_conf(const std::string & file){
         << "duplicated device name: " << dev;
 
       // add device information
-      ret.emplace(dev, Device(dev, drv, opt));
+      ret.emplace(dev, Device(dev,drv,opt));
 
     }
   } catch (Err e){
