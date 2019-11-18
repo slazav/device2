@@ -67,7 +67,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
     if (cmd == "cmd"){
       if (verb>2)
         log << "Device " << dev << ": #" << conn << " >> " << arg << "\n";
-      auto ret = d->cmd(arg);
+      auto ret = d.cmd(cmd, arg);
       if (verb>2)
         log << "Device " << dev << ": #" << conn << " << " << ret << "\n";
       return ret;

@@ -17,7 +17,7 @@
 
 /*************************************************/
 
-class Device : public std::shared_ptr<Driver>, public Lock{
+class Device : std::shared_ptr<Driver>, public Lock{
   // Connections which use the device
   std::set<uint64_t> users;
 
@@ -36,8 +36,8 @@ public:
     if (users.count(conn)>0) return false; // device is opened and used by this connection
     lock();
     bool do_open = users.empty();          // device need to be opened
-    if (do_open) (*this)->open();
     users.insert(conn);
+    if (do_open) (*this)->open();
     unlock();
     return do_open;
   }
@@ -53,6 +53,13 @@ public:
     if (do_close) (*this)->close();
     unlock();
     return do_close;
+  }
+
+  std::string cmd(const std::string & cmd, const std::string & arg){
+    lock();
+    auto ret = (*this)->cmd(arg);
+    unlock();
+    return ret;
   }
 
 };
