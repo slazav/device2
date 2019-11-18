@@ -131,7 +131,7 @@ main(int argc, char ** argv) {
         if (pf.fail())
           throw Err() << "can't open pid-file: " << pidfile;
         pf << pid;
-        if (verb>0) *log << "Starting dev_server in daemon mode, pid=" << pid;
+        if (verb>0) *log << "Starting dev_server in daemon mode, pid=" << pid << "\n";
         return 0;
       }
 
@@ -160,11 +160,11 @@ main(int argc, char ** argv) {
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
-      if (verb>0) *log << "Starting dev_server in console mode";
+      if (verb>0) *log << "Starting dev_server in console mode\n";
     }
 
     // create device manager
-    DevManager dm;
+    DevManager dm(*log, verb);
 
     // read configuration file
     dm.read_conf(devfile);

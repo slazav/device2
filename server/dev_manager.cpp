@@ -8,7 +8,8 @@
 #include "dev_manager.h"
 
 /*************************************************/
-DevManager::DevManager(): Lock("manager"){ }
+DevManager::DevManager(std::ostream & log, int verb):
+   log(log), verb(verb), Lock("manager"){ }
 
 /*************************************************/
 std::vector<std::string>
@@ -29,12 +30,17 @@ DevManager::parse_url(const std::string & url){
 /*************************************************/
 void
 DevManager::conn_open(const uint64_t conn){
+  if (verb>1) log << "Connection #" << conn << ": open\n";
 }
 
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
-  for (auto & d:devices){ d.second.close(conn); }
+  if (verb>1) log << "Connection #" << conn << ": close\n";
+  for (auto & d:devices){
+    if (d.second.close(conn) && verb>1)
+      log << "Closing device: " << d.first << "\n";
+  }
 }
 
 /*************************************************/
@@ -45,17 +51,35 @@ DevManager::run(const std::string & url, const uint64_t conn){
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
-  // Do we know this device?
-  if (dev == "") throw Err() << "empty device";
+  if (verb>1) log << "Connection #" << conn << ": get request: " << url << "\n";
 
-  if (devices.count(dev) == 0)
-    throw Err() << "unknown device: " << dev;
-  Device & d = devices.find(dev)->second;
-  d.open(conn);
+  try {
+    // Do we know this device?
+    if (dev == "") throw Err() << "empty device";
 
-  if (cmd == "cmd") return d->cmd(arg);
+    if (devices.count(dev) == 0)
+      throw Err() << "unknown device: " << dev;
 
-  throw Err() << "unknown command: " << cmd;
+    Device & d = devices.find(dev)->second;
+    if (d.open(conn) && verb>1)
+      log << "Opening device: " << dev << "\n";
+
+    if (cmd == "cmd"){
+      if (verb>2)
+        log << "Device " << dev << ": #" << conn << " >> " << arg << "\n";
+      auto ret = d->cmd(arg);
+      if (verb>2)
+        log << "Device " << dev << ": #" << conn << " << " << ret << "\n";
+      return ret;
+    }
+
+    throw Err() << "unknown command: " << cmd;
+  }
+  catch (Err e){
+    if (verb>1)
+      log << "Connection #" << conn << ": error: " << e.str() << "\n";
+    throw e;
+  }
 }
 
 /*************************************************/
@@ -65,7 +89,8 @@ DevManager::read_conf(const std::string & file){
   int line_num[2] = {0,0};
   std::ifstream ff(file);
   if (!ff.good()) throw Err()
-    << "dev_server: can't open configuration: " << file;
+    << "can't open configuration: " << file;
+  if (verb>0) log << "Reading configuration file: " << file << "\n";
 
   try {
     while (1){
@@ -98,10 +123,11 @@ DevManager::read_conf(const std::string & file){
 
     }
   } catch (Err e){
-    throw Err() << "dev_server: bad configuration file "
+    throw Err() << "bad configuration file "
                 << file << " at line " << line_num[0] << ": " << e.str();
   }
   lock();
+  if (verb>0) log << ret.size() << " devices configured\n";
   devices = ret; // apply the configuration only if no errors have found.
   unlock();
 }

@@ -29,35 +29,48 @@ public:
     std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)),
     Lock("manager:" + dev_name) {}
 
-  // Open a device for connection (if needed)
-  void open(const uint64_t conn){
-    if (users.empty()) (*this)->open();
-    if (users.count(conn)>0) return;
+  // Reserve device for a connection.
+  // Open it if there were no reservations.
+  // Return true if the device was opened.
+  bool open(const uint64_t conn){
+    if (users.count(conn)>0) return false; // device is opened and used by this connection
     lock();
+    bool do_open = users.empty();          // device need to be opened
+    if (do_open) (*this)->open();
     users.insert(conn);
     unlock();
+    return do_open;
   }
 
-  // Close a device for connection (if no other users left)
-  void close(const uint64_t conn){
-    if (users.count(conn)==0) return;
+  // Remove reservation for a connection.
+  // Close the device if no reservations left.
+  // Return true if the device was closed.
+  bool close(const uint64_t conn){
+    if (users.count(conn)==0) return false; // device is not used by this connection
     lock();
     users.erase(conn);
+    bool do_close = users.empty();
+    if (do_close) (*this)->close();
     unlock();
-    if (users.empty()) (*this)->close();
+    return do_close;
   }
+
 };
 
 /*************************************************/
 
-struct DevManager : public Lock {
+class DevManager : public Lock {
+private:
+  std::ostream &log; // log stream
+  int verb; // log level
 
+public:
   // All devices (from configuration file):
   std::map<std::string, Device> devices;
 
   /******/
 
-  DevManager();
+  DevManager(std::ostream & log, int verb);
 
   // open connection callback:
   void conn_open(const uint64_t conn);

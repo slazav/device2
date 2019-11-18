@@ -54,37 +54,37 @@ main(){
     /********************************************/
     // reading configuration file
 
-    DevManager dm;
+    DevManager dm(std::cerr, 0);
 
     assert_err(dm.read_conf("test_data/e0.txt"), // missing file
-      "dev_server: can't open configuration: test_data/e0.txt");
+      "can't open configuration: test_data/e0.txt");
 
     assert_eq(dm.devices.size(), 0);
     dm.read_conf("test_data/n1.txt"); // empty file
     assert_eq(dm.devices.size(), 0);
 
     assert_err(dm.read_conf("test_data/e1.txt"),
-      "dev_server: bad configuration file test_data/e1.txt at line 1: "
+      "bad configuration file test_data/e1.txt at line 1: "
       "expected: <device name> <driver name> [-<parameter> <value>]");
 
     assert_err(dm.read_conf("test_data/e2.txt"),
-      "dev_server: bad configuration file test_data/e2.txt at line 1: "
+      "bad configuration file test_data/e2.txt at line 1: "
       "unknown driver: b");
 
     assert_err(dm.read_conf("test_data/e3.txt"),
-      "dev_server: bad configuration file test_data/e3.txt at line 2: "
+      "bad configuration file test_data/e3.txt at line 2: "
       "even-size list of [-<parameter> <value>] pairs expected");
 
     assert_err(dm.read_conf("test_data/e4.txt"),
-      "dev_server: bad configuration file test_data/e4.txt at line 2: "
+      "bad configuration file test_data/e4.txt at line 2: "
       "parameter name should be prefixed with \"-\" and contain at least one character: c");
 
     assert_err(dm.read_conf("test_data/e5.txt"),
-      "dev_server: bad configuration file test_data/e5.txt at line 2: "
+      "bad configuration file test_data/e5.txt at line 2: "
       "parameter name should be prefixed with \"-\" and contain at least one character: -");
 
     assert_err(dm.read_conf("test_data/e6.txt"),
-      "dev_server: bad configuration file test_data/e6.txt at line 2: "
+      "bad configuration file test_data/e6.txt at line 2: "
       "duplicated device name: a");
 
     assert_eq(dm.devices.size(), 0);
@@ -92,7 +92,7 @@ main(){
     assert_eq(dm.devices.size(), 2);
 
     assert_err(dm.read_conf("test_data/e7.txt"), // missing file
-      "dev_server: bad configuration file test_data/e7.txt at line 3: "
+      "bad configuration file test_data/e7.txt at line 3: "
       "duplicated device name: a");
 
     // error does not change configuration
