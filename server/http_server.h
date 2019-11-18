@@ -15,7 +15,7 @@ class HTTP_Server{
 public:
   HTTP_Server(
       const int port,
-      DevManager & dm);
+      DevManager * dm);
 
   ~HTTP_Server();
 };

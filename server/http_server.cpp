@@ -86,12 +86,12 @@ void ConnFunc (void *cls,
 
 HTTP_Server::HTTP_Server(
       const int port,
-      DevManager & dm) {
+      DevManager * dm) {
 
   d = MHD_start_daemon(
         MHD_USE_THREAD_PER_CONNECTION,
-        port, NULL, NULL, &ProcessRequest, &dm,
-        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, NULL,
+        port, NULL, NULL, &ProcessRequest, dm,
+        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, dm,
         MHD_OPTION_END);
 
   if (d == NULL)
