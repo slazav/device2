@@ -131,6 +131,7 @@ main(int argc, char ** argv) {
         if (pf.fail())
           throw Err() << "can't open pid-file: " << pidfile;
         pf << pid;
+        if (verb>0) *log << "Starting dev_server in daemon mode, pid=" << pid;
         return 0;
       }
 
@@ -159,6 +160,7 @@ main(int argc, char ** argv) {
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
+      if (verb>0) *log << "Starting dev_server in console mode";
     }
 
     // create device manager
@@ -167,8 +169,8 @@ main(int argc, char ** argv) {
     // read configuration file
     dm.read_conf(devfile);
 
-    HTTP_Server srv(port, dm);
-    if (verb>0) *log << "Starting the server at port " << port << "\n";
+    HTTP_Server srv(port, &dm);
+    if (verb>0) *log << "Starting HTTP server at port " << port << "\n";
 
     // set up signals
     {
@@ -187,7 +189,7 @@ main(int argc, char ** argv) {
     try{ while(1) sleep(10); }
     catch(int ret){}
 
-    if (verb>0) *log << "Stopping the server\n";
+    if (verb>0) *log << "Stopping HTTP server\n";
     ret=0;
   }
   catch (Err e){
