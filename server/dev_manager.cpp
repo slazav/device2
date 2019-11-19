@@ -98,7 +98,7 @@ DevManager::read_conf(const std::string & file){
 
   try {
     while (1){
-      std::vector<std::string> vs = read_words(ff, line_num, true);
+      std::vector<std::string> vs = read_words(ff, line_num, false);
       if (vs.size() < 1) break;
       if (vs.size() < 2) throw Err()
         << "expected: <device name> <driver name> [-<parameter> <value>]";
