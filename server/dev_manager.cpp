@@ -30,17 +30,17 @@ DevManager::parse_url(const std::string & url){
 /*************************************************/
 void
 DevManager::conn_open(const uint64_t conn){
-  Log(2) << "Connection #" << conn << ": open";
+  Log(2) << "#" << conn << ": open connection";
 }
 
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
-  Log(2) << "Connection #" << conn << ": close";
   for (auto & d:devices){
     if (d.second.close(conn))
-      Log(2) << d.first << ": close";
+      Log(2) << "#" << conn << "/" << d.first << ": close device";
   }
+  Log(2) << "#" << conn << ": close connection";
 }
 
 /*************************************************/
@@ -51,32 +51,26 @@ DevManager::run(const std::string & url, const uint64_t conn){
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
-  Log(2) << "Connection #" << conn << ": get request: " << url;
+  Log(2) << "#" << conn << ": get request: " << url;
 
   try {
-    // Do we know this device?
     if (dev == "") throw Err() << "empty device";
 
     if (devices.count(dev) == 0)
       throw Err() << "unknown device: " << dev;
-  }
-  catch (Err e){
-    Log(2) << "Connection #" << conn << ": error: " << e.str();
-    throw e;
-  }
 
-  try {
     Device & d = devices.find(dev)->second;
-    if (d.open(conn)) Log(2) << dev << ": open";
+    if (d.open(conn))
+      Log(2) << "#" << conn << "/" << dev << ": open device";
 
-    Log(3) << dev << ": #" << conn << " >> " << cmd << ": " << arg;
+    Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
     auto ret = d.cmd(cmd, arg);
-    Log(3) << dev << ": #" << conn << " << answer: " << ret;
+    Log(3) << "#" << conn << "/" << dev << " << answer: " << ret;
 
     return ret;
   }
   catch (Err e){
-    Log(2) << dev << ": #" << conn << " << error: " << e.str();
+    Log(2) << "#" << conn << "/" << dev << " << error: " << e.str();
     throw e;
   }
 }
