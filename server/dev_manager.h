@@ -37,7 +37,9 @@ public:
     lock();
     bool do_open = users.empty();          // device need to be opened
     users.insert(conn);
-    if (do_open) (*this)->open();
+    if (do_open){
+      (*this)->open();
+    }
     unlock();
     return do_open;
   }
@@ -70,10 +72,6 @@ public:
 /*************************************************/
 
 class DevManager : public Lock {
-private:
-  std::ostream &log; // log stream
-  int verb; // log level
-
 public:
 
   // All devices (from configuration file):
@@ -81,7 +79,7 @@ public:
 
   /******/
 
-  DevManager(std::ostream & log, int verb);
+  DevManager();
 
   // open connection callback:
   void conn_open(const uint64_t conn);

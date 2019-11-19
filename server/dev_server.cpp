@@ -8,6 +8,7 @@
 
 #include "getopt/getopt.h"
 #include "err/err.h"
+#include "log/log.h"
 #include "dev_manager.h"
 #include "http_server.h"
 
@@ -34,11 +35,7 @@ static void StopFunc(int signum){ throw 0; }
 int
 main(int argc, char ** argv) {
 
-  // log streams
-  std::ostream *log = &std::cout;  // log stream
-  std::ofstream flog; // log stream for file logs
-
-  std::string logfile; // fog file name
+  std::string logfile; // log file name
   std::string pidfile; // pidfile
   std::string devfile; // device configuration file
 
@@ -85,14 +82,8 @@ main(int argc, char ** argv) {
       if (dofork) logfile="/var/log/dev_server.log";
       else logfile="-";
     }
-
-    // open log file
-    if (logfile!="-"){
-      flog.open(logfile, std::ios::app);
-      if (flog.fail())
-        throw Err() << "can't open log file: " << logfile;
-      log = &flog;
-    }
+    Log::set_log_file(logfile);
+    Log::set_log_level(verb);
 
     // stop running daemon
     if (stop) {
@@ -131,7 +122,7 @@ main(int argc, char ** argv) {
         if (pf.fail())
           throw Err() << "can't open pid-file: " << pidfile;
         pf << pid;
-        if (verb>0) *log << "Starting dev_server in daemon mode, pid=" << pid << "\n";
+        Log(1) << "Starting dev_server in daemon mode, pid=" << pid;
         return 0;
       }
 
@@ -160,17 +151,17 @@ main(int argc, char ** argv) {
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
-      if (verb>0) *log << "Starting dev_server in console mode\n";
+      Log(1) << "Starting dev_server in console mode";
     }
 
     // create device manager
-    DevManager dm(*log, verb);
+    DevManager dm;
 
     // read configuration file
     dm.read_conf(devfile);
 
     HTTP_Server srv(port, &dm);
-    if (verb>0) *log << "Starting HTTP server at port " << port << "\n";
+    Log(1) << "Starting HTTP server at port " << port;
 
     // set up signals
     {
@@ -189,15 +180,15 @@ main(int argc, char ** argv) {
     try{ while(1) sleep(10); }
     catch(int ret){}
 
-    if (verb>0) *log << "Stopping HTTP server\n";
+    Log(1) << "Stopping HTTP server";
     ret=0;
   }
   catch (Err e){
-    if (e.str()!="") *log << "Error: " << e.str() << "\n";
+    if (e.str()!="") Log(0) << "Error: " << e.str();
     ret = e.code();
     if (ret==-1) ret=1; // default code?!
   }
 
-  remove(pidfile.c_str()); // try to remove pid-file
+  if (pidfile!= "") remove(pidfile.c_str()); // try to remove pid-file
   return ret;
 }
