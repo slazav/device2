@@ -75,6 +75,7 @@ private:
   int verb; // log level
 
 public:
+
   // All devices (from configuration file):
   std::map<std::string, Device> devices;
 
@@ -88,14 +89,12 @@ public:
   // close connection callback:
   void conn_close(const uint64_t conn);
 
-  // process a request form HTTP server (given as 'URL').
+  // process a request from HTTP server (given as 'URL').
   // conn parameter is the connection ID
   std::string run(const std::string & url, const uint64_t conn);
 
-  // Read configuration file, return DevName->Device map.
+  // Read configuration file, update `devices` map.
   // Throw exception on errors.
-  // This is a static function. I plan to use it in the constructor,
-  // and make an additional command to rereading configuration.
   void read_conf(const std::string & file);
 
   // parse url, return three-component vector (name, command, data)
