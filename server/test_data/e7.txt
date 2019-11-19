@@ -1,3 +1,3 @@
-a dummy
-c dummy -a b -c d
-a dummy
+a TEST
+c TEST -a b -c d
+a TEST

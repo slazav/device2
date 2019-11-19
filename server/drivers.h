@@ -28,7 +28,7 @@ public:
 /*************************************************/
 // dummy driver
 
-struct Driver_dummy: Driver {
+struct Driver_test: Driver {
   void open() override {}
   void close() override {}
   std::string cmd(const std::string & cmd) override {return cmd;};

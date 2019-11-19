@@ -56,10 +56,13 @@ public:
   }
 
   std::string cmd(const std::string & cmd, const std::string & arg){
-    lock();
-    auto ret = (*this)->cmd(arg);
-    unlock();
-    return ret;
+    if (cmd == "ask"){
+      lock();
+      auto ret = (*this)->cmd(arg);
+      unlock();
+      return ret;
+    }
+    throw Err() << "unknown command: " << cmd;
   }
 
 };
