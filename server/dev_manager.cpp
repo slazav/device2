@@ -39,7 +39,7 @@ DevManager::conn_close(const uint64_t conn){
   if (verb>1) log << "Connection #" << conn << ": close\n";
   for (auto & d:devices){
     if (d.second.close(conn) && verb>1)
-      log << "Closing device: " << d.first << "\n";
+      log << d.first << ": close\n";
   }
 }
 
@@ -59,25 +59,29 @@ DevManager::run(const std::string & url, const uint64_t conn){
 
     if (devices.count(dev) == 0)
       throw Err() << "unknown device: " << dev;
-
-    Device & d = devices.find(dev)->second;
-    if (d.open(conn) && verb>1)
-      log << "Opening device: " << dev << "\n";
-
-    if (cmd == "cmd"){
-      if (verb>2)
-        log << "Device " << dev << ": #" << conn << " >> " << arg << "\n";
-      auto ret = d.cmd(cmd, arg);
-      if (verb>2)
-        log << "Device " << dev << ": #" << conn << " << " << ret << "\n";
-      return ret;
-    }
-
-    throw Err() << "unknown command: " << cmd;
   }
   catch (Err e){
     if (verb>1)
       log << "Connection #" << conn << ": error: " << e.str() << "\n";
+    throw e;
+  }
+
+  try {
+    Device & d = devices.find(dev)->second;
+    if (d.open(conn) && verb>1)
+      log << dev << ": open\n";
+
+    if (verb>2)
+      log << dev << ": #" << conn << " >> " << cmd << ": " << arg << "\n";
+    auto ret = d.cmd(cmd, arg);
+    if (verb>2)
+      log << dev << ": #" << conn << " << answer: " << ret << "\n";
+
+    return ret;
+  }
+  catch (Err e){
+    if (verb>1)
+      log << dev << ": #" << conn << " << error: " << e.str() << "\n";
     throw e;
   }
 }
