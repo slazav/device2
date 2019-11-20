@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 #include "err/err.h"
 #include "log/log.h"
@@ -7,6 +8,8 @@
 #include "locks.h"
 #include "drivers.h"
 #include "dev_manager.h"
+
+#define SRVDEV "SERVER"
 
 /*************************************************/
 DevManager::DevManager(): Lock("manager"){ }
@@ -36,10 +39,7 @@ DevManager::conn_open(const uint64_t conn){
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
-  for (auto & d:devices){
-    if (d.second.close(conn))
-      Log(2) << "#" << conn << "/" << d.first << ": close device";
-  }
+  for (auto & d:devices) d.second.close(conn);
   Log(2) << "#" << conn << ": close connection";
 }
 
@@ -51,25 +51,53 @@ DevManager::run(const std::string & url, const uint64_t conn){
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
-  Log(2) << "#" << conn << ": get request: " << url;
+  Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
 
-  try {
+  try { // throw errors with code=1 for normal return
+
     if (dev == "") throw Err() << "empty device";
 
+    // special device SERVER
+    if (dev == SRVDEV){
+      if (cmd == "get_log_level") {
+         throw Err(1) << type_to_str(Log::get_log_level());
+      }
+      if (cmd == "set_log_level"){
+         lock();
+         Log::set_log_level(str_to_type<int>(arg));
+         unlock();
+         throw Err(1) << type_to_str(Log::get_log_level());
+      }
+      if (cmd == "open_dev"){
+        if (devices.count(arg) == 0)
+          throw Err() << "unknown device: " << dev;
+        Device & d = devices.find(arg)->second;
+        d.open(conn);
+        throw Err(1);
+      }
+      if (cmd == "usleep"){
+        int t = str_to_type<int>(arg);
+        usleep(t);
+        throw Err(1) << t;
+      }
+      if (cmd == "repeat") {
+        throw Err(1) << arg;
+      }
+      throw Err() << "unknown server command: " << cmd;
+    }
+
+    // other devices
     if (devices.count(dev) == 0)
       throw Err() << "unknown device: " << dev;
-
     Device & d = devices.find(dev)->second;
-    if (d.open(conn))
-      Log(2) << "#" << conn << "/" << dev << ": open device";
-
-    Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
-    auto ret = d.cmd(cmd, arg);
-    Log(3) << "#" << conn << "/" << dev << " << answer: " << ret;
-
-    return ret;
+    d.open(conn);
+    throw Err(1) << d.cmd(cmd, arg);
   }
   catch (Err e){
+    if (e.code() == 1){
+      Log(3) << "#" << conn << "/" << dev << " << answer: " << e.str();
+      return e.str();
+    }
     Log(2) << "#" << conn << "/" << dev << " << error: " << e.str();
     throw e;
   }
@@ -107,6 +135,9 @@ DevManager::read_conf(const std::string & file){
 
       // do not allow empty devices
       if (dev == "") throw Err() << "empty device";
+
+      // do not allow SERVER device
+      if (dev == SRVDEV) throw Err() << "can't redefine " << SRVDEV << " device";
 
       // does this device exists
       if (ret.count(dev)>0) throw Err()

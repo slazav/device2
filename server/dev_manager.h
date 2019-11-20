@@ -11,6 +11,8 @@
 #include <string>
 #include <memory>
 
+#include "err/err.h"
+#include "log/log.h"
 #include "opt/opt.h"
 #include "locks.h"
 #include "drivers.h"
@@ -20,6 +22,7 @@
 class Device : std::shared_ptr<Driver>, public Lock{
   // Connections which use the device
   std::set<uint64_t> users;
+  std::string dev;
 
 public:
   // Constructor
@@ -27,34 +30,35 @@ public:
           const std::string & drv_name,
           const Opt & drv_args):
     std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)),
-    Lock("manager:" + dev_name) {}
+    Lock("manager:" + dev_name),
+    dev(dev_name) {}
 
   // Reserve device for a connection.
   // Open it if there were no reservations.
-  // Return true if the device was opened.
-  bool open(const uint64_t conn){
-    if (users.count(conn)>0) return false; // device is opened and used by this connection
+  void open(const uint64_t conn){
+    if (users.count(conn)>0) return; // device is opened and used by this connection
     lock();
     bool do_open = users.empty();          // device need to be opened
     users.insert(conn);
-    if (do_open){
+    if (do_open) {
       (*this)->open();
+      Log(2) << "#" << conn << "/" << dev << ": open device";
     }
     unlock();
-    return do_open;
   }
 
   // Remove reservation for a connection.
   // Close the device if no reservations left.
-  // Return true if the device was closed.
-  bool close(const uint64_t conn){
-    if (users.count(conn)==0) return false; // device is not used by this connection
+  void close(const uint64_t conn){
+    if (users.count(conn)==0) return; // device is not used by this connection
     lock();
     users.erase(conn);
     bool do_close = users.empty();
-    if (do_close) (*this)->close();
+    if (do_close){
+      (*this)->close();
+      Log(2) << "#" << conn << "/" << dev << ": close device";
+    }
     unlock();
-    return do_close;
   }
 
   std::string cmd(const std::string & cmd, const std::string & arg){
