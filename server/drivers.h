@@ -26,7 +26,7 @@ public:
   bool is_opened() {return opened;}
 };
 /*************************************************/
-// dummy driver
+// test driver
 
 struct Driver_test: Driver {
   void open() override {}

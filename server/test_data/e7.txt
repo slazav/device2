@@ -1,3 +1,3 @@
-a TEST
-c TEST -a b -c d
-a TEST
+a test
+c test -a b -c d
+a test

@@ -98,10 +98,9 @@ and returned in the answer.
 * `repeat` -- Repeat the argument in the answer.
 
 
-### Driver TEST -- a dummy driver for tests
+### Driver `test` -- a dummy driver for tests
 
-Supported configuration options:
-* none
+Supported configuration options: none
 
 Supported commands:
 * ask -- just repeat the message
