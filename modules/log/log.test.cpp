@@ -15,6 +15,7 @@ main(){
     Log::set_log_file("log1.tmp");
     Log(0) << "string " << 0;
     Log(1) << "string " << 1;
+    assert_eq(Log::get_log_level(), 0);
 
     Log::set_log_file("log2.tmp");
     Log::set_log_level(2);
@@ -22,6 +23,7 @@ main(){
     Log(2) << "string " << 2;
     Log(3) << "string " << 3;
 
+    assert_eq(Log::get_log_level(), 2);
     assert_err(Log::set_log_file("tmp/log2.tmp"),
       "can't open log file: tmp/log2.tmp");
 

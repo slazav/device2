@@ -33,6 +33,8 @@ public:
     log_level = lvl;
   }
 
+  static int get_log_level(){ return log_level; }
+
   Log(int l): empty(l>log_level) { }
 
   ~Log() { if (!empty) (*log) << "\n";}
