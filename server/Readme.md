@@ -25,7 +25,7 @@ for re-reading configuration when the server is running.
 
 Locks `"manager:<name>"` are used in each device to protect modifications
 of the `users` structure. This is done when a new connection sends a
-command to the device or then (user is added) or then such a connection
+command to the device (user is added) or then such a connection
 disappeares (user removed).
 
 Each device driver has methods `open, close, cmd` which may be called
