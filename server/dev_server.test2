@@ -8,6 +8,8 @@
 assert "wget localhost:8082/b/ask/text -nv -S"\
   "failed: Connection refused." 4
 
+rm -f log.txt
+
 # run the server
 assert "./dev_server --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --daemon" "" 0
 
@@ -21,6 +23,18 @@ assert "echo $a" "Error: unknown command: x" 0
 a=$(wget localhost:8082/b/ask/text -O - -q ||:)
 assert "echo $a" "text" 0
 
+a=$(wget localhost:8082/SERVER/set_log_level/3 -O - -q ||:)
+assert "echo $a" "3" 0
+a=$(wget localhost:8082/SERVER/get_log_level -O - -q ||:)
+assert "echo $a" "3" 0
+a=$(wget localhost:8082/SERVER/repeat/text -O - -q ||:)
+assert "echo $a" "text" 0
+a=$(wget localhost:8082/b/ask/text -O - -q ||:)
+assert "echo $a" "text" 0
+a=$(wget localhost:8082/SERVER/set_log_level/1 -O - -q ||:)
+assert "echo $a" "1" 0
+
+
 # stop the server
 assert "./dev_server --stop --pidfile pid.tmp" "" 0
-
+assert_diff test_data/log1.txt log.txt

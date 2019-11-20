@@ -1,0 +1,19 @@
+#3/SERVER << answer: 3
+#4: open connection
+#3: close connection
+#4/SERVER >> get_log_level: 
+#4/SERVER << answer: 3
+#5: open connection
+#4: close connection
+#5/SERVER >> repeat: text
+#5/SERVER << answer: text
+#6: open connection
+#5: close connection
+#6/b >> ask: text
+#6/b: open device
+#6/b << answer: text
+#7: open connection
+#6/b: close device
+#6: close connection
+#7/SERVER >> set_log_level: 1
+Stopping HTTP server
