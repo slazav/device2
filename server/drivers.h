@@ -12,7 +12,6 @@
 // base class
 
 class Driver {
-  bool opened;
 public:
 
   // create and return a device driver (static function)
@@ -23,8 +22,8 @@ public:
   virtual void close() = 0;
   virtual std::string cmd(const std::string & cmd) = 0;
 
-  bool is_opened() {return opened;}
 };
+
 /*************************************************/
 // test driver
 
