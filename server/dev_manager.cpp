@@ -12,6 +12,52 @@
 #define SRVDEV "SERVER"
 
 /*************************************************/
+Device::Device( const std::string & dev_name,
+        const std::string & drv_name,
+        const Opt & drv_args):
+  std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)),
+  Lock("manager:" + dev_name),
+  dev(dev_name) {
+}
+
+void
+Device::open(const uint64_t conn){
+  if (users.count(conn)>0) return; // device is opened and used by this connection
+  lock();
+  bool do_open = users.empty();          // device need to be opened
+  users.insert(conn);
+  if (do_open) {
+    (*this)->open();
+    Log(2) << "#" << conn << "/" << dev << ": open device";
+  }
+  unlock();
+}
+
+void
+Device::close(const uint64_t conn){
+  if (users.count(conn)==0) return; // device is not used by this connection
+  lock();
+  users.erase(conn);
+  bool do_close = users.empty();
+  if (do_close){
+    (*this)->close();
+    Log(2) << "#" << conn << "/" << dev << ": close device";
+  }
+  unlock();
+}
+
+std::string
+Device::cmd(const std::string & cmd, const std::string & arg){
+  if (cmd == "ask"){
+    lock();
+    auto ret = (*this)->cmd(arg);
+    unlock();
+    return ret;
+  }
+  throw Err() << "unknown command: " << cmd;
+}
+
+/*************************************************/
 DevManager::DevManager(): Lock("manager"){ }
 
 /*************************************************/
