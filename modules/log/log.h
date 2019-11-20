@@ -16,22 +16,9 @@ class Log {
 
 public:
 
-  static void set_log_file(const std::string & fname){
-    if (fname=="-") {
-      log = &std::cout;
-    }
-    else {
-      if (flog.is_open()) flog.close();
-      flog.open(fname, std::ios::app);
-      if (flog.fail())
-        throw Err() << "can't open log file: " << fname;
-      log = &flog;
-    }
-  }
+  static void set_log_file(const std::string & fname);
 
-  static void set_log_level(const int lvl){
-    log_level = lvl;
-  }
+  static void set_log_level(const int lvl) { log_level = lvl; }
 
   static int get_log_level(){ return log_level; }
 
