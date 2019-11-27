@@ -1,9 +1,0 @@
-a 'b "C" d' e\ e# aa
-a "b 'C' d" e\	e# aa
-"a
-b
-c
-"
-'a
-b
-c'
