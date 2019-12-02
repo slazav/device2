@@ -139,6 +139,12 @@ DevManager::run(const std::string & url, const uint64_t conn){
         d.open(conn);
         throw Err(1);
       }
+      if (cmd == "devices") {
+        std::string ret;
+        for (auto const & d:devices)
+          ret += d.first + "\n";
+        throw Err(1) << ret;
+      }
       if (cmd == "usleep"){
         int t = str_to_type<int>(arg);
         usleep(t);

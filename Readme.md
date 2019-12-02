@@ -82,11 +82,13 @@ server messages,  2 - connections, 3 - communications with devices).
 
 * `set_log_level` -- Set logging lavel. Argument is integer.
 
+* `devices` -- Show list of all known devices.
+
 * `open_dev` -- Open a device. Argument is device name. Usually a device
 is opened on demand, then a command is sent to it. This command can be
 used to open the device before sending any command to it.
 
-* `close_dev` -- Close a device (if no other sessions use it). Argument is
+* `close_dev` -- Close a device (if no other session uses it). Argument is
 device name. Usually devices are closed when session is ended and no
 other sessions are using the device. This command can be used to close the
 device without closing the session. If some other session uses the device it
