@@ -5,6 +5,8 @@
 #include <csignal>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h> // wait
+
 
 #include "getopt/getopt.h"
 #include "err/err.h"
@@ -40,6 +42,7 @@ main(int argc, char ** argv) {
   std::string devfile; // device configuration file
 
   int ret; // return code
+  bool mypid = false; // was the pidfile created by this process?
 
   try {
 
@@ -92,9 +95,20 @@ main(int argc, char ** argv) {
         throw Err() << "can't open pid-file: " << pidfile;
       int pid;
       pf >> pid;
-      if (kill(pid, SIGTERM) != 0)
-        throw Err() << "can't stop dev_server process " << pid << ": "
-                    << strerror(errno);
+
+      if (kill(pid, SIGTERM) == 0){
+        int st=0;
+        waitpid(pid, &st, 0);
+      }
+      else {
+        if (errno == ESRCH){ // no such process, we should remove the pid-file
+          remove(pidfile.c_str());
+        }
+        else {
+          throw Err() << "can't stop dev_server process " << pid << ": "
+                      << strerror(errno);
+        }
+      }
       return 0;
     }
 
@@ -125,6 +139,7 @@ main(int argc, char ** argv) {
         Log(1) << "Starting dev_server in daemon mode, pid=" << pid;
         return 0;
       }
+      mypid = true;
 
       // Change the file mode mask
       umask(0);
@@ -152,6 +167,7 @@ main(int argc, char ** argv) {
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
       Log(1) << "Starting dev_server in console mode";
+      mypid = true;
     }
 
     // create device manager
@@ -189,6 +205,6 @@ main(int argc, char ** argv) {
     if (ret==-1) ret=1; // default code?!
   }
 
-  if (pidfile!= "") remove(pidfile.c_str()); // try to remove pid-file
+  if (mypid && pidfile!= "") remove(pidfile.c_str()); // try to remove pid-file
   return ret;
 }
