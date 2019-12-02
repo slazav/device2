@@ -24,11 +24,17 @@ void
 Device::open(const uint64_t conn){
   if (users.count(conn)>0) return; // device is opened and used by this connection
   lock();
-  bool do_open = users.empty();          // device need to be opened
-  users.insert(conn);
-  if (do_open) {
-    (*this)->open();
-    Log(2) << "#" << conn << "/" << dev << ": open device";
+  try {
+    bool do_open = users.empty(); // device need to be opened
+    if (do_open) {
+      (*this)->open();
+      Log(2) << "#" << conn << "/" << dev << ": open device";
+    }
+    users.insert(conn);
+  }
+  catch(Err & e){
+    unlock();
+    throw e;
   }
   unlock();
 }
@@ -37,11 +43,17 @@ void
 Device::close(const uint64_t conn){
   if (users.count(conn)==0) return; // device is not used by this connection
   lock();
-  users.erase(conn);
-  bool do_close = users.empty();
-  if (do_close){
-    (*this)->close();
-    Log(2) << "#" << conn << "/" << dev << ": close device";
+  try {
+    bool do_close = users.size()==1;
+    if (do_close){
+      (*this)->close();
+      Log(2) << "#" << conn << "/" << dev << ": close device";
+    }
+    users.erase(conn);
+  }
+  catch(Err & e){
+    unlock();
+    throw e;
   }
   unlock();
 }
@@ -50,9 +62,15 @@ std::string
 Device::cmd(const std::string & cmd, const std::string & arg){
   if (cmd == "ask"){
     lock();
-    auto ret = (*this)->cmd(arg);
-    unlock();
-    return ret;
+    try {
+      auto ret = (*this)->cmd(arg);
+      unlock();
+      return ret;
+    }
+    catch(Err & e){
+      unlock();
+      throw e;
+    }
   }
   throw Err() << "unknown command: " << cmd;
 }
