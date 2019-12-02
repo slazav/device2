@@ -1,0 +1,2 @@
+spptest spp -prog "test_data/spp.sh" -open_timeout 2.0 -read_timeout 0.1
+

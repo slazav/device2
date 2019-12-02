@@ -1,19 +1,19 @@
-#3/SERVER << answer: 3
-#4: open connection
-#3: close connection
-#4/SERVER >> get_log_level: 
 #4/SERVER << answer: 3
 #5: open connection
 #4: close connection
-#5/SERVER >> repeat: text
-#5/SERVER << answer: text
+#5/SERVER >> get_log_level: 
+#5/SERVER << answer: 3
 #6: open connection
 #5: close connection
-#6/b >> ask: text
-#6/b: open device
-#6/b << answer: text
+#6/SERVER >> repeat: text
+#6/SERVER << answer: text
 #7: open connection
-#6/b: close device
 #6: close connection
-#7/SERVER >> set_log_level: 1
+#7/b: open device
+#7/b >> ask: text
+#7/b << answer: text
+#8: open connection
+#7/b: close device
+#7: close connection
+#8/SERVER >> set_log_level: 1
 Stopping HTTP server

@@ -23,6 +23,10 @@ assert_cmd "echo $a" "Error: unknown command: x" 0
 a=$(wget localhost:8082/b/ask/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
 
+a=$(wget localhost:8082/SERVER/devices -O - -q ||:)
+assert_cmd "echo $a" "a b" 0
+
+
 a=$(wget localhost:8082/SERVER/set_log_level/3 -O - -q ||:)
 assert_cmd "echo $a" "3" 0
 a=$(wget localhost:8082/SERVER/get_log_level -O - -q ||:)

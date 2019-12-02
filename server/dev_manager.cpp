@@ -115,7 +115,6 @@ DevManager::run(const std::string & url, const uint64_t conn){
   std::string cmd = vs[1];
   std::string arg = vs[2];
 
-  Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
 
   try { // throw errors with code=1 for normal return
 
@@ -123,6 +122,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
 
     // special device SERVER
     if (dev == SRVDEV){
+      Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
       if (cmd == "get_log_level") {
          throw Err(1) << type_to_str(Log::get_log_level());
       }
@@ -162,6 +162,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
       throw Err() << "unknown device: " << dev;
     Device & d = devices.find(dev)->second;
     d.open(conn);
+    Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
     throw Err(1) << d.cmd(cmd, arg);
   }
   catch (Err e){
