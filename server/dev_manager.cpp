@@ -153,6 +153,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
       if (cmd == "repeat") {
         throw Err(1) << arg;
       }
+
       throw Err() << "unknown server command: " << cmd;
     }
 
@@ -200,7 +201,7 @@ DevManager::read_conf(const std::string & file){
         if (vs[i].size()<2 || vs[i][0]!='-') throw Err()
           << "parameter name should be prefixed with \"-\" "
           << "and contain at least one character: " << vs[i];
-        opt.put(vs[i], vs[i+1]);
+        opt.put(vs[i].substr(1), vs[i+1]);
       }
 
       // do not allow empty devices
