@@ -1,6 +1,6 @@
 PROGRAMS := dev_server
-MOD_HEADERS := http_server.h dev_manager.h drivers.h mhd_locks.h locks.h
-MOD_SOURCES := http_server.cpp dev_manager.cpp locks.cpp drivers.cpp
+MOD_HEADERS := http_server.h dev_manager.h drivers.h mhd_locks.h locks.h device.h
+MOD_SOURCES := http_server.cpp dev_manager.cpp locks.cpp drivers.cpp device.cpp
 
 SIMPLE_TESTS := dev_manager locks driver_spp
 OTHER_TESTS := dev_server.test1\

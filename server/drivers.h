@@ -25,7 +25,8 @@ public:
 
   virtual void open() = 0;
   virtual void close() = 0;
-  virtual std::string cmd(const std::string & cmd) = 0;
+  virtual std::string cmd(const std::string & cmd,
+                          const std::string & arg) = 0;
 
 };
 
@@ -39,9 +40,11 @@ public:
   Driver_test(const Opt & opts): Driver(opts) {}
   void open()  override {opened=true;}
   void close() override {opened=false;}
-  std::string cmd(const std::string & cmd) override {
+  std::string cmd(const std::string & cmd,
+                  const std::string & arg) override {
     if (!opened) throw Err() << "Test: sending command to a closed device";
-    return cmd;
+    if (cmd != "ask") throw Err() << "unknown command: " << cmd;
+    return arg;
   };
 };
 
@@ -120,10 +123,12 @@ struct Driver_spp: Driver {
   }
 
   // send a command to the device and read answer
-  std::string cmd(const std::string & cmd) override {
+  std::string cmd(const std::string & cmd,
+                  const std::string & arg) override {
     if (!flt) throw Err() << "SPP: writing to a closed device";
+    if (cmd != "ask") throw Err() << "unknown command: " << cmd;
     try {
-      flt->ostream() << cmd << "\n";
+      flt->ostream() << arg << "\n";
       flt->ostream().flush();
       std::string l;
       return read_spp(read_timeout);
