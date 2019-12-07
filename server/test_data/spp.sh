@@ -8,7 +8,7 @@ stdbuf -o L echo "#OK"
 
 while read x; do
   if [ "$x" == "wait"  ];
-    then sleep 1;
+    then sleep 10;
   fi
   if [ "$x" == error ]; then
     stdbuf -o L echo "#Error: some error";

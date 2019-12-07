@@ -23,7 +23,7 @@ public:
   static std::shared_ptr<Driver> create(
     const std::string & name, const Opt & args);
 
-  virtual void open()  = 0;
+  virtual void open() = 0;
   virtual void close() = 0;
   virtual std::string cmd(const std::string & cmd) = 0;
 
@@ -33,10 +33,16 @@ public:
 // test driver
 
 struct Driver_test: Driver {
+private:
+  bool opened;
+public:
   Driver_test(const Opt & opts): Driver(opts) {}
-  void open() override {}
-  void close() override {}
-  std::string cmd(const std::string & cmd) override {return cmd;};
+  void open()  override {opened=true;}
+  void close() override {opened=false;}
+  std::string cmd(const std::string & cmd) override {
+    if (!opened) throw Err() << "Test: sending command to a closed device";
+    return cmd;
+  };
 };
 
 /*************************************************/
@@ -60,14 +66,13 @@ struct Driver_spp: Driver {
   std::string read_spp(double timeout = -1){
     if (!flt) throw Err() << "SPP: read from closed device";
     std::string ret;
-    while (!flt->istream().eof()){
+    while (1){
       std::string l;
-      if (timeout>0) flt->timer_start(timeout);
-      std::getline(flt->istream(), l);
-      if (timeout>0 && flt->timer_expired())
-        throw Err() << "SPP: timeout error";
-      if (timeout>0) flt->timer_stop();
 
+      // Read from SPP program with timeout.
+      // Err is thrown if error happens.
+      // Return -1 on EOF.
+      int res = flt->getline(l, timeout);
       // line starts with the special character
       if (l.size()>0 && l[0] == ch){
         if (l.substr(1,7) == "Error: ") throw Err() << l.substr(8);
@@ -80,6 +85,7 @@ struct Driver_spp: Driver {
       else {
         ret+=l;
       }
+      if (res<0) break;
     }
     throw Err() << "SPP: no #OK or #Error message: " << prog;
   }
@@ -87,32 +93,44 @@ struct Driver_spp: Driver {
   // start SPP program
   void open() override {
     flt.reset(new IOFilter(prog));
+    try {
 
-    // first line: <symbol>SPP<version>
-    std::string l;
-    std::getline(flt->istream(), l);
-    if (l.size()<5 || l[1]!='S' || l[2]!='P' || l[3]!='P')
-      throw Err() << "SPP: unknown protocol, header expected: " << prog;
-    ch  = l[0];
-    int ver = str_to_type<int>(l.substr(4));
-    if (ver!=1 && ver!=2) throw Err() << "SPP: unsupported protocol version: " << prog;
-    read_spp(open_timeout); // ignore message, throw errors
+      // first line: <symbol>SPP<version>
+      std::string l;
+      flt->getline(l, open_timeout);
+      if (l.size()<5 || l[1]!='S' || l[2]!='P' || l[3]!='P')
+        throw Err() << "SPP: unknown protocol, header expected: " << prog;
+      ch  = l[0];
+      int ver = str_to_type<int>(l.substr(4));
+      if (ver!=1 && ver!=2) throw Err() << "SPP: unsupported protocol version: " << prog;
+      read_spp(open_timeout); // ignore message, throw errors
+    }
+    catch (Err e) {
+      close();
+      throw e;
+    }
   }
 
   // close SPP program
   void close() override {
-    if (!flt) throw Err() << "SPP: closing a closed device";
+    if (!flt) return;
     flt->close_input();
+    flt->kill();
     flt.reset();
   }
 
   // send a command to the device and read answer
   std::string cmd(const std::string & cmd) override {
     if (!flt) throw Err() << "SPP: writing to a closed device";
-    flt->ostream() << cmd << "\n";
-    flt->ostream().flush();
-    std::string l;
-    return read_spp(read_timeout);
+    try {
+      flt->ostream() << cmd << "\n";
+      flt->ostream().flush();
+      std::string l;
+      return read_spp(read_timeout);
+    } catch (Err e) {
+      close();
+      throw e;
+    }
   }
 };
 

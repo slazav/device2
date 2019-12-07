@@ -41,15 +41,15 @@ main(){
     }
 
     {
-      o.put("prog", "echo '#SPP1\n#'");
+      o.put("prog", "echo '#SPP1\n#\n'");
       Driver_spp d(o);
-      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#'");
+      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#\n'");
     }
 
     {
-      o.put("prog", "echo '#SPP1\n#xxx'");
+      o.put("prog", "echo '#SPP1\n#xxx\n'");
       Driver_spp d(o);
-      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#xxx'");
+      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#xxx\n'");
     }
 
     {

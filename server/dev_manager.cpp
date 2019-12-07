@@ -132,13 +132,6 @@ DevManager::run(const std::string & url, const uint64_t conn){
          unlock();
          throw Err(1) << type_to_str(Log::get_log_level());
       }
-      if (cmd == "open_dev"){
-        if (devices.count(arg) == 0)
-          throw Err() << "unknown device: " << dev;
-        Device & d = devices.find(arg)->second;
-        d.open(conn);
-        throw Err(1);
-      }
       if (cmd == "devices") {
         std::string ret;
         for (auto const & d:devices)

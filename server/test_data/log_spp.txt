@@ -1,0 +1,21 @@
+#0/SERVER << answer: 3
+#1: open connection
+#0: close connection
+#1/spptest: open device
+#1/spptest >> ask: error
+#1/spptest << error: some error
+#2: open connection
+#1/spptest: close device
+#1: close connection
+#2/spptest: open device
+#2/spptest >> ask: test
+#2/spptest << answer: Q: test
+#3: open connection
+#2/spptest: close device
+#2: close connection
+#3/spptest: open device
+#3/spptest >> ask: wait
+#3/spptest << error: Read timeout
+Stopping HTTP server
+#3/spptest: close device
+#3: close connection
