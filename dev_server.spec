@@ -20,6 +20,7 @@ dev_server -- HTTP server for accessing devices
 %setup -q
 
 %build
+tar -xvf modules.tar
 %make
 
 %install
