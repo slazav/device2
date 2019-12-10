@@ -1,0 +1,25 @@
+#!/usr/bin/tclsh
+
+package require http
+
+
+proc DevServer {dev cmd args} {
+  set url "http://localhost:8082/$dev/$cmd/$args"
+  set token [::http::geturl $url -keepalive true]
+  set code [::http::ncode $token]
+  set err  [::http::error $token]
+  set data [::http::data $token]
+
+  if {$code != 200} {error $data}
+  return $data
+}
+
+puts [DevServer SERVER log_level 3]
+
+puts [DevServer graphene ask get_time]
+
+puts [DevServer graphene ask get_time]
+
+puts [DevServer SERVER close graphene]
+
+puts [DevServer graphene ask get_time]
