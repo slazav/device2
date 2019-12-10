@@ -79,7 +79,7 @@ is empty return current value of logging level.
 
 * `set_log_level` -- Set logging level. Argument is integer.
 
-* `devices` -- Show list of all known devices.
+* `devices` or `list` -- Show list of all known devices.
 
 * `open_dev` -- Open a device. Argument is device name. Usually a device
 is opened on demand, then a command is sent to it. This command can be

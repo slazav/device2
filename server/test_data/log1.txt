@@ -1,19 +1,31 @@
+#3/SERVER << answer: 3
+#4: open connection
+#3: close connection
+#4/SERVER >> log_level: 
 #4/SERVER << answer: 3
 #5: open connection
 #4: close connection
-#5/SERVER >> log_level: 
-#5/SERVER << answer: 3
+#5/SERVER >> devices: 
+#5/SERVER << answer: a
+b
+
 #6: open connection
 #5: close connection
-#6/SERVER >> repeat: text
-#6/SERVER << answer: text
+#6/SERVER >> list: 
+#6/SERVER << answer: a
+b
+
 #7: open connection
 #6: close connection
-#7/b: open device
-#7/b >> ask: text
-#7/b << answer: text
+#7/SERVER >> repeat: text
+#7/SERVER << answer: text
 #8: open connection
-#7/b: close device
 #7: close connection
-#8/SERVER >> log_level: 1
+#8/b: open device
+#8/b >> ask: text
+#8/b << answer: text
+#9: open connection
+#8/b: close device
+#8: close connection
+#9/SERVER >> log_level: 1
 Stopping HTTP server
