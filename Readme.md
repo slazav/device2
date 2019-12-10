@@ -72,29 +72,29 @@ itself. It can not be redifined in the configuration file.
 
 Supported commands:
 
-* `log_level` -- If argument is non-empty, set logging level of the
-server (0 - no messages, 1 - server messages,  2 - connections,
-3 - communications with devices) and return new value. If argument
-is empty return current value of logging level.
+* `log_level/<N>` -- Set logging level of the server (0 - no messages, 1
+- server messages,  2 - connections, 3 - communications with devices) and
+return new value.
 
-* `set_log_level` -- Set logging level. Argument is integer.
+* `log_level` -- Return current logging level.
 
 * `devices` or `list` -- Show list of all known devices.
 
-* `open_dev` -- Open a device. Argument is device name. Usually a device
+* `open/<device>` -- Open a device. Argument is device name. Usually a device
 is opened on demand, then a command is sent to it. This command can be
-used to open the device before sending any command to it.
+used to open the device before sending any command to it (e.g. to
+process errors separately).
 
-* `close_dev` -- Close a device (if no other session uses it). Argument is
-device name. Usually devices are closed when session is ended and no
-other sessions are using the device. This command can be used to close the
-device without closing the session. If some other session uses the device it
-will stay opened.
+* `close/<device>` -- Close a device (if no other session uses it).
+Argument is device name. Normally devices are closed when session is ended
+and no other sessions are using the device. This command can be used to
+close the device without closing the session. If some other session uses
+the device it will stay opened.
 
-* `usleep` -- Sleep for some time. Number of microseconds is taken from the argument
-and returned in the answer.
+* `usleep/<time>` -- Sleep for some time. Number of microseconds is taken
+from the argument and returned in the answer.
 
-* `repeat` -- Repeat the argument in the answer.
+* `repeat/<arg>` -- Return the argument in the answer.
 
 
 ### Driver `test` -- a dummy driver for tests
