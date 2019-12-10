@@ -27,5 +27,15 @@ b
 #9: open connection
 #8/b: close device
 #8: close connection
-#9/SERVER >> log_level: 1
+#9/SERVER >> close: b
+#9/SERVER << answer: 
+#10: open connection
+#9: close connection
+#10/SERVER >> open: a
+#10/a: open device
+#10/SERVER << answer: 
+#11: open connection
+#10/a: close device
+#10: close connection
+#11/SERVER >> log_level: 1
 Stopping HTTP server

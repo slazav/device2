@@ -73,6 +73,20 @@ DevManager::run(const std::string & url, const uint64_t conn){
           ret += d.first + "\n";
         throw Err(1) << ret;
       }
+      if (cmd == "open") {
+        if (devices.count(arg) == 0)
+          throw Err() << "unknown device: " << arg;
+        Device & d = devices.find(arg)->second;
+        d.open(conn);
+        throw Err(1);
+      }
+      if (cmd == "close") {
+        if (devices.count(arg) == 0)
+          throw Err() << "unknown device: " << arg;
+        Device & d = devices.find(arg)->second;
+        d.close(conn);
+        throw Err(1);
+      }
       if (cmd == "usleep"){
         int t = str_to_type<int>(arg);
         usleep(t);
