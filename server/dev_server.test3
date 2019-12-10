@@ -2,28 +2,31 @@
 
 . ../modules/test_lib.sh
 
-# try to stop the server
-./dev_server --stop --pidfile pid.tmp &>/dev/null ||:
+# use non-standard port to avoid collisions with running server
+port=8182
 
-assert_cmd "wget localhost:8082/b/ask/text -nv -S"\
+# try to stop the server
+./dev_server --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+
+assert_cmd "wget localhost:$port/b/ask/text -nv -S"\
   "failed: Connection refused." 4
 
 rm -f log.txt
 
 # run the server -- spp device
-assert_cmd "./dev_server --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --daemon" "" 0
+assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --daemon" "" 0
 
-a=$(wget localhost:8082/SERVER/set_log_level/3 -O - -q ||:)
+a=$(wget localhost:$port/SERVER/set_log_level/3 -O - -q ||:)
 
-a=$(wget localhost:8082/spptest/ask/error -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/spptest/ask/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0
 
-a=$(wget localhost:8082/spptest/ask/test -O - -q 2>&1)
+a=$(wget localhost:$port/spptest/ask/test -O - -q 2>&1)
 assert_cmd "echo $a" "Q: test" 0
 
-a=$(wget localhost:8082/spptest/ask/wait -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/spptest/ask/wait -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: Read timeout" 0
 
 # stop the server
-assert_cmd "./dev_server --stop --pidfile pid.tmp" "" 0
+assert_cmd "./dev_server --port $port --stop --pidfile pid.tmp" "" 0
 assert_diff test_data/log_spp.txt log.txt

@@ -2,25 +2,28 @@
 
 . ../modules/test_lib.sh
 
+# use non-standard port to avoid collisions with running server
+port=8182
+
 assert_cmd "./dev_server -x"\
   "Error: unknown option: -x" 1
 
 assert_cmd "./dev_server x"\
   "Error: unexpected argument: x" 1
 
-assert_cmd "./dev_server"\
-  "Error: can't open pid-file: /var/run/dev_server.pid" 1
+assert_cmd "./dev_server -P /a -p $port"\
+  "Error: can't open pid-file: /a" 1
 
 assert_cmd "./dev_server -p a"\
   "Error: can't parse value: \"a\"" 1
 
 #####################
 # try to stop the server
-./dev_server --stop --pidfile pid.tmp &>/dev/null ||:
+./dev_server --stop -p $port --pidfile pid.tmp &>/dev/null ||:
 
 #####################
 # run server in normal mode (background)
-./dev_server --pidfile pid.tmp --config test_data/n1.txt &
+./dev_server --pidfile pid.tmp -p $port --config test_data/n1.txt &
 
 pid=$!
 # wait until server write its pid-file and check it
@@ -40,10 +43,10 @@ fi
 
 #####################
 # same in daemon mode
-assert_cmd "./dev_server --pidfile pid.tmp --config test_data/n1.txt --logfile log.txt --daemon"\
+assert_cmd "./dev_server -p $port --pidfile pid.tmp --config test_data/n1.txt --logfile log.txt --daemon"\
     "" 0
 # pid file should exist when dev_server exits. No waiting is needed
-assert_cmd "./dev_server --stop --pidfile pid.tmp" "" 0
+assert_cmd "./dev_server --stop -p $port --pidfile pid.tmp" "" 0
 
 sleep 0.1
 if [ -f pid.tmp ]; then
@@ -51,7 +54,7 @@ if [ -f pid.tmp ]; then
   exit 1
 fi
 
-assert_cmd "./dev_server --stop --pidfile pid.tmp"\
+assert_cmd "./dev_server --stop -p $port --pidfile pid.tmp"\
    "Error: can't open pid-file: pid.tmp" 1
 
 
