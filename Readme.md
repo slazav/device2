@@ -35,22 +35,17 @@ commands (e.g. "generator" role has a "set frequency" command).
 ### Locking
 
 Server and device drivers provide IO locking (one device can be used by a
-severel programs or threads without collisions) and optional high-level
-locking (one program can grab a device for a long time).
+severel programs or threads without collisions)
 
-Server provides logging of all device communications: if there is a file
-`/var/log/device_server/<name>` then all communication with the device
-<name> is appended to this file. This allows to start/stop logging
-without restarting and modifing programs.
+TODO: and optional high-level locking (one program can grab a device for
+a long time).
 
 ## TODO
 
-- device and resource locks
-- lock timeouts
-- logging
-- session-based device management
-- grabbing devices
-- authorisation
+- grab/release commands for locking a device
+- open/close/list/help commands
+- logging commands
+- authorisation, https
 
 ### Configuration file
 
@@ -77,10 +72,12 @@ itself. It can not be redifined in the configuration file.
 
 Supported commands:
 
-* `get_log_level` -- Get logging level of the server (0 - no messages, 1 -
-server messages,  2 - connections, 3 - communications with devices).
+* `log_level` -- If argument is non-empty, set logging level of the
+server (0 - no messages, 1 - server messages,  2 - connections,
+3 - communications with devices) and return new value. If argument
+is empty return current value of logging level.
 
-* `set_log_level` -- Set logging lavel. Argument is integer.
+* `set_log_level` -- Set logging level. Argument is integer.
 
 * `devices` -- Show list of all known devices.
 

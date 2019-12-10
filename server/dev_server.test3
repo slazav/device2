@@ -16,7 +16,7 @@ rm -f log.txt
 # run the server -- spp device
 assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --daemon" "" 0
 
-a=$(wget localhost:$port/SERVER/set_log_level/3 -O - -q ||:)
+a=$(wget localhost:$port/SERVER/log_level/3 -O - -q ||:)
 
 a=$(wget localhost:$port/spptest/ask/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0

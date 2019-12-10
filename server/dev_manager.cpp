@@ -59,13 +59,12 @@ DevManager::run(const std::string & url, const uint64_t conn){
     // special device SERVER
     if (dev == SRVDEV){
       Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
-      if (cmd == "get_log_level") {
-         throw Err(1) << type_to_str(Log::get_log_level());
-      }
-      if (cmd == "set_log_level"){
-         lock();
-         Log::set_log_level(str_to_type<int>(arg));
-         unlock();
+      if (cmd == "log_level"){
+         if (arg != ""){
+           lock();
+           Log::set_log_level(str_to_type<int>(arg));
+           unlock();
+         }
          throw Err(1) << type_to_str(Log::get_log_level());
       }
       if (cmd == "devices") {
