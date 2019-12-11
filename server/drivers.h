@@ -127,15 +127,9 @@ struct Driver_spp: Driver {
                   const std::string & arg) override {
     if (!flt) throw Err() << "SPP: writing to a closed device";
     if (cmd != "ask") throw Err() << "unknown command: " << cmd;
-    try {
-      flt->ostream() << arg << "\n";
-      flt->ostream().flush();
-      std::string l;
-      return read_spp(read_timeout);
-    } catch (Err e) {
-      close();
-      throw e;
-    }
+    flt->ostream() << arg << "\n";
+    flt->ostream().flush();
+    return read_spp(read_timeout);
   }
 };
 
