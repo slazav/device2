@@ -50,12 +50,12 @@ main(int argc, char ** argv) {
     GetOptSet options;
     options.add("config",  1,'C', "DEVSERV", "Device configuration file (default: /etc/dev_server.txt).");
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
-    options.add("daemon",  0,'d', "DEVSERV", "Do fork and run as a daemon.");
+    options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
     options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: 0 - write nothing; "
       "1 - write some information on start; 2 - write information about connections; "
       "3 - write input data; 4 - write output data (default: 0).");
-    options.add("logfile", 1,'L', "DEVSERV", "Log file, '-' for stdout. "
+    options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
       "(default: /var/log/dev_server.log in daemon mode, '-' in console mode.");
     options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/dev_server.pid)");
     options.add("help",    0,'h', "DEVSERV", "Print help message.");
@@ -73,7 +73,7 @@ main(int argc, char ** argv) {
 
     // extract parameters
     int port    = opts.get("port", 8082);
-    bool dofork = opts.exists("daemon");
+    bool dofork = opts.exists("dofork");
     bool stop   = opts.exists("stop");
     int  verb   = opts.get("verbose", 0);
     logfile = opts.get("logfile");

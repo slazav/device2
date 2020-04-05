@@ -14,7 +14,7 @@ assert_cmd "wget localhost:$port/b/ask/text -nv -S"\
 rm -f log.txt
 
 # run the server
-assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --daemon" "" 0
+assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --dofork" "" 0
 
 a=$(wget localhost:$port/x/ask/text -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: unknown device: x" 0
