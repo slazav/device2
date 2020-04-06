@@ -11,8 +11,8 @@ assert_cmd "./dev_server -x"\
 assert_cmd "./dev_server x"\
   "Error: unexpected argument: x" 1
 
-assert_cmd "./dev_server -P /a -p $port"\
-  "Error: can't open pid-file: /a" 1
+assert_cmd "./dev_server -P wrong/pid/file -p $port"\
+  "Error: can't open pid-file: wrong/pid/file" 1
 
 assert_cmd "./dev_server -p a"\
   "Error: can't parse value: \"a\"" 1
