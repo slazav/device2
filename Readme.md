@@ -11,7 +11,7 @@ connected via some interface, or programs (which can use other
 devices if needed).
 
 The server has a configuration file `/etc/device_server.txt` which lists
-all avalible devices. For example, line `generator gpib -board 0 -address
+all available devices. For example, line `generator gpib -board 0 -address
 6` says that communication with device `generator` is done using driver
 gpib with parameters `-board 0 -address 6`.
 
@@ -21,21 +21,23 @@ Users communicate with the server using GET requests of HTTP protocol.
 URLs with three-components are used: `<device>`, `<command>`,
 `<argument>`. For example, a request to
 `http://<server>:<port>/generator/ask/FREQ?`" sends phrase `FREQ?` to
-the device `generator` and returns answer. Commands are driver-specific.
+the device `generator` and returns answer. Commands are driver-specific,
+aruments are device-specific. Most drivers support `ask` command to write
+message to the devace an get answer.
 
 On success a response with code 200 and answer of the device in the
 message body is returned. On error a response with code 400 is returned.
-Error description is written in `Error` header and in the mesage body.
+Error description is written in `Error` header and in the message body.
 
 The server does not know what it sends to a device and what answer is
 expected, it just provides connection. For the next layer see DeviceRole
-library. It defines sertain "roles" for devices with common high-level
+library. It defines certain "roles" for devices with common high-level
 commands (e.g. "generator" role has a "set frequency" command).
 
 ### Locking
 
 Server and device drivers provide IO locking (one device can be used by a
-severel programs or threads without collisions)
+several programs or threads without collisions)
 
 TODO: and optional high-level locking (one program can grab a device for
 a long time).
@@ -55,9 +57,9 @@ adding symbol `\` before end of line. Words can be quoted by single
 or double quotes. Special symbols (`#`, `\`, quotes) can be typed by
 adding `\` in front of them. Case of characters is important.
 
-Each non-empty line should have the form:
+Each non-empty, non-comment line should have the form:
 ```
-<device name> <driver name> [<paramter> ...]
+<device name> <driver name> [<parameter> ...]
 ```
 
 Parameters are pairs of words, first word in each pair should have prefix
@@ -68,7 +70,7 @@ Parameters are driver-specific.
 ### Special device SERVER
 
 Device with name SERVER is a special device for controlling the device server
-itself. It can not be redifined in the configuration file.
+itself. It can not be redefined in the configuration file.
 
 Supported commands:
 
@@ -103,4 +105,16 @@ Supported configuration options: none
 
 Supported commands:
 * ask -- just repeat the message
+
+### Driver `spp` -- a "Simple Pipe protocol".
+
+Provides communication with programs using stdin/stdout
+unix pipes. The protocol is described in 
+
+Supported configuration options:
+* -prog -- name of the program
+
+Supported commands:
+* ask -- send the command and read answer.
+
 
