@@ -1,4 +1,4 @@
-#!/bin/sh -efu
+#!/bin/bash -efu
 
 . ../modules/test_lib.sh
 
@@ -14,7 +14,7 @@ assert_cmd "wget localhost:$port/b/ask/text -nv -S"\
 rm -f log.txt
 
 # run the server -- spp device
-assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --daemon" "" 0
+assert_cmd "./dev_server --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --dofork" "" 0
 
 a=$(wget localhost:$port/SERVER/log_level/3 -O - -q ||:)
 

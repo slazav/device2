@@ -1,4 +1,4 @@
-#!/bin/sh -efu
+#!/bin/bash -efu
 
 . ../modules/test_lib.sh
 
@@ -11,8 +11,8 @@ assert_cmd "./dev_server -x"\
 assert_cmd "./dev_server x"\
   "Error: unexpected argument: x" 1
 
-assert_cmd "./dev_server -P /a -p $port"\
-  "Error: can't open pid-file: /a" 1
+assert_cmd "./dev_server -P wrong/pid/file -p $port"\
+  "Error: can't open pid-file: wrong/pid/file" 1
 
 assert_cmd "./dev_server -p a"\
   "Error: can't parse value: \"a\"" 1
@@ -43,7 +43,7 @@ fi
 
 #####################
 # same in daemon mode
-assert_cmd "./dev_server -p $port --pidfile pid.tmp --config test_data/n1.txt --logfile log.txt --daemon"\
+assert_cmd "./dev_server -p $port --pidfile pid.tmp --config test_data/n1.txt --logfile log.txt --dofork"\
     "" 0
 # pid file should exist when dev_server exits. No waiting is needed
 assert_cmd "./dev_server --stop -p $port --pidfile pid.tmp" "" 0

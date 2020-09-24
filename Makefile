@@ -1,6 +1,11 @@
 all:
 	make -C server
 
+prefix  ?= /usr
+bindir  ?= $(prefix)/bin
+sysconfdir ?= /etc
+initdir    ?= $(sysconfdir)/init.d
+
 install: all
 	mkdir -p ${bindir} ${initdir}
 	install server/dev_server ${bindir}
