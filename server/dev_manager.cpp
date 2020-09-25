@@ -5,14 +5,10 @@
 #include "err/err.h"
 #include "log/log.h"
 #include "read_words/read_words.h"
-#include "locks.h"
 #include "drivers.h"
 #include "dev_manager.h"
 
 #define SRVDEV "SERVER"
-
-/*************************************************/
-DevManager::DevManager(): Lock("manager"){ }
 
 /*************************************************/
 std::vector<std::string>
@@ -52,6 +48,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
   std::string arg = vs[2];
 
 
+  auto lk = get_lock();
   try { // throw errors with code=1 for normal return
 
     if (dev == "") throw Err() << "empty device";
@@ -60,11 +57,7 @@ DevManager::run(const std::string & url, const uint64_t conn){
     if (dev == SRVDEV){
       Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
       if (cmd == "log_level"){
-         if (arg != ""){
-           lock();
-           Log::set_log_level(str_to_type<int>(arg));
-           unlock();
-         }
+         if (arg != "") Log::set_log_level(str_to_type<int>(arg));
          throw Err(1) << type_to_str(Log::get_log_level());
       }
       if (cmd == "devices" || cmd == "list") {
@@ -168,8 +161,7 @@ DevManager::read_conf(const std::string & file){
 
   Log(1) << ret.size() << " devices configured";
 
-  lock();
+  auto lk = get_lock();
   devices = ret; // apply the configuration only if no errors have found.
-  unlock();
 }
 

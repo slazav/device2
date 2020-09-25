@@ -8,31 +8,26 @@
 
 `drivers.{cpp,h}` -- device drivers.
 
-`locks.h` -- inter-thread locks.
+`device.{cpp,h}` -- A device object represents a device in
+the configuration file.
 
-`mhd_locks.h` -- locking interface from libmicrohttpd library. pthread/win32 locks.
 
-## Locks
+## Definitions
 
-There is a lock system (see lock.h) where you can obtain a lock for a
-named resource. It is used in a few places:
+* `connection` -- HTTP client can keep a connection to the
+server and use single device without closing/opening it.
+Each device stores list of user connections. It is opened
+when the first user send calls the device and and closed
+when the last connection where it was used disappeares.
 
-The lock `"manager"` is used in the device manager to protect
-modifications of the `devices` structure. At the moment it is done only
-when reading configuration and only in the device manager constructor.
-Thus no locking is actually needed. The plan is to introduce a command
-for re-reading configuration when the server is running.
+* `device` -- Devices are external objects (physical devices,
+over programs) which are accessed by the device server. The server does
+not know how device commands but provides communication via drivers.
+Devices, their drivers and driver options are listed in the configuration
+file.
 
-Locks `"manager:<name>"` are used in each device to protect modifications
-of the `users` structure. This is done when a new connection sends a
-command to the device (user is added) or then such a connection
-disappeares (user removed).
+* `driver` -- An object which knows how to access a device.
+Each device contains its own driver object.
 
-Each device driver has methods `open, close, cmd` which may be called
-from different threads. Also driver can use some extermal resource which
-may need locking. It is responsibility of the driver to create locks.
-It is recommended to use name `"device:<name>"` for device-specific locks
-(as when two clients sends a command to the same device), name `"driver:<name>"`
-for driver specific locks, `"resource:<address>"` for resource locks
-(as when two drivers/devices access a single physical device).
+
 

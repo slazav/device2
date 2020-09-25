@@ -9,20 +9,29 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <mutex>
 
 #include "err/err.h"
 #include "log/log.h"
 #include "opt/opt.h"
 #include "device.h"
-#include "locks.h"
 
-class DevManager : public Lock {
-public:
+class DevManager {
 
   // All devices (from configuration file):
   std::map<std::string, Device> devices;
 
-  DevManager();
+  // Mutex for locking data
+  std::mutex data_mutex;
+
+  // Get lock for the mutex
+  std::unique_lock<std::mutex> get_lock() {
+    return std::unique_lock<std::mutex>(data_mutex);}
+
+public:
+
+  // number of devices (for tests)
+  size_t size() const {return devices.size();}
 
   // open connection callback:
   void conn_open(const uint64_t conn);
