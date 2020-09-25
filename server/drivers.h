@@ -81,12 +81,15 @@ struct Driver_spp: Driver {
         if (l.substr(1,7) == "Error: ") throw Err() << l.substr(8);
         if (l.substr(1,7) == "Fatal: ") throw Err() << l.substr(8);
         if (l.substr(1) == "OK") return ret;
-        if (l.size()>1 && l[1] == ch) ret+=l.substr(1);
+
+        if (ret.size()>0) ret += '\n';
+        if (l.size()>1 && l[1] == ch) ret += l.substr(1);
         else throw Err() << "SPP: symbol " << ch <<
           " in the beginning of a line is not protected: " << prog;
       }
       else {
-        ret+=l;
+        if (ret.size()>0) ret += '\n';
+        ret += l;
       }
       if (res<0) break;
     }
