@@ -20,7 +20,7 @@ PIDFILE=/var/run/dev_server.pid
 CONFFILE=/etc/dev_server.cfg
 
 DAEMON=/usr/bin/dev_server
-DAEMON_OPTS="-d -p $PORT -C $CONFFILE -P $PIDFILE"
+DAEMON_OPTS="-f -p $PORT -C $CONFFILE -P $PIDFILE"
 SCRIPTNAME=/etc/init.d/"$NAME"
 
 test -f $DAEMON || exit 0
