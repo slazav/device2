@@ -12,13 +12,12 @@
 Device::Device( const std::string & dev_name,
         const std::string & drv_name,
         const Opt & drv_args):
-  std::shared_ptr<Driver>(Driver::create(drv_name, drv_args)),
+  drv(Driver::create(drv_name, drv_args)),
   dev(dev_name) {
 }
 
 Device::Device(const Device & d){
-  std::shared_ptr<Driver>::operator=(d);
-  dev = d.dev; users = d.users;
+  drv = d.drv; dev = d.dev; users = d.users;
 }
 
 void
@@ -26,7 +25,7 @@ Device::open(const uint64_t conn){
   if (users.count(conn)>0) return; // device is opened and used by this connection
   auto lk = get_lock();
   if (users.empty()) { // device needs to be opened
-    (*this)->open();
+    drv->open();
     Log(2) << "#" << conn << "/" << dev << ": open device";
   }
   users.insert(conn);
@@ -37,7 +36,7 @@ Device::close(const uint64_t conn){
   if (users.count(conn)==0) return; // device is not used by this connection
   auto lk = get_lock();
   if (users.size()==1){
-    (*this)->close();
+    drv->close();
     Log(2) << "#" << conn << "/" << dev << ": close device";
   }
   users.erase(conn);
@@ -45,6 +44,6 @@ Device::close(const uint64_t conn){
 
 std::string
 Device::cmd(const std::string & cmd, const std::string & arg){
-  return (*this)->cmd(cmd, arg);
+  return drv->cmd(cmd, arg);
 }
 

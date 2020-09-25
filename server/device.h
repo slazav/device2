@@ -15,7 +15,11 @@
 // A device object represents a device in the configuration
 // file.
 
-class Device : std::shared_ptr<Driver> {
+class Device {
+
+  // Device driver
+  std::shared_ptr<Driver> drv;
+
   // Connections which use the device
   std::set<uint64_t> users;
 
