@@ -66,6 +66,13 @@ DevManager::run(const std::string & url, const uint64_t conn){
           ret += d.first + "\n";
         throw Err(1) << ret;
       }
+      if (cmd == "info") {
+        if (arg=="SERVER") throw Err(1);
+        if (devices.count(arg) == 0)
+          throw Err() << "unknown device: " << arg;
+        Device & d = devices.find(arg)->second;
+        throw Err(1) << d.print(conn);
+      }
       if (cmd == "open") {
         if (arg=="SERVER") throw Err(1);
         if (devices.count(arg) == 0)

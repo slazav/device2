@@ -24,7 +24,11 @@ class Device {
   std::set<uint64_t> users;
 
   // Device name
-  std::string dev;
+  std::string dev_name;
+
+  // Driver name and args (for printing device information)
+  std::string drv_name;
+  Opt drv_args;
 
   // Mutex for locking device data
   std::mutex data_mutex;
@@ -52,6 +56,9 @@ public:
 
   // Send command to the device
   std::string cmd(const std::string & cmd, const std::string & arg);
+
+  // print device information: name, users, driver, driver arguments
+  std::string print(const uint64_t conn=0) const;
 
 };
 

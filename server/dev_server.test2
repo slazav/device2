@@ -35,6 +35,9 @@ a=$(wget localhost:$port/SERVER/devices -O - -q ||:)
 assert_cmd "echo $a" "a b" 0
 a=$(wget localhost:$port/SERVER/list -O - -q ||:)
 assert_cmd "echo $a" "a b" 0
+a=$(wget localhost:$port/SERVER/info/a -O - -q ||:)
+assert_cmd "echo $a" "Device: a Driver: test Device is closed Number of users: 0" 0
+
 a=$(wget localhost:$port/SERVER/repeat/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
 a=$(wget localhost:$port/b/ask/text -O - -q ||:)
@@ -44,7 +47,6 @@ a=$(wget localhost:$port/SERVER/close/b -O - -q ||:)
 assert_cmd "echo $a" "" 0
 a=$(wget localhost:$port/SERVER/open/a -O - -q ||:)
 assert_cmd "echo $a" "" 0
-
 a=$(wget localhost:$port/SERVER/log_level/1 -O - -q ||:)
 assert_cmd "echo $a" "1" 0
 

@@ -17,25 +17,33 @@ b
 
 #7: open connection
 #6: close connection
-#7/SERVER >> repeat: text
-#7/SERVER << answer: text
+#7/SERVER >> info: a
+#7/SERVER << answer: Device: a
+Driver: test
+Device is closed
+Number of users: 0
+
 #8: open connection
 #7: close connection
-#8/b: open device
-#8/b >> ask: text
-#8/b << answer: text
+#8/SERVER >> repeat: text
+#8/SERVER << answer: text
 #9: open connection
-#8/b: close device
 #8: close connection
-#9/SERVER >> close: b
-#9/SERVER << answer: 
+#9/b: open device
+#9/b >> ask: text
+#9/b << answer: text
 #10: open connection
+#9/b: close device
 #9: close connection
-#10/SERVER >> open: a
-#10/a: open device
+#10/SERVER >> close: b
 #10/SERVER << answer: 
 #11: open connection
-#10/a: close device
 #10: close connection
-#11/SERVER >> log_level: 1
+#11/SERVER >> open: a
+#11/a: open device
+#11/SERVER << answer: 
+#12: open connection
+#11/a: close device
+#11: close connection
+#12/SERVER >> log_level: 1
 Stopping HTTP server
