@@ -36,6 +36,7 @@ mkdir -p %buildroot%_sharedstatedir/dev_server
 %files
 %attr(2770,root,users) %dir %_sharedstatedir/dev_server
 %_bindir/dev_server
+%_bindir/device_c
 %config %_initdir/dev_server
 %config(noreplace) %_sysconfdir/dev_server.cfg
 
