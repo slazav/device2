@@ -8,10 +8,9 @@ sysconfdir ?= /etc
 initdir    ?= $(sysconfdir)/init.d
 
 install: all
-	mkdir -p ${bindir} ${initdir}
-	install server/dev_server ${bindir}
-	install client/device_c ${bindir}
-	install dev_server.cfg ${sysconfdir}
-	install dev_server.init ${initdir}/dev_server
+	install -D -m755 server/device_d -t ${bindir}
+	install -D -m755 client/device_c -t ${bindir}
+	install -D devices.cfg -t ${sysconfdir}/device2/
+	install -D device_d.init ${initdir}/device_d
 
 

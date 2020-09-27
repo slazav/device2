@@ -78,7 +78,7 @@ public:
     // For SPP2 it should be #Fatal
     try {
       // open device, throw error if needed
-      if (dev!="SERVER") get("SERVER", "open", dev);
+      if (dev!="SERVER") get("SERVER", "use", dev);
       out << "#OK\n";
       out.flush();
 

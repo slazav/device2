@@ -1,28 +1,27 @@
-## Device server
+## Device2
 ---
 
-This is a client-server pair for accessing devices and programs in
+This is a client-server system for accessing devices and programs in
 experimental setups. Previous version was a tcl library (
-https://github.com/slazav/tcl-device ), but that approach had a few
+https://github.com/slazav/tcl-device ), that that approach had a few
 limitations.
 
-All operations are done using "devices". They can be physical devices
-connected via some interface, or programs (which can use other
-devices if needed).
+Server works with "devices". They can be physical devices or programs
+with special interface (they can use other devices if needed).
 
-The server has a configuration file `/etc/device_server.txt` which lists
-all available devices. For example, line `generator gpib -board 0 -address
-6` says that communication with device `generator` is done using driver
-gpib with parameters `-board 0 -address 6`.
+Devices are listed in the configuration file `/etc/device2/devices.cfg`.
+For example, line `generator gpib -board 0 -address 6` says that
+communication with device `generator` is done using driver `gpib` with
+parameters `-board 0 -address 6`.
 
 
-### server
+### Server
 
-Users communicate with the server using GET requests of HTTP protocol.
+Clients communicate with the server using GET requests of HTTP protocol.
 URLs with three-components are used: `<device>`, `<command>`,
 `<argument>`. For example, a request to
-`http://<server>:<port>/generator/ask/FREQ?`" sends phrase `FREQ?` to
-the device `generator` and returns answer. Commands are driver-specific,
+`http://<server>:<port>/generator/ask/FREQ?`" sends phrase `FREQ?` to the
+device `generator` and returns answer. Commands are driver-specific,
 aruments are device-specific. Most drivers support `ask` command to write
 message to the devace an get answer.
 
@@ -50,7 +49,7 @@ a long time).
 - logging commands
 - authorisation, https
 
-### Configuration file
+### Device configuration file
 
 Configuration file contains one line per device. Empty lines and
 comments (starting with `#`) are allowed. A few lines can be joined by

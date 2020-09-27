@@ -18,7 +18,7 @@
 /*************************************************/
 // print help message
 void usage(const GetOptSet & options, bool pod=false){
-  HelpPrinter pr(pod, options, "dev_server");
+  HelpPrinter pr(pod, options, "device_d");
   pr.name("device server");
   pr.usage("<options>");
 
@@ -48,7 +48,7 @@ main(int argc, char ** argv) {
 
     // fill option structure
     GetOptSet options;
-    options.add("config",  1,'C', "DEVSERV", "Device configuration file (default: /etc/dev_server.txt).");
+    options.add("config",  1,'C', "DEVSERV", "Device configuration file (default: /etc/device/devices.cfg).");
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
@@ -56,8 +56,8 @@ main(int argc, char ** argv) {
       "1 - write some information on start; 2 - write information about connections; "
       "3 - write input data; 4 - write output data (default: 0).");
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
-      "(default: /var/log/dev_server.log in daemon mode, '-' in console mode.");
-    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/dev_server.pid)");
+      "(default: /var/log/device_d.log in daemon mode, '-' in console mode.");
+    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/device_d.pid)");
     options.add("help",    0,'h', "DEVSERV", "Print help message.");
     options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format.");
 
@@ -77,12 +77,12 @@ main(int argc, char ** argv) {
     bool stop   = opts.exists("stop");
     int  verb   = opts.get("verbose", 0);
     logfile = opts.get("logfile");
-    pidfile = opts.get("pidfile", "/var/run/dev_server.pid");
-    devfile = opts.get("config", "/etc/dev_server.txt");
+    pidfile = opts.get("pidfile", "/var/run/device_d.pid");
+    devfile = opts.get("config", "/etc/device2/devices.cfg");
 
     // default log file
     if (logfile==""){
-      if (dofork) logfile="/var/log/dev_server.log";
+      if (dofork) logfile="/var/log/device_d.log";
       else logfile="-";
     }
     Log::set_log_file(logfile);
@@ -105,7 +105,7 @@ main(int argc, char ** argv) {
           remove(pidfile.c_str());
         }
         else {
-          throw Err() << "can't stop dev_server process " << pid << ": "
+          throw Err() << "can't stop device_d process " << pid << ": "
                       << strerror(errno);
         }
       }
@@ -118,7 +118,7 @@ main(int argc, char ** argv) {
       if (!pf.fail()){
         int pid;
         pf >> pid;
-        throw Err() << "dev_server already runing (pid-file exists): " << pid;
+        throw Err() << "device_d already runing (pid-file exists): " << pid;
       }
     }
 
@@ -136,7 +136,7 @@ main(int argc, char ** argv) {
         if (pf.fail())
           throw Err() << "can't open pid-file: " << pidfile;
         pf << pid;
-        Log(1) << "Starting dev_server in daemon mode, pid=" << pid;
+        Log(1) << "Starting device_d in daemon mode, pid=" << pid;
         return 0;
       }
       mypid = true;
@@ -166,7 +166,7 @@ main(int argc, char ** argv) {
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
-      Log(1) << "Starting dev_server in console mode";
+      Log(1) << "Starting device_d in console mode";
       mypid = true;
     }
 

@@ -1,10 +1,10 @@
 #!/bin/sh
 #
 # chkconfig: 345 50 50
-# description: dev_server -- HTTP server for accessing devices
+# description: device_d -- HTTP server for accessing devices
 #
-# processname: dev_server
-# pidfile: /var/run/dev_server.pid
+# processname: device_d
+# pidfile: /var/run/device_d.pid
 
 WITHOUT_RC_COMPAT=1
 
@@ -12,10 +12,10 @@ WITHOUT_RC_COMPAT=1
 . /etc/init.d/functions
 
 PORT=8082
-PIDFILE=/var/run/dev_server.pid
-LOCKFILE=/var/lock/subsys/dev_server
-CONFFILE=/etc/dev_server.cfg
-DAEMON=/usr/bin/dev_server
+PIDFILE=/var/run/device_d.pid
+LOCKFILE=/var/lock/subsys/device_d
+CONFFILE=/etc/device2/devices.cfg
+DAEMON=/usr/bin/device_d
 DAEMON_OPTS="-f -p $PORT -C $CONFFILE -P $PIDFILE"
 RETVAL=0
 USER=root
@@ -50,7 +50,7 @@ case "$1" in
 		stop
 		;;
 	status)
-		status --pidfile "$PIDFILE" --expect-user $USER -- dev_server
+		status --pidfile "$PIDFILE" --expect-user $USER -- device_d
 		RETVAL=$?
 		;;
 	reload|sreload|restart)

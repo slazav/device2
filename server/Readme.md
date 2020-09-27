@@ -1,6 +1,6 @@
 ## dev_server code
 
-`dev_server.cpp` -- main function; command line options; daemonization; pid-file control.
+`device_s.cpp` -- main program; command line options; daemonization; pid-file control.
 
 `http_server.{cpp,h}` -- libmicrohttpd-related stuff; Run HTTP server, transfer requests to DevManager.
 
