@@ -10,8 +10,6 @@
 #include "drivers.h"
 #include "dev_manager.h"
 
-#define SRVDEV "SERVER"
-
 /*************************************************/
 std::vector<std::string>
 DevManager::parse_url(const std::string & url){
@@ -154,9 +152,6 @@ DevManager::read_conf(const std::string & file){
 
       // do not allow empty devices
       if (dev == "") throw Err() << "empty device";
-
-      // do not allow SERVER device
-      if (dev == SRVDEV) throw Err() << "can't redefine " << SRVDEV << " device";
 
       // does this device exists
       if (ret.count(dev)>0) throw Err()
