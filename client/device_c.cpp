@@ -4,6 +4,8 @@
 
 #include <curl/curl.h>
 
+#include "read_words/read_words.h"
+#include "getopt/getopt.h"
 #include "getopt/getopt.h"
 #include "err/err.h"
 
@@ -13,7 +15,13 @@
 void usage(const GetOptSet & options, bool pod=false){
   HelpPrinter pr(pod, options, "device_c");
   pr.name("device client program");
-  pr.usage("<options>");
+  pr.usage("[<options>] ask <dev> <msg> -- send message to the device, print answer");
+  pr.usage("[<options>] use_dev <dev>   -- SPP interface to a device");
+  pr.usage("[<options>] use_srv         -- SPP interface to the server");
+  pr.usage("[<options>] list            -- print list of available devices");
+  pr.usage("[<options>] info <dev>      -- print information about device");
+  pr.usage("[<options>] ping            -- check if the server is working");
+  pr.usage("[<options>] get_time        -- get server system time");
 
   pr.head(1, "Options:");
   pr.opts({"DEVCLI"});
@@ -41,6 +49,7 @@ public:
     curl_easy_cleanup(cm);
   }
 
+  // ask the server
   std::string get(const std::string & act,
                   const std::string & dev = "",
                   const std::string & cmd = ""){
@@ -72,8 +81,10 @@ public:
     return data;
   }
 
-  void interactive(const std::string & dev, std::istream & in, std::ostream & out){
+  // SPP interface to a single device.
+  void use_dev(const std::string & dev, std::istream & in, std::ostream & out){
     out << "#SPP001\n"; // command-line protocol, version 001.
+    out << "Server: " << server << "\n";
     out << "Device: " << dev << "\n";
     out.flush();
 
@@ -109,9 +120,66 @@ public:
     return;
   }
 
+  // SPP interface to the server.
+  void use_srv(std::istream & in, std::ostream & out){
+    out << "#SPP001\n"; // command-line protocol, version 001.
+    out << "Server: " << server << "\n";
+    out.flush();
+
+    // Outer try -- exit on errors with #Error message
+    // For SPP2 it should be #Fatal
+    try {
+      // ping the server, throw error if needed
+      get("ping");
+      out << "#OK\n";
+      out.flush();
+
+      while (1){
+        // inner try -- continue to a new command with #Error message
+        try {
+          if (!in) break;
+          auto pars = read_words(in);
+          if (pars.size()==0) break;
+
+          if (pars.size()>3)
+            throw Err() << "too many arguments";
+          pars.resize(3);
+
+          out << get(pars[0], pars[1], pars[2]) << '\n';
+          out << "#OK\n";
+          out.flush();
+        }
+        catch(Err e){
+          if (e.str()!="") out << "#Error: " << e.str() << "\n";
+          out.flush();
+        }
+      }
+    }
+    catch(Err e){
+      if (e.str()!="") out << "#Error: " << e.str() << "\n";
+      return;
+    }
+    return;
+  }
+
 
 };
 
+/*************************************************/
+void
+check_par_count(const std::vector<std::string> & pars,
+                const int num) {
+  if (num < 1)
+    throw Err() << "bad usage of check_par_count()";
+
+  if (pars.size()>num)
+    throw Err() << "unexpected parameter for \""
+                << pars[0] << "\" action: " << pars[num];
+
+  if (pars.size()<num)
+    throw Err() << "not enough parameters for \""
+                << pars[0] << "\" action";
+}
 
 /*************************************************/
 // main function.
@@ -124,19 +192,12 @@ main(int argc, char ** argv) {
     GetOptSet options;
     std::string on("DEVCLI");
     options.add("server",  1,'s', on, "Server (default: http://localhost:8082).");
-    options.add("list",    0,'l', on, "Print list of available devices.");
-    options.add("info",    1,'i', on, "Print device information.");
-    options.add("dev",     1,'d', on, "Use device.");
-    options.add("action",  1,'a', on, "Action (default: ask)");
-    options.add("cmd",     1,'c', on, "Action argument (if not set then interactive mode is used).");
-    options.add("help",    0,'h', on, "Print help message.");
-    options.add("pod",     0,0,   on, "Print help message in POD format.");
+    options.add("help",    0,'h', on, "Print help message and exit.");
+    options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
 
     // parse options
-    std::vector<std::string> nonopt;
-    Opt opts = parse_options_all(&argc, &argv, options, {}, nonopt);
-    if (nonopt.size()>0) throw Err()
-      << "unexpected argument: " << nonopt[0];
+    std::vector<std::string> pars;
+    Opt opts = parse_options_all(&argc, &argv, options, {}, pars);
 
     // print help message
     if (opts.exists("help")) usage(options);
@@ -144,35 +205,55 @@ main(int argc, char ** argv) {
 
     // extract parameters
     std::string server = opts.get("server", "http://localhost:8082");
-    std::string action = opts.get("action", "ask");
-    std::string cmd    = opts.get("cmd",    "");
-    std::string dev    = opts.get("dev",    "");
+
+    if (pars.size()==0) usage(options);
+    auto & action = pars[0];
 
     Downloader D(server);
 
-    opts.check_conflict({"list", "dev", "info"});
-
-    if (opts.exists("list")){
-      std::cout << D.get("list");
+    if (action == "ask"){
+      check_par_count(pars, 3);
+      std::cout << D.get(action, pars[1], pars[2]) << "\n";
       return 0;
     }
 
-    if (opts.exists("info")){
-      std::cout << D.get("info", opts.get("info"));
+    if (action == "use_dev"){
+      check_par_count(pars, 2);
+      D.use_dev(pars[1], std::cin, std::cout);
       return 0;
     }
 
-    if (opts.exists("dev")){
-      if (opts.exists("cmd")){
-        std::cout << D.get(action, dev, cmd) << '\n';
-        return 0;
-      }
-      else{
-        D.interactive(dev, std::cin, std::cout);
-        return 0;
-      }
+    if (action == "use_srv"){
+      check_par_count(pars, 1);
+      D.use_srv(std::cin, std::cout);
+      return 0;
     }
-    usage(options);
+
+    if (action == "list") {
+      check_par_count(pars, 1);
+      std::cout << D.get(action);
+      return 0;
+    }
+
+    if (action == "info"){
+      check_par_count(pars, 2);
+      std::cout << D.get(action, pars[1]);
+      return 0;
+    }
+
+    if (action == "ping"){
+      check_par_count(pars, 1);
+      D.get(action);
+      return 0;
+    }
+
+    if (action == "get_time"){
+      check_par_count(pars, 1);
+      std::cout << D.get(action) << "\n";
+      return 0;
+    }
+
+    throw Err() << "unknown action: " << action;
 
   }
   catch (Err e){
