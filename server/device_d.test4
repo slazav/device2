@@ -1,0 +1,80 @@
+#!/bin/bash -efu
+
+# test server program using device_c
+
+. ../modules/test_lib.sh
+
+# use non-standard port to avoid collisions with running server
+port=8182
+srv="-s localhost:$port"
+
+# try to stop the server
+./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+
+assert_cmd "./device_c $srv ask b text"\
+  "Error: Couldn't connect to server" 1
+
+rm -f log.txt
+
+####################
+# run the server (-v 3!)
+assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
+
+help=$(./device_c -h ||:)
+
+assert_cmd "./device_c -s x ping" "Error: Couldn't resolve host name" 1
+assert_cmd "./device_c $srv ping a" "Error: unexpected parameter for \"ping\" action: a" 1
+assert_cmd "./device_c $srv" "$help" 1
+assert_cmd "./device_c $srv ping" "" 0
+a=$(./device_c $srv get_time | sed 's/[0-9]/x/g')
+assert_cmd "echo $a" "xxxxxxxxxx.xxxxxx" 0
+
+assert_cmd "./device_c $srv ask x text" "Error: unknown device: x" 1
+assert_cmd "./device_c $srv x b text"   "Error: unknown action: x" 1
+assert_cmd "./device_c $srv ask b text" "text" 0
+assert_cmd "./device_c $srv devices" "a
+b" 0
+assert_cmd "./device_c $srv list"    "a
+b" 0
+assert_cmd "./device_c $srv info a" "Device: a
+Driver: test
+Device is closed
+Number of users: 0" 0
+
+assert_cmd "./device_c $srv ask b text" "text" 0
+
+# spp interfaces
+a="$(echo -e 'a\nb c\nd/e\nf&g\n\n' | ./device_c $srv use_dev b)"
+assert_cmd "echo $a" "#SPP001 Server: localhost:$port Device: b #OK a #OK b c #OK d/e #OK f&g #OK" 0
+
+a="$(echo -e 'list\nlist 1\nerr\nping\nuse b\nask b 123\ninfo b\n' | ./device_c $srv use_srv)"
+assert_cmd "echo $a" \
+"#SPP001 Server: localhost:8182 #OK \
+a b #OK \
+#Error: unexpected argument: /list/1 \
+#Error: unknown action: err #OK \
+#OK 123 \
+#OK Device: b Driver: test Driver arguments: a: b c: d \
+Device is open Number of users: 1 You are currently using the device #OK" 0
+
+####################
+# stop the server
+assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+
+sed -r 's/pid=[0-9]+/pid=<...>/
+        s/answer: ([0-9]+)\.([0-9]+)/answer xxxxxxxxxx.xxxxxx/' -i log.txt
+assert_diff test_data/log2.txt log.txt
+
+
+####################
+# run the server (-v 3!)
+assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --dofork" "" 0
+
+assert_cmd "./device_c $srv ask spptest error" "Error: some error" 1
+assert_cmd "./device_c $srv ask spptest test"  "Q: test" 0
+assert_cmd "./device_c $srv ask spptest wait" "Error: Read timeout" 1
+
+# stop the server
+assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+
+rm -f log.txt

@@ -1,5 +1,7 @@
 #!/bin/bash -efu
 
+# test server program using wget -- spp driver
+
 . ../modules/test_lib.sh
 
 # use non-standard port to avoid collisions with running server
