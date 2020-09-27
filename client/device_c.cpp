@@ -243,7 +243,9 @@ main(int argc, char ** argv) {
 
     if (action == "ping"){
       check_par_count(pars, 1);
-      D.get(action);
+      auto ret = D.get(action);
+      if ( ret != "")
+        throw Err() << "wrong response from the server: " << ret;
       return 0;
     }
 
