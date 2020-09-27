@@ -229,7 +229,7 @@ main(int argc, char ** argv) {
       return 0;
     }
 
-    if (action == "list") {
+    if (action == "list" || action == "devices") {
       check_par_count(pars, 1);
       std::cout << D.get(action);
       return 0;
