@@ -134,15 +134,8 @@ main(int argc, char ** argv) {
       if (pid < 0)
         throw Err() << "can't do fork";
       if (pid > 0){
-        // write pidfile and exit
-        std::ofstream pf(pidfile);
-        if (pf.fail())
-          throw Err() << "can't open pid-file: " << pidfile;
-        pf << pid;
-        Log(1) << "Starting device_d in daemon mode, pid=" << pid;
         return 0;
       }
-      mypid = true;
 
       // Change the file mode mask
       umask(0);
@@ -163,15 +156,21 @@ main(int argc, char ** argv) {
     }
 
     // write pidfile
-    else {
+    {
       pid_t pid = getpid();
       std::ofstream pf(pidfile);
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       pf << pid;
-      Log(1) << "Starting device_d in console mode";
       mypid = true;
+
+      if (dofork)
+        Log(1) << "Starting device_d in daemon mode, pid=" << pid;
+      else
+        Log(1) << "Starting device_d in console mode, pid=" << pid;
     }
+
+
 
     // create device manager
     DevManager dm;
