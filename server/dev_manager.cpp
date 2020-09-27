@@ -41,12 +41,11 @@ DevManager::conn_close(const uint64_t conn){
 
 /*************************************************/
 std::string
-DevManager::run(const std::string & url, const uint64_t conn){
+DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
   auto vs = parse_url(url);
   std::string dev = vs[0];
   std::string act = vs[1];
   std::string arg = vs[2];
-
 
   auto lk = get_lock();
   try { // throw errors with code=1 for normal return

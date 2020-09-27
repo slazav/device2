@@ -41,9 +41,10 @@ public:
 
   // Process a request from HTTP server.
   // Arguments:
-  // - url:  request "URL", device/action/data
+  // - act:  action (URL without arguments in GET request)
+  // - opts: options (arguments from the url)
   // - conn: connection ID
-  std::string run(const std::string & url, const uint64_t conn);
+  std::string run(const std::string & act, const Opt & opts, const uint64_t conn);
 
   // Read configuration file, update `devices` map.
   // Throw exception on errors.

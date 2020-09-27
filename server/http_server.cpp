@@ -8,8 +8,19 @@
 #include "err/err.h"
 #include "http_server.h"
 
-// callback for microhttpd
-int ProcessRequest(void * cls,
+// callback for getting GET arguments (appending them to Opt object)
+int
+AppendToOpt (void *cls,
+      enum MHD_ValueKind kind,
+      const char *key, const char *value){
+  ((Opt*)cls)->put(key, value);
+  return MHD_YES;
+}
+
+
+// callback for processing requests
+int
+ProcessRequest(void * cls,
       struct MHD_Connection * connection,
       const char * url,
       const char * method,
@@ -42,7 +53,9 @@ int ProcessRequest(void * cls,
   struct MHD_Response * response;
   int ret;
   try {
-    std::string msg = dm->run(url, cnum);
+    Opt opts;
+    MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, AppendToOpt, &opts);
+    std::string msg = dm->run(url, opts, cnum);
     response = MHD_create_response_from_buffer(
         msg.length(), (void*)msg.data(), MHD_RESPMEM_MUST_COPY);
     ret = MHD_queue_response(connection, 200, response);
