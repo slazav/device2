@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <mutex>
+#include <shared_mutex> // C++14
 
 #include "err/err.h"
 #include "log/log.h"
@@ -22,11 +22,16 @@ class DevManager {
   std::map<std::string, Device> devices;
 
   // Mutex for locking data
-  std::mutex data_mutex;
+  typedef std::shared_timed_mutex mutex_t;
+  mutex_t data_mutex;
 
-  // Get lock for the mutex
-  std::unique_lock<std::mutex> get_lock() {
-    return std::unique_lock<std::mutex>(data_mutex);}
+  // Get lock for the mutex (for writers)
+  std::unique_lock<mutex_t> get_lock() {
+    return std::unique_lock<mutex_t>(data_mutex);}
+
+  // Get shared lock for the mutex (for readers)
+  std::shared_lock<mutex_t> get_sh_lock() {
+    return std::shared_lock<mutex_t>(data_mutex);}
 
 public:
 
@@ -50,7 +55,7 @@ public:
   // Throw exception on errors.
   void read_conf(const std::string & file);
 
-  // parse url, return three-component vector (device, action, data)
+  // Split url (action/argument/message), return vector<string> with 3 elements
   static std::vector<std::string> parse_url(const std::string & url);
 
 };

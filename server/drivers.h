@@ -31,11 +31,8 @@ public:
   // Close device.
   virtual void close() = 0;
 
-  // Do an action with the device.
-  // Usually action "ask" should be implemented
-  // to communicate with the device (send a command and return answer).
-  virtual std::string do_action(const std::string & act,
-                                const std::string & arg) = 0;
+  // Send message to the device, get answer
+  virtual std::string ask(const std::string & msg) = 0;
 
 };
 
@@ -52,14 +49,9 @@ public:
   Driver_test(const Opt & opts): Driver(opts) {}
   void open()  override {opened=true;}
   void close() override {opened=false;}
-  std::string do_action(const std::string & act,
-                        const std::string & arg) override {
+  std::string ask(const std::string & msg) override {
     if (!opened) throw Err() << "Test: device if closed";
-
-    if (act == "ask"){
-      return arg;
-    }
-    throw Err() << "unknown action: " << act;
+    return msg;
   };
 };
 
@@ -144,18 +136,12 @@ struct Driver_spp: Driver {
     flt.reset();
   }
 
-  // send a command to the device and read answer
-  std::string do_action(const std::string & act,
-                  const std::string & arg) override {
+  // send a message to the device and read answer
+  std::string ask(const std::string & msg) override {
     if (!flt) throw Err() << "SPP: device is closed";
-
-    // just asking!
-    if (act == "ask") {
-      flt->ostream() << arg << "\n";
-      flt->ostream().flush();
-      return read_spp(read_timeout);
-    }
-    throw Err() << "unknown action: " << act;
+    flt->ostream() << msg << "\n";
+    flt->ostream().flush();
+    return read_spp(read_timeout);
   }
 };
 

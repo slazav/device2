@@ -7,6 +7,8 @@ OTHER_TESTS := device_d.test1\
                device_d.test2\
                device_d.test3
 
+# use C++14 for shared locks
+CXXFLAGS := -std=gnu++14
 PKG_CONFIG := libmicrohttpd
 
 MODDIR := ../modules

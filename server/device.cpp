@@ -30,7 +30,7 @@ Device::use(const uint64_t conn){
   auto lk = get_lock();
   if (users.empty()) { // device needs to be opened
     drv->open();
-    Log(2) << "#" << conn << "/" << dev_name << ": open device";
+    Log(2) << "conn:" << conn << " open device: " << dev_name;
   }
   users.insert(conn);
 }
@@ -41,7 +41,7 @@ Device::release(const uint64_t conn){
   auto lk = get_lock();
   if (users.size()==1){
     drv->close();
-    Log(2) << "#" << conn << "/" << dev_name << ": close device";
+    Log(2) << "conn:" << conn << " close device: " << dev_name;
   }
   users.erase(conn);
 }

@@ -29,93 +29,97 @@ DevManager::parse_url(const std::string & url){
 /*************************************************/
 void
 DevManager::conn_open(const uint64_t conn){
-  Log(2) << "#" << conn << ": open connection";
+  Log(2) << "conn:" << conn << " open connection";
 }
 
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
   for (auto & d:devices) d.second.release(conn);
-  Log(2) << "#" << conn << ": close connection";
+  Log(2) << "conn:" << conn << " close connection";
 }
 
 /*************************************************/
 std::string
 DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
   auto vs = parse_url(url);
-  std::string dev = vs[0];
-  std::string act = vs[1];
-  std::string arg = vs[2];
+  std::string act = vs[0];
+  std::string arg = vs[1];
+  std::string msg = vs[2];
 
-  auto lk = get_lock();
-  try { // throw errors with code=1 for normal return
+  // log_level, log_level/<n> --  get/set loglevel
+  if (act == "log_level"){
+     if (arg != "") Log::set_log_level(str_to_type<int>(arg));
+     return type_to_str(Log::get_log_level());
+  }
 
-    if (dev == "") throw Err() << "empty device";
+  // devices, list -- list all available devices
+  if (act == "devices" || act == "list") {
+    if (arg!="")
+      throw Err() << "unexpected argument: " << url;
+    std::string ret;
+    for (auto const & d:devices)
+      ret += d.first + "\n";
+    return ret;
+  }
 
-    // special device SERVER
-    if (dev == SRVDEV){
-      Log(3) << "#" << conn << "/" << dev << " >> " << act << ": " << arg;
-      if (act == "log_level"){
-         if (arg != "") Log::set_log_level(str_to_type<int>(arg));
-         throw Err(1) << type_to_str(Log::get_log_level());
-      }
-      if (act == "devices" || act == "list") {
-        std::string ret;
-        for (auto const & d:devices)
-          ret += d.first + "\n";
-        throw Err(1) << ret;
-      }
-      if (act == "info") {
-        if (arg=="SERVER") throw Err(1);
-        if (devices.count(arg) == 0)
-          throw Err() << "unknown device: " << arg;
-        Device & d = devices.find(arg)->second;
-        throw Err(1) << d.print(conn);
-      }
-      if (act == "use") {
-        if (arg=="SERVER") throw Err(1);
-        if (devices.count(arg) == 0)
-          throw Err() << "unknown device: " << arg;
-        Device & d = devices.find(arg)->second;
-        d.use(conn);
-        throw Err(1);
-      }
-      if (act == "release") {
-        if (arg=="SERVER") throw Err(1);
-        if (devices.count(arg) == 0)
-          throw Err() << "unknown device: " << arg;
-        Device & d = devices.find(arg)->second;
-        d.release(conn);
-        throw Err(1);
-      }
-      if (act == "usleep"){
-        int t = str_to_type<int>(arg);
-        usleep(t);
-        throw Err(1) << t;
-      }
-      if (act == "repeat") {
-        throw Err(1) << arg;
-      }
+  // info/<name> -- print device <name> information
+  if (act == "info") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    return devices.find(arg)->second.print(conn);
+  }
 
-      throw Err() << "SERVER: unknown action: " << act;
-    }
+  // use/<name> -- notify server that device should be open
+  if (act == "use") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.use(conn);
+    return std::string();
+  }
 
-    // other devices
-    if (devices.count(dev) == 0)
-      throw Err() << "unknown device: " << dev;
-    Device & d = devices.find(dev)->second;
+  // release/<name> -- notify server that device can be closed
+  if (act == "release") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.release(conn);
+    return std::string();
+  }
+
+  // ask/<name>/<cmd> -- send a command to the device, get answer
+  if (act == "ask") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    Device & d = devices.find(arg)->second;
     d.use(conn);
-    Log(3) << "#" << conn << "/" << dev << " >> " << act << ": " << arg;
-    throw Err(1) << d.do_action(act, arg);
+    return d.ask(msg);
   }
-  catch (Err e){
-    if (e.code() == 1){
-      Log(3) << "#" << conn << "/" << dev << " << answer: " << e.str();
-      return e.str();
-    }
-    Log(2) << "#" << conn << "/" << dev << " << error: " << e.str();
-    throw e;
+
+  // usleep/<ms> -- do sleep (for tests)
+  if (act == "usleep"){
+    int t = str_to_type<size_t>(arg);
+    usleep(t);
+    return type_to_str(t);
   }
+
+  // repeat/<arg> -- return the argument (for tests)
+  if (act == "repeat") {
+    return arg;
+  }
+
+  throw Err() << "unknown action: " << act;
 }
 
 /*************************************************/

@@ -8,7 +8,7 @@ port=8182
 # try to stop the server
 ./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
 
-assert_cmd "wget localhost:$port/b/ask/text -nv -S"\
+assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
   "failed: Connection refused." 4
 
 rm -f log.txt
@@ -16,38 +16,39 @@ rm -f log.txt
 # run the server
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --dofork" "" 0
 
-a=$(wget localhost:$port/x/ask/text -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/ask/x/text -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: unknown device: x" 0
 
-
-a=$(wget localhost:$port/b/x/text -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/x/b/text -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: unknown action: x" 0
 
-a=$(wget localhost:$port/b/ask/text -O - -q ||:)
+a=$(wget localhost:$port/ask/b/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
 
-a=$(wget localhost:$port/SERVER/log_level/3 -O - -q ||:)
+exit
+
+a=$(wget localhost:$port/log_level/3 -O - -q ||:)
 assert_cmd "echo $a" "3" 0
-a=$(wget localhost:$port/SERVER/log_level -O - -q ||:)
+a=$(wget localhost:$port/log_level -O - -q ||:)
 assert_cmd "echo $a" "3" 0
 
-a=$(wget localhost:$port/SERVER/devices -O - -q ||:)
+a=$(wget localhost:$port/devices -O - -q ||:)
 assert_cmd "echo $a" "a b" 0
-a=$(wget localhost:$port/SERVER/list -O - -q ||:)
+a=$(wget localhost:$port/list -O - -q ||:)
 assert_cmd "echo $a" "a b" 0
-a=$(wget localhost:$port/SERVER/info/a -O - -q ||:)
+a=$(wget localhost:$port/info/a -O - -q ||:)
 assert_cmd "echo $a" "Device: a Driver: test Device is closed Number of users: 0" 0
 
-a=$(wget localhost:$port/SERVER/repeat/text -O - -q ||:)
+a=$(wget localhost:$port/repeat/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
-a=$(wget localhost:$port/b/ask/text -O - -q ||:)
+a=$(wget localhost:$port/ask/b/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
 
-a=$(wget localhost:$port/SERVER/release/b -O - -q ||:)
+a=$(wget localhost:$port/release/b -O - -q ||:)
 assert_cmd "echo $a" "" 0
-a=$(wget localhost:$port/SERVER/use/a -O - -q ||:)
+a=$(wget localhost:$port/use/a -O - -q ||:)
 assert_cmd "echo $a" "" 0
-a=$(wget localhost:$port/SERVER/log_level/1 -O - -q ||:)
+a=$(wget localhost:$port/log_level/1 -O - -q ||:)
 assert_cmd "echo $a" "1" 0
 
 # stop the server

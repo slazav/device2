@@ -1,49 +1,21 @@
-#3/SERVER << answer: 3
-#4: open connection
-#3: close connection
-#4/SERVER >> log_level: 
-#4/SERVER << answer: 3
-#5: open connection
-#4: close connection
-#5/SERVER >> devices: 
-#5/SERVER << answer: a
-b
-
-#6: open connection
-#5: close connection
-#6/SERVER >> list: 
-#6/SERVER << answer: a
-b
-
-#7: open connection
-#6: close connection
-#7/SERVER >> info: a
-#7/SERVER << answer: Device: a
-Driver: test
-Device is closed
-Number of users: 0
-
-#8: open connection
-#7: close connection
-#8/SERVER >> repeat: text
-#8/SERVER << answer: text
-#9: open connection
-#8: close connection
-#9/b: open device
-#9/b >> ask: text
-#9/b << answer: text
-#10: open connection
-#9/b: close device
-#9: close connection
-#10/SERVER >> release: b
-#10/SERVER << answer: 
-#11: open connection
-#10: close connection
-#11/SERVER >> use: a
-#11/a: open device
-#11/SERVER << answer: 
-#12: open connection
-#11/a: close device
-#11: close connection
-#12/SERVER >> log_level: 1
+conn:0 answer: 3
+conn:1 open connection
+conn:0 close connection
+conn:1 process request: /ask/spptest/error
+conn:1 open device: spptest
+conn:1 error: some error
+conn:2 open connection
+conn:2 process request: /ask/spptest/test
+conn:1 close device: spptest
+conn:1 close connection
+conn:2 open device: spptest
+conn:2 answer: Q: test
+conn:3 open connection
+conn:3 process request: /ask/spptest/wait
+conn:2 close device: spptest
+conn:2 close connection
+conn:3 open device: spptest
+conn:3 error: Read timeout
 Stopping HTTP server
+conn:3 close device: spptest
+conn:3 close connection

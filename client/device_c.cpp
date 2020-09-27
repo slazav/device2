@@ -41,14 +41,17 @@ public:
     curl_easy_cleanup(cm);
   }
 
-  std::string get(const std::string & dev, const std::string & act, const std::string & cmd = ""){
+  std::string get(const std::string & act,
+                  const std::string & dev = "",
+                  const std::string & cmd = ""){
     // escape url components
     char *dev_ = curl_easy_escape(cm, dev.data() , dev.size());
     char *act_ = curl_easy_escape(cm, act.data() , act.size());
     char *cmd_ = curl_easy_escape(cm, cmd.data() , cmd.size());
 
     // build url, free unneded strings
-    std::string url = server + "/" + dev_ + "/" + act_;
+    std::string url = server + "/" + act_;
+    if  (dev != "") url += std::string("/") + dev_;
     if  (cmd != "") url += std::string("/") + cmd_;
     curl_free(dev_);
     curl_free(act_);
@@ -78,7 +81,7 @@ public:
     // For SPP2 it should be #Fatal
     try {
       // open device, throw error if needed
-      if (dev!="SERVER") get("SERVER", "use", dev);
+      get("use", dev);
       out << "#OK\n";
       out.flush();
 
@@ -89,7 +92,7 @@ public:
           std::string arg;
           getline(in, arg);
           if (arg.size()==0) continue;
-          out << get(dev, "ask", arg) << '\n';
+          out << get("ask", dev, arg) << '\n';
           out << "#OK\n";
           out.flush();
         }
@@ -150,18 +153,18 @@ main(int argc, char ** argv) {
     opts.check_conflict({"list", "dev", "info"});
 
     if (opts.exists("list")){
-      std::cout << D.get("SERVER", "list");
+      std::cout << D.get("list");
       return 0;
     }
 
     if (opts.exists("info")){
-      std::cout << D.get("SERVER", "info", opts.get("info"));
+      std::cout << D.get("info", opts.get("info"));
       return 0;
     }
 
     if (opts.exists("dev")){
       if (opts.exists("cmd")){
-        std::cout << D.get(dev, action, cmd) << '\n';
+        std::cout << D.get(action, dev, cmd) << '\n';
         return 0;
       }
       else{

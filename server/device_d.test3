@@ -8,7 +8,7 @@ port=8182
 # try to stop the server
 ./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
 
-assert_cmd "wget localhost:$port/b/ask/text -nv -S"\
+assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
   "failed: Connection refused." 4
 
 rm -f log.txt
@@ -16,15 +16,15 @@ rm -f log.txt
 # run the server -- spp device
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --dofork" "" 0
 
-a=$(wget localhost:$port/SERVER/log_level/3 -O - -q ||:)
+a=$(wget localhost:$port/log_level/3 -O - -q ||:)
 
-a=$(wget localhost:$port/spptest/ask/error -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/ask/spptest/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0
 
-a=$(wget localhost:$port/spptest/ask/test -O - -q 2>&1)
+a=$(wget localhost:$port/ask/spptest/test -O - -q 2>&1)
 assert_cmd "echo $a" "Q: test" 0
 
-a=$(wget localhost:$port/spptest/ask/wait -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget localhost:$port/ask/spptest/wait -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: Read timeout" 0
 
 # stop the server

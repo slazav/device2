@@ -54,9 +54,9 @@ public:
   // Close it if nobody else use it.
   void release(const uint64_t conn);
 
-  // Do an action with the device
-  std::string do_action(const std::string & act, const std::string & arg){
-    return drv->do_action(act, arg); }
+  // Send message to the device, get answer
+  std::string ask(const std::string & msg){
+    return drv->ask(msg); }
 
   // Print device information: name, users, driver, driver arguments.
   std::string print(const uint64_t conn=0) const;

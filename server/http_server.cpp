@@ -55,13 +55,16 @@ ProcessRequest(void * cls,
   try {
     Opt opts;
     MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, AppendToOpt, &opts);
+    Log(3) << "conn:" << cnum << " process request: " << url;
     std::string msg = dm->run(url, opts, cnum);
+    Log(3) << "conn:" << cnum << " answer: " << msg;
     response = MHD_create_response_from_buffer(
         msg.length(), (void*)msg.data(), MHD_RESPMEM_MUST_COPY);
     ret = MHD_queue_response(connection, 200, response);
     MHD_destroy_response(response);
   }
   catch (Err e) {
+    Log(3) << "conn:" << cnum << " error: " << e.str();
     response = MHD_create_response_from_buffer(
         e.str().length(), (void*)e.str().data(), MHD_RESPMEM_MUST_COPY);
     MHD_add_response_header(response, "Error", e.str().c_str());
