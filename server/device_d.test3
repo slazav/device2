@@ -16,9 +16,7 @@ assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
 rm -f log.txt
 
 # run the server -- spp device
-assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --dofork" "" 0
-
-a=$(wget localhost:$port/log_level/3 -O - -q ||:)
+assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 3 --dofork" "" 0
 
 a=$(wget localhost:$port/ask/spptest/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0
@@ -31,4 +29,6 @@ assert_cmd "echo $a" "Error: Read timeout" 0
 
 # stop the server
 assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+
+sed -r 's/pid=[0-9]+/pid=<...>/' -i log.txt
 assert_diff test_data/log_spp.txt log.txt

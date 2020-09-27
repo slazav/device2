@@ -23,7 +23,7 @@ assert_cmd "./device_d -p a"\
 
 #####################
 # run server in normal mode (background)
-./device_d --pidfile pid.tmp -p $port --config test_data/n1.txt &
+./device_d --pidfile pid.tmp -p $port -v 0 --config test_data/n1.txt &
 
 pid=$!
 # wait until server write its pid-file and check it

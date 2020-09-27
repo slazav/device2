@@ -119,12 +119,6 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     return s.str();
   }
 
-  // log_level, log_level/<n> --  get/set loglevel
-  if (act == "log_level"){
-     if (arg != "") Log::set_log_level(str_to_type<int>(arg));
-     return type_to_str(Log::get_log_level());
-  }
-
   // usleep/<ms> -- do sleep (for tests)
   if (act == "usleep"){
     int t = str_to_type<size_t>(arg);

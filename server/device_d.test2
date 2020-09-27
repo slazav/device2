@@ -16,7 +16,7 @@ assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
 rm -f log.txt
 
 # run the server
-assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt --dofork" "" 0
+assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
 
 a=$(wget localhost:$port/ask/x/text -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: unknown device: x" 0
@@ -26,13 +26,6 @@ assert_cmd "echo $a" "Error: unknown action: x" 0
 
 a=$(wget localhost:$port/ask/b/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
-
-exit
-
-a=$(wget localhost:$port/log_level/3 -O - -q ||:)
-assert_cmd "echo $a" "3" 0
-a=$(wget localhost:$port/log_level -O - -q ||:)
-assert_cmd "echo $a" "3" 0
 
 a=$(wget localhost:$port/devices -O - -q ||:)
 assert_cmd "echo $a" "a b" 0
@@ -50,9 +43,8 @@ a=$(wget localhost:$port/release/b -O - -q ||:)
 assert_cmd "echo $a" "" 0
 a=$(wget localhost:$port/use/a -O - -q ||:)
 assert_cmd "echo $a" "" 0
-a=$(wget localhost:$port/log_level/1 -O - -q ||:)
-assert_cmd "echo $a" "1" 0
 
 # stop the server
 assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+sed -r 's/pid=[0-9]+/pid=<...>/' -i log.txt
 assert_diff test_data/log1.txt log.txt
