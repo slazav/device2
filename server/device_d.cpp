@@ -52,14 +52,17 @@ main(int argc, char ** argv) {
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
-    options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: 0 - write nothing; "
-      "1 - write some information on start; 2 - write information about connections; "
-      "3 - write input data; 4 - write output data (default: 0).");
+    options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: "
+      "0 - write nothing; "
+      "1 - write some information on server start/stop; "
+      "2 - write about opening/closing connections and devices; "
+      "3 - write all messages sent to devices and recieved from them. "
+      " (default: 1).");
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
       "(default: /var/log/device_d.log in daemon mode, '-' in console mode.");
     options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/device_d.pid)");
-    options.add("help",    0,'h', "DEVSERV", "Print help message.");
-    options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format.");
+    options.add("help",    0,'h', "DEVSERV", "Print help message and exit.");
+    options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format and exit.");
 
     // parse options
     std::vector<std::string> nonopt;
@@ -75,7 +78,7 @@ main(int argc, char ** argv) {
     int port    = opts.get("port", 8082);
     bool dofork = opts.exists("dofork");
     bool stop   = opts.exists("stop");
-    int  verb   = opts.get("verbose", 0);
+    int  verb   = opts.get("verbose", 1);
     logfile = opts.get("logfile");
     pidfile = opts.get("pidfile", "/var/run/device_d.pid");
     devfile = opts.get("config", "/etc/device2/devices.cfg");
