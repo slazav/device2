@@ -37,23 +37,19 @@ Number of users: 0
 
 conn:6 open connection
 conn:5 close connection
-conn:6 process request: /repeat/text
+conn:6 process request: /ask/b/text
+conn:6 open device: b
 conn:6 answer: text
 conn:7 open connection
+conn:6 close device: b
 conn:6 close connection
-conn:7 process request: /ask/b/text
-conn:7 open device: b
-conn:7 answer: text
+conn:7 process request: /release/b
+conn:7 answer: 
 conn:8 open connection
-conn:7 close device: b
 conn:7 close connection
-conn:8 process request: /release/b
+conn:8 process request: /use/a
+conn:8 open device: a
 conn:8 answer: 
-conn:9 open connection
-conn:8 close connection
-conn:9 process request: /use/a
-conn:9 open device: a
-conn:9 answer: 
 Stopping HTTP server
-conn:9 close device: a
-conn:9 close connection
+conn:8 close device: a
+conn:8 close connection

@@ -34,8 +34,6 @@ assert_cmd "echo $a" "a b" 0
 a=$(wget localhost:$port/info/a -O - -q ||:)
 assert_cmd "echo $a" "Device: a Driver: test Device is closed Number of users: 0" 0
 
-a=$(wget localhost:$port/repeat/text -O - -q ||:)
-assert_cmd "echo $a" "text" 0
 a=$(wget localhost:$port/ask/b/text -O - -q ||:)
 assert_cmd "echo $a" "text" 0
 

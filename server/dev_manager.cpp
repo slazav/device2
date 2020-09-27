@@ -119,19 +119,6 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     return s.str();
   }
 
-  // usleep/<ms> -- do sleep (for tests)
-  if (act == "usleep"){
-    int t = str_to_type<size_t>(arg);
-    usleep(t);
-    return type_to_str(t);
-  }
-
-  // repeat/<arg> -- return the argument (for tests)
-  if (act == "repeat") {
-    if (msg!="") arg = arg + "/" + msg;
-    return arg;
-  }
-
   throw Err() << "unknown action: " << act;
 }
 
