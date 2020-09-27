@@ -1,5 +1,7 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <unistd.h>
 
 #include "err/err.h"
@@ -47,30 +49,16 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
   std::string arg = vs[1];
   std::string msg = vs[2];
 
-  // log_level, log_level/<n> --  get/set loglevel
-  if (act == "log_level"){
-     if (arg != "") Log::set_log_level(str_to_type<int>(arg));
-     return type_to_str(Log::get_log_level());
-  }
-
-  // devices, list -- list all available devices
-  if (act == "devices" || act == "list") {
-    if (arg!="")
-      throw Err() << "unexpected argument: " << url;
-    std::string ret;
-    for (auto const & d:devices)
-      ret += d.first + "\n";
-    return ret;
-  }
-
-  // info/<name> -- print device <name> information
-  if (act == "info") {
+  // ask/<name>/<cmd> -- send a command to the device, get answer
+  if (act == "ask") {
     if (arg=="")
       throw Err() << "device name expected: " << url;
     auto lk = get_sh_lock();
     if (devices.count(arg) == 0)
       throw Err() << "unknown device: " << arg;
-    return devices.find(arg)->second.print(conn);
+    Device & d = devices.find(arg)->second;
+    d.use(conn);
+    return d.ask(msg);
   }
 
   // use/<name> -- notify server that device should be open
@@ -95,16 +83,46 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     return std::string();
   }
 
-  // ask/<name>/<cmd> -- send a command to the device, get answer
-  if (act == "ask") {
+  // info/<name> -- print device <name> information
+  if (act == "info") {
     if (arg=="")
       throw Err() << "device name expected: " << url;
     auto lk = get_sh_lock();
     if (devices.count(arg) == 0)
       throw Err() << "unknown device: " << arg;
-    Device & d = devices.find(arg)->second;
-    d.use(conn);
-    return d.ask(msg);
+    return devices.find(arg)->second.print(conn);
+  }
+
+  // devices, list -- list all available devices
+  if (act == "devices" || act == "list") {
+    if (arg!="")
+      throw Err() << "unexpected argument: " << url;
+    std::string ret;
+    for (auto const & d:devices)
+      ret += d.first + "\n";
+    return ret;
+  }
+
+  // ping -- do nothing
+  if (act == "ping"){
+    return std::string();
+  }
+
+  // print current time (unix seconds with ms precision)
+  if (act == "get_time"){
+    if (arg!="")
+      throw Err() << "unexpected argument: " << url;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    std::ostringstream s;
+    s << tv.tv_sec << "." << std::setfill('0') << std::setw(6) << tv.tv_usec;
+    return s.str();
+  }
+
+  // log_level, log_level/<n> --  get/set loglevel
+  if (act == "log_level"){
+     if (arg != "") Log::set_log_level(str_to_type<int>(arg));
+     return type_to_str(Log::get_log_level());
   }
 
   // usleep/<ms> -- do sleep (for tests)
@@ -116,6 +134,7 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
 
   // repeat/<arg> -- return the argument (for tests)
   if (act == "repeat") {
+    if (msg!="") arg = arg + "/" + msg;
     return arg;
   }
 
