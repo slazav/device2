@@ -1,7 +1,7 @@
 ## Device server
 ---
 
-This is a server for accessing devices and programs in sophisticated
+This is a client-server pair for accessing devices and programs in
 experimental setups. Previous version was a tcl library (
 https://github.com/slazav/tcl-device ), but that approach had a few
 limitations.
@@ -15,7 +15,8 @@ all available devices. For example, line `generator gpib -board 0 -address
 6` says that communication with device `generator` is done using driver
 gpib with parameters `-board 0 -address 6`.
 
-### HTTP server
+
+### server
 
 Users communicate with the server using GET requests of HTTP protocol.
 URLs with three-components are used: `<device>`, `<command>`,
@@ -72,7 +73,7 @@ Parameters are driver-specific.
 Device with name SERVER is a special device for controlling the device server
 itself. It can not be redefined in the configuration file.
 
-Supported commands:
+Supported actions:
 
 * `log_level/<N>` -- Set logging level of the server (0 - no messages, 1
 - server messages,  2 - connections, 3 - communications with devices) and
@@ -82,12 +83,13 @@ return new value.
 
 * `devices` or `list` -- Show list of all known devices.
 
-* `open/<device>` -- Open a device. Argument is device name. Usually a device
-is opened on demand, then a command is sent to it. This command can be
-used to open the device before sending any command to it (e.g. to
-process errors separately).
+* `use/<device>` -- Use the device in this connection. Argument is device name.
+Usually a device is opened (if it is not opened yet) on demand, then some
+action is requested. This action can be used to open and check the device
+before sending any command to it (e.g. to process errors separately).
 
-* `close/<device>` -- Close a device (if no other session uses it).
+* `release/<device>` -- Notify the server that this device is not going
+to be used by this connection. Device is closed if no other connections use it.
 Argument is device name. Normally devices are closed when session is ended
 and no other sessions are using the device. This command can be used to
 close the device without closing the session. If some other session uses
@@ -103,18 +105,22 @@ from the argument and returned in the answer.
 
 Supported configuration options: none
 
-Supported commands:
+Supported actions:
 * ask -- just repeat the message
 
 ### Driver `spp` -- a "Simple Pipe protocol".
 
-Provides communication with programs using stdin/stdout
-unix pipes. The protocol is described in 
+This driver implements "Simple pipe prococol" for comminicating with
+programs using stdin/stdout unix pipes.
+Used in a few of my projects (pico_rec, graphene),
+described in https://github.com/slazav/tcl-device (see Readme.md)
 
 Supported configuration options:
 * -prog -- name of the program
+* -open_timeout -- timeout for device opening, seconds (default 20.0).
+* -read_timeout -- timeout for reading from the device (default  5.0).
 
-Supported commands:
+Supported actions:
 * ask -- send the command and read answer.
 
 

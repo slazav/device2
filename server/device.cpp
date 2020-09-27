@@ -25,7 +25,7 @@ Device::Device(const Device & d){
 }
 
 void
-Device::open(const uint64_t conn){
+Device::use(const uint64_t conn){
   if (users.count(conn)>0) return; // device is opened and used by this connection
   auto lk = get_lock();
   if (users.empty()) { // device needs to be opened
@@ -36,7 +36,7 @@ Device::open(const uint64_t conn){
 }
 
 void
-Device::close(const uint64_t conn){
+Device::release(const uint64_t conn){
   if (users.count(conn)==0) return; // device is not used by this connection
   auto lk = get_lock();
   if (users.size()==1){
@@ -44,11 +44,6 @@ Device::close(const uint64_t conn){
     Log(2) << "#" << conn << "/" << dev_name << ": close device";
   }
   users.erase(conn);
-}
-
-std::string
-Device::cmd(const std::string & cmd, const std::string & arg){
-  return drv->cmd(cmd, arg);
 }
 
 std::string

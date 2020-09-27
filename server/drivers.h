@@ -19,19 +19,31 @@ protected:
   Driver(const Opt & opts): opts(opts) {}
 
 public:
-  // create and return a device driver (static function)
+  // Create and return a device driver (static function).
+  // Parameter `args` contains parameters from the configuration file.
+  // They describe how the driver can find the device.
   static std::shared_ptr<Driver> create(
     const std::string & name, const Opt & args);
 
+  // Open device.
   virtual void open() = 0;
+
+  // Close device.
   virtual void close() = 0;
-  virtual std::string cmd(const std::string & cmd,
-                          const std::string & arg) = 0;
+
+  // Do an action with the device.
+  // Usually action "ask" should be implemented
+  // to communicate with the device (send a command and return answer).
+  virtual std::string do_action(const std::string & act,
+                                const std::string & arg) = 0;
 
 };
 
 /*************************************************/
-// test driver
+// Test driver
+// Configuration options: none
+// Actions:
+//   ask - just return the action argument
 
 struct Driver_test: Driver {
 private:
@@ -40,16 +52,23 @@ public:
   Driver_test(const Opt & opts): Driver(opts) {}
   void open()  override {opened=true;}
   void close() override {opened=false;}
-  std::string cmd(const std::string & cmd,
-                  const std::string & arg) override {
-    if (!opened) throw Err() << "Test: sending command to a closed device";
-    if (cmd != "ask") throw Err() << "unknown command: " << cmd;
-    return arg;
+  std::string do_action(const std::string & act,
+                        const std::string & arg) override {
+    if (!opened) throw Err() << "Test: device if closed";
+
+    if (act == "ask"){
+      return arg;
+    }
+    throw Err() << "unknown action: " << act;
   };
 };
 
 /*************************************************/
-// spp driver
+// SPP driver
+// This driver implements "Simple pipe prococol" for comminicating with
+// programs using stdin/stdout unix pipes.
+// Used in a few of my projects (pico_rec, graphene),
+// described in https://github.com/slazav/tcl-device (see Readme.md)
 
 struct Driver_spp: Driver {
   std::shared_ptr<IOFilter> flt;
@@ -126,13 +145,17 @@ struct Driver_spp: Driver {
   }
 
   // send a command to the device and read answer
-  std::string cmd(const std::string & cmd,
+  std::string do_action(const std::string & act,
                   const std::string & arg) override {
-    if (!flt) throw Err() << "SPP: writing to a closed device";
-    if (cmd != "ask") throw Err() << "unknown command: " << cmd;
-    flt->ostream() << arg << "\n";
-    flt->ostream().flush();
-    return read_spp(read_timeout);
+    if (!flt) throw Err() << "SPP: device is closed";
+
+    // just asking!
+    if (act == "ask") {
+      flt->ostream() << arg << "\n";
+      flt->ostream().flush();
+      return read_spp(read_timeout);
+    }
+    throw Err() << "unknown action: " << act;
   }
 };
 

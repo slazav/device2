@@ -46,18 +46,19 @@ public:
   // Copy constructor
   Device(const Device & d);
 
-  // Reserve device for a connection.
-  // Open it if there were no reservations.
-  void open(const uint64_t conn);
+  // Start using the device by a connection.
+  // Open it if nobody else use it.
+  void use(const uint64_t conn);
 
-  // Remove reservation for a connection.
-  // Close the device if no reservations left.
-  void close(const uint64_t conn);
+  // Stop using the device by a connection.
+  // Close it if nobody else use it.
+  void release(const uint64_t conn);
 
-  // Send command to the device
-  std::string cmd(const std::string & cmd, const std::string & arg);
+  // Do an action with the device
+  std::string do_action(const std::string & act, const std::string & arg){
+    return drv->do_action(act, arg); }
 
-  // print device information: name, users, driver, driver arguments
+  // Print device information: name, users, driver, driver arguments.
   std::string print(const uint64_t conn=0) const;
 
 };

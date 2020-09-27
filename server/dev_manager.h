@@ -41,7 +41,7 @@ public:
 
   // Process a request from HTTP server.
   // Arguments:
-  // - url:  request "URL", device/command/data
+  // - url:  request "URL", device/action/data
   // - conn: connection ID
   std::string run(const std::string & url, const uint64_t conn);
 
@@ -49,7 +49,7 @@ public:
   // Throw exception on errors.
   void read_conf(const std::string & file);
 
-  // parse url, return three-component vector (device, command, data)
+  // parse url, return three-component vector (device, action, data)
   static std::vector<std::string> parse_url(const std::string & url);
 
 };

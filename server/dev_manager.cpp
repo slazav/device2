@@ -35,7 +35,7 @@ DevManager::conn_open(const uint64_t conn){
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
-  for (auto & d:devices) d.second.close(conn);
+  for (auto & d:devices) d.second.release(conn);
   Log(2) << "#" << conn << ": close connection";
 }
 
@@ -44,7 +44,7 @@ std::string
 DevManager::run(const std::string & url, const uint64_t conn){
   auto vs = parse_url(url);
   std::string dev = vs[0];
-  std::string cmd = vs[1];
+  std::string act = vs[1];
   std::string arg = vs[2];
 
 
@@ -55,59 +55,59 @@ DevManager::run(const std::string & url, const uint64_t conn){
 
     // special device SERVER
     if (dev == SRVDEV){
-      Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
-      if (cmd == "log_level"){
+      Log(3) << "#" << conn << "/" << dev << " >> " << act << ": " << arg;
+      if (act == "log_level"){
          if (arg != "") Log::set_log_level(str_to_type<int>(arg));
          throw Err(1) << type_to_str(Log::get_log_level());
       }
-      if (cmd == "devices" || cmd == "list") {
+      if (act == "devices" || act == "list") {
         std::string ret;
         for (auto const & d:devices)
           ret += d.first + "\n";
         throw Err(1) << ret;
       }
-      if (cmd == "info") {
+      if (act == "info") {
         if (arg=="SERVER") throw Err(1);
         if (devices.count(arg) == 0)
           throw Err() << "unknown device: " << arg;
         Device & d = devices.find(arg)->second;
         throw Err(1) << d.print(conn);
       }
-      if (cmd == "open") {
+      if (act == "use") {
         if (arg=="SERVER") throw Err(1);
         if (devices.count(arg) == 0)
           throw Err() << "unknown device: " << arg;
         Device & d = devices.find(arg)->second;
-        d.open(conn);
+        d.use(conn);
         throw Err(1);
       }
-      if (cmd == "close") {
+      if (act == "release") {
         if (arg=="SERVER") throw Err(1);
         if (devices.count(arg) == 0)
           throw Err() << "unknown device: " << arg;
         Device & d = devices.find(arg)->second;
-        d.close(conn);
+        d.release(conn);
         throw Err(1);
       }
-      if (cmd == "usleep"){
+      if (act == "usleep"){
         int t = str_to_type<int>(arg);
         usleep(t);
         throw Err(1) << t;
       }
-      if (cmd == "repeat") {
+      if (act == "repeat") {
         throw Err(1) << arg;
       }
 
-      throw Err() << "unknown server command: " << cmd;
+      throw Err() << "SERVER: unknown action: " << act;
     }
 
     // other devices
     if (devices.count(dev) == 0)
       throw Err() << "unknown device: " << dev;
     Device & d = devices.find(dev)->second;
-    d.open(conn);
-    Log(3) << "#" << conn << "/" << dev << " >> " << cmd << ": " << arg;
-    throw Err(1) << d.cmd(cmd, arg);
+    d.use(conn);
+    Log(3) << "#" << conn << "/" << dev << " >> " << act << ": " << arg;
+    throw Err(1) << d.do_action(act, arg);
   }
   catch (Err e){
     if (e.code() == 1){

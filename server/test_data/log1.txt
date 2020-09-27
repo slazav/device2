@@ -35,11 +35,11 @@ Number of users: 0
 #10: open connection
 #9/b: close device
 #9: close connection
-#10/SERVER >> close: b
+#10/SERVER >> release: b
 #10/SERVER << answer: 
 #11: open connection
 #10: close connection
-#11/SERVER >> open: a
+#11/SERVER >> use: a
 #11/a: open device
 #11/SERVER << answer: 
 #12: open connection
