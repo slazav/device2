@@ -18,7 +18,7 @@ void usage(const GetOptSet & options, bool pod=false){
   pr.usage("[<options>] ask <dev> <msg> -- send message to the device, print answer");
   pr.usage("[<options>] use_dev <dev>   -- SPP interface to a device");
   pr.usage("[<options>] use_srv         -- SPP interface to the server");
-  pr.usage("[<options>] list            -- print list of available devices");
+  pr.usage("[<options>] (list|devices)  -- print list of available devices");
   pr.usage("[<options>] info <dev>      -- print information about device");
   pr.usage("[<options>] ping            -- check if the server is working");
   pr.usage("[<options>] get_time        -- get server system time");
