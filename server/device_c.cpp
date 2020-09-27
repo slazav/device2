@@ -192,6 +192,7 @@ main(int argc, char ** argv) {
     GetOptSet options;
     std::string on("DEVCLI");
     options.add("server",  1,'s', on, "Server (default: http://localhost:8082).");
+    options.add("lock",    0,'l', on, "Lock the device (only for use_dev action).");
     options.add("help",    0,'h', on, "Print help message and exit.");
     options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
 
@@ -219,7 +220,9 @@ main(int argc, char ** argv) {
 
     if (action == "use_dev"){
       check_par_count(pars, 2);
+      if (opts.exists("lock")) D.get("lock", pars[1]);
       D.use_dev(pars[1], std::cin, std::cout);
+      if (opts.exists("lock")) D.get("unlock", pars[1]);
       return 0;
     }
 

@@ -81,6 +81,28 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     return std::string();
   }
 
+  // lock/<name> -- lock device by connection
+  if (act == "lock") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.lock(conn);
+    return std::string();
+  }
+
+  // lock/<name> -- unlock device by connection
+  if (act == "unlock") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.unlock(conn);
+    return std::string();
+  }
+
   // info/<name> -- print device <name> information
   if (act == "info") {
     if (arg=="")

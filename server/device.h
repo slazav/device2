@@ -23,6 +23,9 @@ class Device {
   // Connections which use the device
   std::set<uint64_t> users;
 
+  // Is the device locked?
+  bool locked;
+
   // Device name
   std::string dev_name;
 
@@ -50,13 +53,20 @@ public:
   // Open it if nobody else use it.
   void use(const uint64_t conn);
 
+  // Lock device by a connection.
+  // It can be done only if the connection is the only user of the device.
+  // If device is locked other connections can not use it.
+  void lock(const uint64_t conn);
+
+  // Unlock device if it is locked by the connection.
+  void unlock(const uint64_t conn);
+
   // Stop using the device by a connection.
   // Close it if nobody else use it.
   void release(const uint64_t conn);
 
   // Send message to the device, get answer
-  std::string ask(const std::string & msg){
-    return drv->ask(msg); }
+  std::string ask(const std::string & msg);
 
   // Print device information: name, users, driver, driver arguments.
   std::string print(const uint64_t conn=0) const;
