@@ -115,8 +115,6 @@ Parameters are driver-specific.
 
 Supported configuration options: none
 
-Supported actions:
-* ask -- just repeat the message
 
 ### Driver `spp` -- a "Simple Pipe protocol".
 
@@ -126,13 +124,25 @@ Used in a few of my projects (pico_rec, graphene),
 described in https://github.com/slazav/tcl-device (see Readme.md)
 
 Supported configuration options:
-* -prog -- name of the program
+* -prog -- name of the program (mandatory option)
 * -open_timeout -- timeout for device opening, seconds (default 20.0).
 * -read_timeout -- timeout for reading from the device, seconds (default  5.0).
 
-Supported actions:
-* ask -- send the command and read answer.
 
+### Driver `usbtmc` -- using usbtmc kernel module.
+
+This driver supports devices connected via `usbtmc` kernel driver.
+It should work with all usual Agilent/Keysight devices connected
+via USB. Read timeout is set internally in the driver (5s?)
+but can be changed by -read_timeout option in the configuration file.
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
+
+Supported configuration options:
+* -dev -- name of serial device (mandatory option, e.g. `/dev/usbtmc0`)
+* -read_timeout -- timeout for reading from the device, seconds (default 0.0 - do not change).
+
+---
 ### Running the server
 
 Usage:

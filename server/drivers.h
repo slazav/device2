@@ -61,6 +61,10 @@ public:
 // programs using stdin/stdout unix pipes.
 // Used in a few of my projects (pico_rec, graphene),
 // described in https://github.com/slazav/tcl-device (see Readme.md)
+// Options:
+//  -prog          -- program name
+//  -open_timeout  -- timeout for opening
+//  -read_timeout  -- timeout for reading
 
 struct Driver_spp: Driver {
   std::shared_ptr<IOFilter> flt;
@@ -144,5 +148,93 @@ struct Driver_spp: Driver {
     return read_spp(read_timeout);
   }
 };
+
+#include "tmc.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+
+/*************************************************/
+// usbtmc driver
+// This driver supports devices connected via usbtmc kernel driver.
+// It should work with all usual Agilent/Keysight devices connected
+// via USB. Read timeout is set internally in the driver (5s?)
+// but can be changed by -read_timeout option in the configuration file.
+// Driver reads answer from the device only if there is a question mark '?'
+// in the message.
+// Options:
+//  -dev -- serial device filename (e.g. /dev/usbtmc0)
+//  -read_timeout  -- timeout for reading (default 0 - do not change)
+
+struct Driver_usbtmc: Driver {
+  std::string dev; // serial device name
+  int fd;          // file descriptor
+  double read_timeout; // read timeout, s
+
+  Driver_usbtmc(const Opt & opts): Driver(opts) {
+    dev = opts.get("dev");
+    read_timeout = opts.get<double>("read_timeout", 0);
+    if (dev == "") throw Err() << "Parameter -dev is empty or missing";
+  }
+
+  // open connection
+  void open() override {
+    fd = ::open(dev.c_str(), O_RDWR);
+    if (fd<0) throw Err() << "usbtmc driver: can't open device: "
+                          << dev << ": " << strerror(errno);
+
+    // clear input and output buffers
+    ssize_t ret = ioctl(fd, USBTMC_IOCTL_CLEAR, NULL);
+    if (ret<0) throw Err() << "usbtmc driver: can't clear device state: "
+                           << dev << ": " << strerror(errno);
+
+    // set timeout (ms)
+    if (read_timeout>0){
+      uint32_t v = read_timeout*1000; // convert to ms
+      ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
+      if (ret<0) throw Err() << "usbtmc driver: can't set timeout: "
+                             << dev << ": " << strerror(errno);
+    }
+  }
+
+  // close conection
+  void close() override {
+    ::close(fd);
+  }
+
+  // send a message to the device and read answer
+  std::string ask(const std::string & msg) override {
+    if (msg.size()==0) return "";
+    // add '\n' if needed
+    std::string m = msg;
+    if (msg[msg.size()-1]!='\n') m+='\n';
+    ssize_t ret = write(fd, m.data(), m.size());
+    if (ret<0) throw Err() << "write error: " << strerror(errno);
+
+    // if we do not have '?' in the message
+    // no answer is needed.
+    if (msg.find('?') == std::string::npos)
+      return std::string();
+
+    char buf[4096];
+    ret = read(fd,buf,sizeof(buf));
+    if (ret<0){
+      auto en = errno;
+      // Recover from timeout.
+      // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
+      // should be enough, but for me it does not work in some cases.
+      ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
+      throw Err() << "usbtmc driver: can't read from "
+                  << dev << ": " << strerror(en);
+    }
+    // remove '\n' is needed
+    if (buf[ret-1]=='\n') ret--;
+    return std::string(buf, buf+ret);
+  }
+};
+
+
 
 #endif
