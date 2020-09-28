@@ -166,6 +166,7 @@ Usage:
 * `device_c [<options>] use_srv`         -- SPP interface to the server
 * `device_c [<options>] (list|devices)`  -- print list of available devices
 * `device_c [<options>] info <dev>`      -- print information about device
+* `device_c [<options>] log <dev>`       -- log all communication of the device
 * `device_c [<options>] ping`            -- check if the server is working
 * `device_c [<options>] get_time`        -- get server system time
 
