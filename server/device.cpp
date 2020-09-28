@@ -5,7 +5,6 @@
 #include "err/err.h"
 #include "log/log.h"
 #include "read_words/read_words.h"
-#include "drivers.h"
 #include "device.h"
 
 /*************************************************/

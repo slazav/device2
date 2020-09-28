@@ -1,4 +1,8 @@
-#include "drivers.h"
+#include "drv.h"
+#include "drv_test.h"
+#include "drv_spp.h"
+#include "drv_usbtmc.h"
+#include "drv_tenma_ps.h"
 
 std::shared_ptr<Driver>
 Driver::create(const std::string & name, const Opt & args){

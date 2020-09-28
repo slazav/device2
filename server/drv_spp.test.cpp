@@ -1,6 +1,6 @@
 ///\cond HIDDEN (do not show this in Doxyden)
 
-#include "drivers.h"
+#include "drv_spp.h"
 #include "err/assert_err.h"
 
 using namespace std;
