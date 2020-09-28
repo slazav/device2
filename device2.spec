@@ -10,8 +10,10 @@ License:      GPL
 Packager:     Vladislav Zavjalov <slazav@altlinux.org>
 
 Source:       %name-%version.tar
+BuildRequires: gcc-c++
 BuildRequires: libmicrohttpd-devel
-Requires:      libmicrohttpd
+BuildRequires: libjansson-devel
+BuildRequires: libcurl-devel
 
 %description
 Device2 is a client-server system for accessing devices and programs
