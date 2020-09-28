@@ -116,7 +116,7 @@ Parameters are driver-specific.
 Supported configuration options: none
 
 
-### Driver `spp` -- a "Simple Pipe protocol".
+### Driver `spp` -- a "Simple Pipe protocol"
 
 This driver implements "Simple pipe prococol" for comminicating with
 programs using stdin/stdout unix pipes.
@@ -129,7 +129,7 @@ Supported configuration options:
 * -read_timeout -- timeout for reading from the device, seconds (default  5.0).
 
 
-### Driver `usbtmc` -- using usbtmc kernel module.
+### Driver `usbtmc` -- using usbtmc kernel module
 
 This driver supports devices connected via `usbtmc` kernel driver.
 It should work with all usual Agilent/Keysight devices connected
@@ -141,6 +141,19 @@ in the message.
 Supported configuration options:
 * -dev -- name of serial device (mandatory option, e.g. `/dev/usbtmc0`)
 * -read_timeout -- timeout for reading from the device, seconds (default 0.0 - do not change).
+
+### Driver `tenmaps` -- Korad/Velleman/Tenma power supplies
+
+This driver works with Korad/Velleman/Tenma power supplies. It is a
+simple communication via a serial device with some specific delays and
+without newline characters. Note that devices require quite strict
+command syntax with exact number of digits in all settings, etc. Driver
+converts all messages to upper case before sending to the device. Driver
+reads answer from the device only if there is a question mark '?' in the
+message.
+
+Supported configuration options:
+* -dev -- name of serial device (mandatory option, e.g. `/dev/ttyACM0`)
 
 ---
 ### Running the server

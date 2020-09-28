@@ -166,7 +166,7 @@ struct Driver_spp: Driver {
 // in the message.
 // Options:
 //  -dev -- serial device filename (e.g. /dev/usbtmc0)
-//  -read_timeout  -- timeout for reading (default 0 - do not change)
+//  -read_timeout  -- timeout for reading, seconds (default 0 - do not change)
 
 struct Driver_usbtmc: Driver {
   std::string dev; // serial device name
@@ -211,7 +211,8 @@ struct Driver_usbtmc: Driver {
     std::string m = msg;
     if (msg[msg.size()-1]!='\n') m+='\n';
     ssize_t ret = write(fd, m.data(), m.size());
-    if (ret<0) throw Err() << "write error: " << strerror(errno);
+    if (ret<0) throw Err() << "usbtcm driver: write error: "
+                           << dev << ": " << strerror(errno);
 
     // if we do not have '?' in the message
     // no answer is needed.
@@ -226,11 +227,83 @@ struct Driver_usbtmc: Driver {
       // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
       // should be enough, but for me it does not work in some cases.
       ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
-      throw Err() << "usbtmc driver: can't read from "
+      throw Err() << "usbtmc driver: read error: "
                   << dev << ": " << strerror(en);
     }
     // remove '\n' is needed
     if (buf[ret-1]=='\n') ret--;
+    return std::string(buf, buf+ret);
+  }
+};
+
+#include <algorithm>
+/*************************************************/
+// tenma_ps driver
+// This driver works with Korad/Velleman/Tenma power supplies.
+// It is a simple communication via a serial device with some
+// specific delays and without newline characters.
+// Options:
+//  -dev -- serial device filename (e.g. /dev/ttyACM0)
+//
+// See:
+// https://sigrok.org/wiki/Korad_KAxxxxP_series
+// https://sigrok.org/gitweb/?p=libsigrok.git (src/hardware /korad-kaxxxxp/)
+
+struct Driver_tenma_ps: Driver {
+  std::string dev; // serial device name
+  int fd;          // file descriptor
+  int del;         // delay between write and read, us
+
+  Driver_tenma_ps(const Opt & opts): Driver(opts) {
+    dev = opts.get("dev");
+    if (dev == "") throw Err() << "Parameter -dev is empty or missing";
+    del=250000; // 0.25s
+  }
+
+  // open connection
+  void open() override {
+    fd = ::open(dev.c_str(), O_RDWR);
+    if (fd<0) throw Err() << "tenma_ps driver: can't open device: "
+                          << dev << ": " << strerror(errno);
+    // set non-blocking mode
+    int ret = fcntl(fd, F_SETFL, FNDELAY);
+    if (ret<0) throw Err() << "tenma_ps driver: can't do fcntl: "
+                           << dev << ": " << strerror(errno);
+  }
+
+  // close conection
+  void close() override {
+    ::close(fd);
+  }
+
+  // send a message to the device and read answer
+  std::string ask(const std::string & msg) override {
+
+    // to upper case
+    std::string m(msg);
+    std::transform(m.begin(),m.end(),m.begin(),::toupper);
+
+    ssize_t ret = write(fd, m.data(), m.size());
+    if (ret<0) throw Err() << "tenma_ps driver: write error: "
+                           << dev << ": " << strerror(errno);
+
+    // delay is needed after writing
+    usleep(del);
+
+    // if we do not have '?' in the message
+    // no answer is needed.
+    if (msg.find('?') == std::string::npos)
+      return std::string();
+
+    char buf[4096];
+    ret = read(fd,buf,sizeof(buf));
+    if (ret<0) throw Err() << "tenma_ps driver: read error: "
+                           << dev << ": " << strerror(errno);
+
+    // convert binary status byte to a number
+    if (msg == "STATUS?" && ret>0) {
+      return type_to_str((int)buf[0]);
+    }
     return std::string(buf, buf+ret);
   }
 };
