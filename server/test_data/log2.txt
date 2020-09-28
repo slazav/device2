@@ -81,9 +81,9 @@ conn:9 answer: 123
 conn:9 process request: /info/b
 conn:9 answer: Device: b
 Driver: test
-Driver arguments: 
-  a: b
-  c: d
+Driver arguments:
+  -a: b
+  -c: d
 Device is open
 Number of users: 1
 You are currently using the device

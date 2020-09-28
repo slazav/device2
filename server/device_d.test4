@@ -54,7 +54,7 @@ a b #OK \
 #Error: unexpected argument: /list/1 \
 #Error: unknown action: err #OK \
 #OK 123 \
-#OK Device: b Driver: test Driver arguments: a: b c: d \
+#OK Device: b Driver: test Driver arguments: -a: b -c: d \
 Device is open Number of users: 1 You are currently using the device #OK" 0
 
 ####################

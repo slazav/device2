@@ -81,9 +81,9 @@ Device::print(const uint64_t conn) const {
   s << "Device: " << dev_name << "\n"
     << "Driver: " << drv_name << "\n";
   if (drv_args.size())
-    s << "Driver arguments: \n";
+    s << "Driver arguments:\n";
   for (auto const & o:drv_args)
-    s << "  " << o.first << ": " << o.second << "\n";
+    s << "  -" << o.first << ": " << o.second << "\n";
   s << "Device is " << (users.size()>0 ? "open":"closed") << "\n";
   s << "Number of users: " << users.size() << "\n";
   if (conn && users.count(conn))
