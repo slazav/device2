@@ -53,7 +53,11 @@ Device::lock(const uint64_t conn){
 void
 Device::unlock(const uint64_t conn){
   auto lk = get_lock();
-  if (locked && users.count(conn)==1) locked = false;
+  if (!locked)
+    throw Err() << "device is not locked";
+  if (users.count(conn)==0)
+    throw Err() << "device is locked by another connection";
+  locked = false;
 }
 
 void
