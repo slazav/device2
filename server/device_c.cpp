@@ -82,10 +82,12 @@ public:
   }
 
   // SPP interface to a single device.
-  void use_dev(const std::string & dev, std::istream & in, std::ostream & out){
+  void use_dev(const std::string & dev, std::istream & in, std::ostream & out, const bool lock){
     out << "#SPP001\n"; // command-line protocol, version 001.
     out << "Server: " << server << "\n";
     out << "Device: " << dev << "\n";
+    if (lock) get("lock", dev);
+
     out.flush();
 
     // Outer try -- exit on errors with #Error message
@@ -117,6 +119,7 @@ public:
       if (e.str()!="") out << "#Error: " << e.str() << "\n";
       return;
     }
+    get("release", dev);
     return;
   }
 
@@ -220,9 +223,7 @@ main(int argc, char ** argv) {
 
     if (action == "use_dev"){
       check_par_count(pars, 2);
-      if (opts.exists("lock")) D.get("lock", pars[1]);
-      D.use_dev(pars[1], std::cin, std::cout);
-      if (opts.exists("lock")) D.get("unlock", pars[1]);
+      D.use_dev(pars[1], std::cin, std::cout, opts.exists("lock"));
       return 0;
     }
 
