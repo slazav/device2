@@ -1,0 +1,73 @@
+#!/bin/bash -efu
+
+# test server program using device_c -- logging
+
+. ../modules/test_lib.sh
+
+# use non-standard port to avoid collisions with running server
+port=8182
+srv="-s localhost:$port"
+
+# try to stop the server
+./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+
+assert_cmd "./device_c $srv ask b text"\
+  "Error: Couldn't connect to server" 1
+
+rm -f log.txt
+
+####################
+# run the server
+assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 0 --dofork" "" 0
+
+
+a="$(echo -e '
+log_start b
+ask b Q1?
+ask b Q2?
+log_get b
+ask b Q3?
+log_get b
+ask b Q3a?
+log_start b
+ask b Q4?
+log_get b
+log_finish b
+log_get b' | ./device_c $srv use_srv)"
+
+assert_cmd "echo $a" "\
+#SPP001 \
+Server: localhost:8182 \
+#OK \
+#OK \
+Q1? \
+#OK \
+Q2? \
+#OK \
+>> Q1? \
+<< Q1? \
+>> Q2? \
+<< Q2? \
+#OK \
+Q3? \
+#OK \
+>> Q3? \
+<< Q3? \
+#OK \
+Q3a? \
+#OK \
+#OK \
+Q4? \
+#OK \
+>> Q4? \
+<< Q4? \
+#OK \
+#OK \
+#Error: Logging is off\
+" 0
+
+####################
+# stop the server
+assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+
+

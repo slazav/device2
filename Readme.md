@@ -73,6 +73,18 @@ reopen the connection, and try to use the same device. Thus it is
 recommended to unlocked device when you finish with it.
 Command returns errors if device is locked by somebody else, or not locked.
 
+* `log_start/<device>` -- Any user can see all communications of every device.
+To do it one should start with `log_start` action. The buffer of size 1024 lines
+is created for this connection, all messages send to the device and received
+from it will be written to the buffer (with "<<" and ">>" prefixes).
+If the buffer already exist it will be cleared.
+
+* `log_finish/<device>` -- Stop logging, delete the log buffer for this
+connection.
+
+* `log_get/<device>` -- Get contents of the log buffer, clear it. If logging
+is not started return error.
+
 * `ping` -- Check connection to the server. Returns nothing.
 
 * `get_time` -- Get sysem time (unix seconds with microsecond precision)

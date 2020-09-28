@@ -103,6 +103,39 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     return std::string();
   }
 
+  // log_start/<name> -- start logging device communication
+  if (act == "log_start") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.log_start(conn);
+    return std::string();
+  }
+
+  // log_finish/<name> -- stop logging device communications
+  if (act == "log_finish") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.log_finish(conn);
+    return std::string();
+  }
+
+  // log_get/<name> -- get information logged after
+  // previous call to log_get or log_start.
+  if (act == "log_get") {
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    return devices.find(arg)->second.log_get(conn);
+  }
+
   // info/<name> -- print device <name> information
   if (act == "info") {
     if (arg=="")

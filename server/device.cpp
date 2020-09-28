@@ -16,16 +16,18 @@ Device::Device( const std::string & dev_name,
   dev_name(dev_name),
   drv_name(drv_name),
   drv_args(drv_args),
-  locked(false) {
+  locked(false),
+  max_log_size(1024) {
 }
 
 Device::Device(const Device & d){
+  users = d.users;
   drv = d.drv;
   dev_name = d.dev_name;
   drv_name = d.drv_name;
   drv_args = d.drv_args;
   locked = d.locked;
-  users = d.users;
+  max_log_size = d.max_log_size;
 }
 
 void
@@ -38,6 +40,26 @@ Device::use(const uint64_t conn){
     Log(2) << "conn:" << conn << " open device: " << dev_name;
   }
   users.insert(conn);
+}
+
+void
+Device::release(const uint64_t conn){
+  auto lk = get_lock();
+
+  // remove log buffer
+  if (log_bufs.count(conn)>0)
+    log_bufs.erase(conn);
+
+  // device is not used by this connection
+  if (users.count(conn)==0) return;
+
+  // if device is used by only this connection close it
+  if (users.size()==1){
+    drv->close();
+    Log(2) << "conn:" << conn << " close device: " << dev_name;
+  }
+  if (locked) locked = false;
+  users.erase(conn);
 }
 
 void
@@ -61,22 +83,62 @@ Device::unlock(const uint64_t conn){
 }
 
 void
-Device::release(const uint64_t conn){
-  if (users.count(conn)==0) return; // device is not used by this connection
+Device::log_start(const uint64_t conn){
   auto lk = get_lock();
-  if (users.size()==1){
-    drv->close();
-    Log(2) << "conn:" << conn << " close device: " << dev_name;
+  log_bufs[conn] = log_buf_t();
+}
+
+void
+Device::log_finish(const uint64_t conn){
+  auto lk = get_lock();
+  log_bufs.erase(conn);
+}
+
+std::string
+Device::log_get(const uint64_t conn){
+  auto lk = get_lock();
+  if (log_bufs.count(conn)==0)
+    throw Err() << "Logging is off";
+  std::string ret;
+  while (log_bufs[conn].size()>0){
+    ret += *log_bufs[conn].front();
+    log_bufs[conn].pop();
   }
-  if (locked) locked = false;
-  users.erase(conn);
+  return ret;
+}
+
+void
+Device::log_message(const std::string & pref, const std::string & msg){
+  if (log_bufs.size()==0) return;
+  // make shared_ptr to share it between log buffers
+  std::shared_ptr<std::string> s(new std::string);
+  *s += pref + msg + "\n";
+  for (auto & b: log_bufs){
+    b.second.push(s);
+    // limit log buffer size to max_log_size
+    while (b.second.size()>max_log_size) b.second.pop();
+  }
 }
 
 // Send message to the device, get answer
 std::string
 Device::ask(const std::string & msg){
   if (locked) throw Err() << "device is locked";
-  return drv->ask(msg);
+
+  // if no logging is needed just return answer
+  if (log_bufs.size()==0) return drv->ask(msg);
+
+  // do all logging (message, answer, errors)
+  log_message(">>", msg);
+  try {
+    auto ret = drv->ask(msg);
+    log_message("<<", ret);
+    return ret;
+  }
+  catch (Err & e) {
+    log_message("EE", e.str());
+    throw;
+  }
 }
 
 std::string
