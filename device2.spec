@@ -14,6 +14,7 @@ BuildRequires: gcc-c++
 BuildRequires: libmicrohttpd-devel
 BuildRequires: libjansson-devel
 BuildRequires: libcurl-devel
+BuildRequires: linux-gpib-devel
 
 %description
 Device2 is a client-server system for accessing devices and programs

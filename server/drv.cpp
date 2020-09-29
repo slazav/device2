@@ -9,6 +9,7 @@
 #include "drv_serial_vs_ld.h"
 #include "drv_serial_tenma_ps.h"
 #include "drv_serial_simple.h"
+#include "drv_gpib.h"
 
 std::shared_ptr<Driver>
 Driver::create(const std::string & name, const Opt & args){
@@ -40,8 +41,11 @@ Driver::create(const std::string & name, const Opt & args){
   if (name == "net")
      return std::shared_ptr<Driver>(new Driver_net(args));
 
-  if (name == "drv_net_gpib_prologix")
+  if (name == "net_gpib_prologix")
      return std::shared_ptr<Driver>(new Driver_net_gpib_prologix(args));
+
+  if (name == "gpib")
+     return std::shared_ptr<Driver>(new Driver_gpib(args));
 
   throw Err() << "unknown driver: " << name;
 }
