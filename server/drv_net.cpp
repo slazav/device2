@@ -11,10 +11,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-Driver_net::Driver_net(const Opt & opts) {
 // based on the example in
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
-
+Driver_net::Driver_net(const Opt & opts) {
+  opts.check_unknown({"addr","port","timeout","bufsize","errpref"});
   int res;
 
   //prefix for error messages

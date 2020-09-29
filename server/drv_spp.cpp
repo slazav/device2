@@ -34,6 +34,8 @@ Driver_spp::read_spp(double timeout){
 
 
 Driver_spp::Driver_spp(const Opt & opts) {
+  opts.check_unknown({"prog", "open_timeout", "read_timeout", "errpref"});
+
   //prefix for error messages
   errpref = opts.get("errpref", "spp: ");
 

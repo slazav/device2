@@ -68,6 +68,17 @@ baud_to_mask(int b){
 }
 
 Driver_serial::Driver_serial(const Opt & opts) {
+  opts.check_unknown({"errpref","dev","ndelay",
+    "speed","ispeed","ospeed", // speed
+    "clocal","cread","crtscts","cs","cstopb","hup", "parenb","parodd","cmspar", //contol
+    "icrnl","inlcr","igncr","iuclc","iutf8","brkint","ignbrk","imaxbel",
+    "inpck","ignpar","istrip","parmrk","ixany","ixoff","ixon", // input
+    "bs","cr","ff","nl","tab","vt","ocrnl","onlcr","onlret","onocr",
+    "ofdel","ofill","olcuc","opost", // output
+    "echo","echoctl","echoe","echok","echoke","echonl","echoprt","extproc",
+    "flusho","icanon","iexten","isig","noflsh","tostop","xcase" // local
+    "parity","raw","sfc","nlcnv","lcase","timeout","vmin",
+    "delay","add_ch","trim_ch","ack_ch","nack_ch"});
   int ret;
 
   //prefix for error messages
