@@ -132,14 +132,14 @@ Device::ask(const uint64_t conn, const std::string & msg){
   if (log_bufs.size()==0) return drv->ask(msg);
 
   // do all logging (message, answer, errors)
-  log_message(">>", msg);
+  log_message(">> ", msg);
   try {
     auto ret = drv->ask(msg);
-    log_message("<<", ret);
+    log_message("<< ", ret);
     return ret;
   }
   catch (Err & e) {
-    log_message("EE", e.str());
+    log_message("EE ", e.str());
     throw;
   }
 }

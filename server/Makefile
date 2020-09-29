@@ -12,7 +12,8 @@ SIMPLE_TESTS := dev_manager drv_spp
 OTHER_TESTS := device_d.test1\
                device_d.test2\
                device_d.test3\
-               device_d.test4
+               device_d.test4\
+               device_d.test5
 
 # use C++14 for shared locks
 CXXFLAGS := -std=gnu++14
