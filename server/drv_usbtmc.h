@@ -13,7 +13,7 @@
 // in the message.
 // Options:
 //  -dev -- serial device filename (e.g. /dev/usbtmc0)
-//  -read_timeout -- timeout for reading, seconds (default - do not change)
+//  -timeout -- timeout for reading, seconds (default: do not change)
 //  -errpref -- error prefix (default "usbtmc: ")
 
 class Driver_usbtmc: public Driver {

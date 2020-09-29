@@ -14,6 +14,7 @@
 #include <cstring>
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
+  opts.check_unknown({"dev", "timeout", "errpref"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "usbtmc: ");
@@ -35,7 +36,7 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
 
   // set timeout (ms)
   if (opts.exists("timeout")) {
-    uint32_t v = opts.get<double>("read_timeout", 0)*1000; // convert to integer ms
+    uint32_t v = opts.get<double>("timeout", 0)*1000; // convert to integer ms
     ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
     if (ret<0) throw Err() << errpref
       << "can't set timeout: " << strerror(errno);
