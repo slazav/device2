@@ -22,7 +22,7 @@ Driver_serial::close() { serial.reset(); }
 std::string
 Driver_serial::ask(const std::string & msg) {
   if (!serial) throw Err() << "device is closed";
-  serial->write(msg);
+  serial->write(msg + "\n");
 
   // if we do not have '?' in the message
   // no answer is needed.
