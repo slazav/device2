@@ -55,8 +55,7 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     if (devices.count(arg) == 0)
       throw Err() << "unknown device: " << arg;
     Device & d = devices.find(arg)->second;
-    d.use(conn);
-    return d.ask(msg);
+    return d.ask(conn, msg);
   }
 
   // use/<name> -- notify server that device should be open

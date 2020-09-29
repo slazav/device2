@@ -35,6 +35,7 @@ Device::use(const uint64_t conn){
   if (locked) throw Err() << "device is locked";
   auto lk = get_lock();
   if (users.empty()) { // device needs to be opened
+    drv = Driver::create(drv_name, drv_args);
     drv->open();
     Log(2) << "conn:" << conn << " open device: " << dev_name;
   }
@@ -55,6 +56,7 @@ Device::release(const uint64_t conn){
   // if device is used by only this connection close it
   if (users.size()==1){
     drv->close();
+    drv.reset();
     Log(2) << "conn:" << conn << " close device: " << dev_name;
   }
   if (locked) locked = false;
@@ -121,7 +123,11 @@ Device::log_message(const std::string & pref, const std::string & msg){
 
 // Send message to the device, get answer
 std::string
-Device::ask(const std::string & msg){
+Device::ask(const uint64_t conn, const std::string & msg){
+
+  // open device if needed
+  if (users.count(conn)==0) use(conn);
+
   if (locked) throw Err() << "device is locked";
 
   // if no logging is needed just return answer

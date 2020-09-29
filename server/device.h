@@ -92,7 +92,7 @@ public:
   std::string log_get(const uint64_t conn);
 
   // Send message to the device, get answer
-  std::string ask(const std::string & msg);
+  std::string ask(const uint64_t conn, const std::string & msg);
 
   // Print device information: name, users, driver, driver arguments.
   std::string print(const uint64_t conn=0) const;
