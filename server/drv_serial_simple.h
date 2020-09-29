@@ -37,16 +37,17 @@ class Driver_serial_simple: public Driver_serial {
     o.put("parity", "8N1"); // character size, parity, stop bit
     o.put("cread",  1);     // always set cread=1
     o.put("clocal", 1);     // always set clocal=1
-    o.put("timeout", o.get("timeout", 5.0));     // default timeout
     o.put("vmin",   0); // should be set with timeout
     o.put("ndelay", 0); // should be set with timeout
     o.put("icrnl",  1); // convert CR->NL on input
-    o.put("sfc", o.get("sfc", 1)); // default software flow control
     o.put("raw",     1); // raw mode!
     o.put("delay", 0.1); // 100ms delay after write
     o.put("opost",   0); // no output postprocessing
     o.put("add_ch",  0x0A); // add NL to each sent message
     o.put("trim_ch", 0x0A); // trim NL from each recieved message
+    // set defaults (only it no values are set by user)
+    o.put_missing("timeout", 5.0); // default timeout
+    o.put_missing("sfc", 1);       // default software flow control
     return o;
   }
 public:

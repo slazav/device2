@@ -33,7 +33,6 @@ class Driver_serial_tenma_ps: public Driver_serial {
     o.put("parity", "8N1"); // character size, parity, stop bit
     o.put("cread",  1);     // always set cread=1
     o.put("clocal", 1);     // always set clocal=1
-    o.put("timeout", o.get("timeout", 5.0));     // default timeout
     o.put("vmin",   0); // should be set with timeout
     o.put("ndelay", 0); // should be set with timeout
     o.put("sfc",    1); // default software flow control
@@ -41,7 +40,10 @@ class Driver_serial_tenma_ps: public Driver_serial {
     o.put("delay",0.1); // 100ms delay after write
     o.put("opost",  1); // no output postprocessing, for case conversion
     o.put("olcuc",  1); // convert messages to upper case
-    o.put("errpref", o.get("errpref", "TenmaPS: ")); // change default error prefix
+    // set defaults (only it no values are set by user)
+    o.put_missing("timeout", 5.0);
+    o.put_missing("errpref", "TenmaPS: ");
+
     return o;
   }
 public:

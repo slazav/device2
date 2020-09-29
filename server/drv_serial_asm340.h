@@ -35,11 +35,9 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("parity", "8N1"); // character size, parity, stop bit
     o.put("cread",  1);     // always set cread=1
     o.put("clocal", 1);     // always set clocal=1
-    o.put("timeout", o.get("timeout", 5.0));     // default timeout
     o.put("vmin",   0); // should be set with timeout
     o.put("ndelay", 0); // should be set with timeout
     o.put("icrnl",  0); // do not convert CR->NL on input
-    o.put("sfc", o.get("sfc", 1)); // default software flow control
     o.put("raw", 1);     // raw mode!
     o.put("delay", 0.1); // 100ms delay after write
     o.put("opost", 0);   // no output postprocessing
@@ -47,8 +45,11 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("nack_ch", 0x15); // trim nack char, return communication errors
     o.put("add_ch",  0x0D); // add CR to each sent message
     o.put("trim_ch", 0x0D); // trim CR from each recieved message
-    o.put("errpref", o.get("errpref", "ASM340: ")); // change default error prefix
-    o.put("idn", o.get("idn", "Adixen ASM340 leak detector"));
+    // set defaults (only it no values are set by user)
+    o.put_missing("timeout", 5.0);
+    o.put_missing("sfc", 1);
+    o.put_missing("errpref", "ASM340: ");
+    o.put_missing("idn", "Adixen ASM340 leak detector");
     return o;
   }
 public:
