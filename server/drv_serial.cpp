@@ -71,7 +71,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   int ret;
 
   //prefix for error messages
-  errpref = opts.get("errpref", "Driver_serial: ");
+  errpref = opts.get("errpref", "serial: ");
 
   // open serial device
   std::string dev = opts.get("dev");
@@ -348,6 +348,9 @@ Driver_serial::Driver_serial(const Opt & opts) {
   ret=tcsetattr(fd, TCSANOW, &options);
   if (ret<0) throw Err() << errpref
     << "can't set serial port parameters: " << strerror(errno);
+
+  addnl = opts.get("addnl", true);
+  delay = opts.get("delay", 0.1);
 }
 
 
@@ -372,16 +375,25 @@ Driver_serial::write(const std::string & msg) {
   ssize_t ret = ::write(fd, msg.data(), msg.size());
   if (ret<0) throw Err() << errpref
     << "write error: " << strerror(errno);
+
+  if (addnl){
+    char c='\n';
+    ssize_t ret = ::write(fd, &c, 1);
+    if (ret<0) throw Err() << errpref
+      << "write error: " << strerror(errno);
+  }
+  usleep(delay*1e6);
 }
 
 std::string
 Driver_serial::ask(const std::string & msg) {
-  write(msg + "\n");
+  write(msg);
 
   // if we do not have '?' in the message
   // no answer is needed.
   if (msg.find('?') == std::string::npos)
     return std::string();
+
 
   return read();
 }

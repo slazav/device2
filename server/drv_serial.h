@@ -10,6 +10,9 @@
  *  stty(1), tcsetattr(3)
 
 Options:
+
+  Serial port setup.
+
   -dev <name>   -- Serial device filename (e.g. /dev/ttyUSB0)
                    Required.
 
@@ -117,12 +120,19 @@ Options:
   -vmin <N>    -- min number of characters [0..255]
                   Only valid in blocking, raw input mode (-raw=1 -ndelay=0).
 
-  -errpref     -- Prefix for error messages.
-                 Default: "IOSerial: "
+  Other settings:
+
+  -errpref <str> -- Prefix for error messages.
+                    Default: "serial: "
+
+  -addnl (1|0)   -- send messages with newline character at the end.
+                    Default: 1
+
+  -delay <val>   -- delay after write command, s.
+                    Default: 0.1
 
 Note that most options have no defaults: if such an option is not set
-then the setting is left untouched. Some settings are not controlled
-via options and done anyway.
+then the setting is left untouched.
 
 */
 
@@ -135,6 +145,8 @@ via options and done anyway.
 class Driver_serial: public Driver {
   int fd; // file descriptor
   std::string errpref;
+  bool addnl;
+  double delay;
 
 public:
 
