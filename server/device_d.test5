@@ -19,6 +19,7 @@ rm -f log.txt
 ####################
 # run the server
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 0 --dofork" "" 0
+usleep 10000
 
 
 a="$(echo -e '

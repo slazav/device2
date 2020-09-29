@@ -17,6 +17,7 @@ rm -f log.txt
 
 # run the server
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
+usleep 10000
 
 a=$(wget localhost:$port/ask/x/text -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: unknown device: x" 0

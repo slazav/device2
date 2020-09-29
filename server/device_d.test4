@@ -19,6 +19,7 @@ rm -f log.txt
 ####################
 # run the server (-v 3!)
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
+usleep 10000
 
 help=$(./device_c -h ||:)
 
@@ -69,6 +70,7 @@ assert_diff test_data/log2.txt log.txt
 ####################
 # run the server (-v 3!)
 assert_cmd "./device_d --port $port --pidfile pid.tmp --config test_data/n3.txt --logfile log.txt -v 0 --dofork" "" 0
+usleep 10000
 
 assert_cmd "./device_c $srv ask spptest error" "Error: some error" 1
 assert_cmd "./device_c $srv ask spptest test"  "Q: test" 0
