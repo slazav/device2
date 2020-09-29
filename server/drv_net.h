@@ -32,6 +32,7 @@ Options:
 */
 
 class Driver_net: public Driver {
+protected:
   int sockfd; // file descriptor for the network socket
   size_t bufsize;
   double timeout;
