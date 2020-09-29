@@ -130,19 +130,19 @@ Options:
 
   -add_ch <N>    -- Add character to each message sent to the device.
                     Note: using terminal setting -onlcr you can convert NL to NL+CR
-                    Default: '\n'
+                    Default: -1 (no adding)
 
   -trim_ch <N>   -- remove character from the end of recieved messages.
-                    Default: '\n'
+                    Default: -1 (no trimming)
 
 
   -ack_ch <N>    -- Some devices send ack/nack chars at the end of message.
                     This option set the ack char to trim it.
-                    Default: no ack char processing
+                    Default: -1 (no ack char processing)
 
   -nack_ch <N>   -- Some devices send ack/nack chars at the end of message.
                     This option set the nack char to trim it and return an error.
-                    Default: no nack char processing
+                    Default: -1 (no nack char processing)
 
 Note that most options have no defaults: if such an option is not set
 then the setting is left untouched.
