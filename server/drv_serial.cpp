@@ -349,8 +349,11 @@ Driver_serial::Driver_serial(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't set serial port parameters: " << strerror(errno);
 
-  addnl = opts.get("addnl", true);
-  delay = opts.get("delay", 0.1);
+  delay  = opts.get("delay",  0.1);
+  add    = opts.get("add_ch",  -1);
+  trim   = opts.get("trim_ch", -1);
+  ack    = opts.get("ack_ch",  -1);
+  nack   = opts.get("nack_ch", -1);
 }
 
 
@@ -367,21 +370,31 @@ Driver_serial::read() {
     << "read error: " << strerror(errno);
   if (ret==0) throw Err() << errpref
     << "read timeout";
+
+  // trim ack char
+  if (ack>0 && buf[ret-1]==ack) ret--;
+
+  // trim nack char, return error
+  if (nack>0 && buf[ret-1]==nack) {
+    ret--;
+    throw Err() << errpref << "communication error";
+  }
+
+  // trim trm_ch (NL, CR)
+  if (trim>0 && buf[ret-1]==trim) ret--;
   return std::string(buf, buf+ret);
 }
 
 void
 Driver_serial::write(const std::string & msg) {
-  ssize_t ret = ::write(fd, msg.data(), msg.size());
+
+  std::string m = msg;
+  if (add > 0) m+=(char)add;
+
+  ssize_t ret = ::write(fd, m.data(), m.size());
   if (ret<0) throw Err() << errpref
     << "write error: " << strerror(errno);
 
-  if (addnl){
-    char c='\n';
-    ssize_t ret = ::write(fd, &c, 1);
-    if (ret<0) throw Err() << errpref
-      << "write error: " << strerror(errno);
-  }
   usleep(delay*1e6);
 }
 
@@ -393,7 +406,6 @@ Driver_serial::ask(const std::string & msg) {
   // no answer is needed.
   if (msg.find('?') == std::string::npos)
     return std::string();
-
 
   return read();
 }

@@ -107,7 +107,7 @@ Options:
   -sfc (1|0)   -- Enable/disable software flow control (ixon ixof ixany)
                   Default: do not change.
 
-  -nlcnv (1|0) -- Enable/disable newline conversion (icrnl, onlcr)
+  -nlcnv (1|0) -- Enable/disable newline conversion NL->NL+CR, CR->NL (icrnl, onlcr)
                   opost should be enabled for onlcr?
 
   -lcase (1|0) -- Enable/disable upper to lower case conversion (iuclc, olcuc)
@@ -122,14 +122,27 @@ Options:
 
   Other settings:
 
+  -delay <val>   -- delay after write command, s.
+                    Default: 0.1
+
   -errpref <str> -- Prefix for error messages.
                     Default: "serial: "
 
-  -addnl (1|0)   -- send messages with newline character at the end.
-                    Default: 1
+  -add_ch <N>    -- Add character to each message sent to the device.
+                    Note: using terminal setting -onlcr you can convert NL to NL+CR
+                    Default: '\n'
 
-  -delay <val>   -- delay after write command, s.
-                    Default: 0.1
+  -trim_ch <N>   -- remove character from the end of recieved messages.
+                    Default: '\n'
+
+
+  -ack_ch <N>    -- Some devices send ack/nack chars at the end of message.
+                    This option set the ack char to trim it.
+                    Default: no ack char processing
+
+  -nack_ch <N>   -- Some devices send ack/nack chars at the end of message.
+                    This option set the nack char to trim it and return an error.
+                    Default: no nack char processing
 
 Note that most options have no defaults: if such an option is not set
 then the setting is left untouched.
@@ -145,7 +158,7 @@ then the setting is left untouched.
 class Driver_serial: public Driver {
   int fd; // file descriptor
   std::string errpref;
-  bool addnl;
+  int ack,nack,add,trim;
   double delay;
 
 public:
