@@ -15,6 +15,7 @@
 //  -open_timeout  -- timeout for opening
 //  -read_timeout  -- timeout for reading
 //  -errpref -- error prefix (default "spp: ")
+//  -idn     -- override output of *idn? command (default: do not override)
 
 class Driver_spp: public Driver {
   std::shared_ptr<IOFilter> flt;
@@ -23,6 +24,7 @@ class Driver_spp: public Driver {
   int ver; // protocol version
   double open_timeout, read_timeout;
   std::string errpref; // error prefix
+  std::string idn;
 
   // read SPP message until #OK or #Error line
   std::string read_spp(double timeout = -1);

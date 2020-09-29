@@ -14,10 +14,11 @@
 #include <cstring>
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
-  opts.check_unknown({"dev", "timeout", "errpref"});
+  opts.check_unknown({"dev", "timeout", "errpref", "idn"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "usbtmc: ");
+
 
   auto dev = opts.get("dev");
   if (dev == "") throw Err() << errpref
@@ -75,6 +76,7 @@ Driver_usbtmc::write(const std::string & msg) {
 
 std::string
 Driver_usbtmc::ask(const std::string & msg) {
+  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")) return idn;
   write(msg+'\n');
 
   // if we do not have '?' in the message

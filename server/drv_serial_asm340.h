@@ -10,24 +10,26 @@ Options:
 
   Serial port setup.
 
-  -dev <name>   -- Serial device filename (e.g. /dev/ttyUSB0)
-                   Required.
+  -dev <str>     -- Serial device filename (e.g. /dev/ttyUSB0)
+                    Required.
 
-  -timeout <v>  -- Read timeout, seconds [0 .. 25.5]
-                   Default: 5.0
+  -timeout <v>   -- Read timeout, seconds [0 .. 25.5]
+                    Default: 5.0
 
-  -sfc (0|1)    -- Software flow control (both 0 and 1 should work).
-                   Default: 1
+  -sfc (0|1)     -- Software flow control (both 0 and 1 should work).
+                    Default: 1
 
-  -errpref      -- error prefix (default "ASM340: ")
+  -errpref <str> -- error prefix (default "ASM340: ")
 
+  -idn <str>     -- override output of *idn? command
+                    Default: "Adixen ASM340 leak detector"
 */
 
 #include "drv_serial.h"
 
 class Driver_serial_asm340: public Driver_serial {
   Opt add_opts(const Opt & opts){
-    opts.check_unknown({"dev", "timeout", "sfc", "errpref"});
+    opts.check_unknown({"dev", "timeout", "sfc", "errpref", "idn"});
     Opt o(opts);
     o.put("speed",  9600);  // baud rate
     o.put("parity", "8N1"); // character size, parity, stop bit
@@ -46,6 +48,7 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("add_ch",  0x0D); // add CR to each sent message
     o.put("trim_ch", 0x0D); // trim CR from each recieved message
     o.put("errpref", o.get("errpref", "ASM340: ")); // change default error prefix
+    o.put("idn", o.get("idn", "Adixen ASM340 leak detector"));
     return o;
   }
 public:

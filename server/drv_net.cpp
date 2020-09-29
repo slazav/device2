@@ -14,7 +14,7 @@
 // based on the example in
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
 Driver_net::Driver_net(const Opt & opts) {
-  opts.check_unknown({"addr","port","timeout","bufsize","errpref",
+  opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn",
     "add_ch", "trim_ch"});
   int res;
 
@@ -55,14 +55,11 @@ Driver_net::Driver_net(const Opt & opts) {
   }
   freeaddrinfo(servinfo);
 
-  // set bufsize
   bufsize = opts.get("bufsize", 4096);
-
-  // set timeout
   timeout = opts.get("timeout", 5.0);
-
-  add    = opts.get("add_ch",  0xA);
-  trim   = opts.get("trim_ch", 0xA);
+  add     = opts.get("add_ch",  0xA);
+  trim    = opts.get("trim_ch", 0xA);
+  idn     = opts.get("idn", "");
 }
 
 Driver_net::~Driver_net() {
@@ -113,6 +110,9 @@ Driver_net::write(const std::string & msg) {
 
 std::string
 Driver_net::ask(const std::string & msg) {
+
+  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")) return idn;
+
   write(msg);
 
   // if we do not have '?' in the message

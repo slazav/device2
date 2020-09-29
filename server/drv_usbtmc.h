@@ -15,10 +15,13 @@
 //  -dev -- serial device filename (e.g. /dev/usbtmc0)
 //  -timeout -- timeout for reading, seconds (default: do not change)
 //  -errpref -- error prefix (default "usbtmc: ")
+//  -idn     -- override output of *idn? command (default: do not override)
+
 
 class Driver_usbtmc: public Driver {
   int fd;              // file descriptor
   std::string errpref; // error prefix
+  std::string idn;
 
 public:
   Driver_usbtmc(const Opt & opts);

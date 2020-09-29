@@ -18,13 +18,16 @@ Options:
 
   -errpref      -- error prefix (default "TenmaPS: ")
 
+  -idn <str>     -- override output of *idn? command
+                    Default: do not override.
+
 */
 
 #include "drv_serial.h"
 
 class Driver_serial_tenma_ps: public Driver_serial {
   Opt add_opts(const Opt & opts){
-    opts.check_unknown({"dev", "timeout", "errpref"});
+    opts.check_unknown({"dev", "timeout", "errpref", "idn"});
     Opt o(opts);
     o.put("speed",  9600);  // baud rate
     o.put("parity", "8N1"); // character size, parity, stop bit

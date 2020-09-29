@@ -68,7 +68,7 @@ baud_to_mask(int b){
 }
 
 Driver_serial::Driver_serial(const Opt & opts) {
-  opts.check_unknown({"errpref","dev","ndelay",
+  opts.check_unknown({"errpref","idn","dev","ndelay",
     "speed","ispeed","ospeed", // speed
     "clocal","cread","crtscts","cs","cstopb","hup", "parenb","parodd","cmspar", //contol
     "icrnl","inlcr","igncr","iuclc","iutf8","brkint","ignbrk","imaxbel",
@@ -365,6 +365,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   trim   = opts.get("trim_ch", -1);
   ack    = opts.get("ack_ch",  -1);
   nack   = opts.get("nack_ch", -1);
+  idn    = opts.get("idn", "");
 }
 
 
@@ -411,6 +412,9 @@ Driver_serial::write(const std::string & msg) {
 
 std::string
 Driver_serial::ask(const std::string & msg) {
+
+  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")) return idn;
+
   write(msg);
 
   // if we do not have '?' in the message

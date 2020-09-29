@@ -1,5 +1,6 @@
 #include "drv_spp.h"
 #include "err/err.h"
+#include <cstring> // strcasecmp
 
 std::string
 Driver_spp::read_spp(double timeout){
@@ -34,7 +35,7 @@ Driver_spp::read_spp(double timeout){
 
 
 Driver_spp::Driver_spp(const Opt & opts) {
-  opts.check_unknown({"prog", "open_timeout", "read_timeout", "errpref"});
+  opts.check_unknown({"prog", "open_timeout", "read_timeout", "errpref", "idn"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "spp: ");
@@ -71,6 +72,8 @@ Driver_spp::Driver_spp(const Opt & opts) {
     }
     throw;
   }
+  idn = opts.get("idn", "");
+
 }
 
 
@@ -99,6 +102,7 @@ Driver_spp::write(const std::string & msg) {
 
 std::string
 Driver_spp::ask(const std::string & msg) {
+  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")) return idn;
   write(msg);
   return read();
 }

@@ -22,6 +22,9 @@ Options:
 
   -errpref      -- error prefix (default "ASM340: ")
 
+  -idn <str>     -- override output of *idn? command
+                    Default: do not override.
+
 */
 
 #include "drv_serial.h"

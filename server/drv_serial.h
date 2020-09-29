@@ -128,6 +128,9 @@ Options:
   -errpref <str> -- Prefix for error messages.
                     Default: "serial: "
 
+  -idn <str>     -- Override output of *idn? command.
+                    Default: empty string, do not override.
+
   -add_ch <N>    -- Add character to each message sent to the device.
                     Note: using terminal setting -onlcr you can convert NL to NL+CR
                     Default: -1 (no adding)
@@ -157,7 +160,7 @@ then the setting is left untouched.
 
 class Driver_serial: public Driver {
   int fd; // file descriptor
-  std::string errpref;
+  std::string errpref, idn;
   int ack,nack,add,trim;
   double delay;
 
