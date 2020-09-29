@@ -36,7 +36,7 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("timeout", o.get("timeout", 5.0));     // default timeout
     o.put("vmin",   0); // should be set with timeout
     o.put("ndelay", 0); // should be set with timeout
-    o.put("icrnl",  0); // do not convert CR->NL on output
+    o.put("icrnl",  0); // do not convert CR->NL on input
     o.put("sfc", o.get("sfc", 1)); // default software flow control
     o.put("raw", 1);     // raw mode!
     o.put("delay", 0.1); // 100ms delay after write
