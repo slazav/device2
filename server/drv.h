@@ -16,6 +16,12 @@ public:
   static std::shared_ptr<Driver> create(
     const std::string & name, const Opt & args);
 
+  // read message from the device
+  virtual std::string read() = 0;
+
+  // write message to the device
+  virtual void write(const std::string & msg) = 0;
+
   // Send message to the device, get answer
   virtual std::string ask(const std::string & msg) = 0;
 

@@ -79,12 +79,24 @@ Driver_spp::~Driver_spp() {
   flt.reset();
 }
 
-
 std::string
-Driver_spp::ask(const std::string & msg) {
+Driver_spp::read() {
+  if (!flt) throw Err() << errpref
+    << "device is closed";
+  return read_spp(read_timeout);
+}
+
+void
+Driver_spp::write(const std::string & msg) {
   if (!flt) throw Err() << errpref
     << "device is closed";
   flt->ostream() << msg << "\n";
   flt->ostream().flush();
-  return read_spp(read_timeout);
+}
+
+
+std::string
+Driver_spp::ask(const std::string & msg) {
+  write(msg);
+  return read();
 }

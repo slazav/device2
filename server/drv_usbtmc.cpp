@@ -47,24 +47,10 @@ Driver_usbtmc::~Driver_usbtmc() {
   ::close(fd);
 }
 
-
 std::string
-Driver_usbtmc::ask(const std::string & msg) {
-  if (msg.size()==0) return "";
-  // add '\n' if needed
-  std::string m = msg;
-  if (msg[msg.size()-1]!='\n') m+='\n';
-  ssize_t ret = write(fd, m.data(), m.size());
-  if (ret<0) throw Err() << errpref
-    << "write error: " << strerror(errno);
-
-  // if we do not have '?' in the message
-  // no answer is needed.
-  if (msg.find('?') == std::string::npos)
-    return std::string();
-
+Driver_usbtmc::read() {
   char buf[4096];
-  ret = read(fd,buf,sizeof(buf));
+  auto ret = ::read(fd,buf,sizeof(buf));
   if (ret<0){
     auto en = errno;
     // Recover from timeout.
@@ -74,7 +60,28 @@ Driver_usbtmc::ask(const std::string & msg) {
     throw Err() << errpref
       << "read error: " << strerror(en);
   }
-  // remove '\n' is needed
+  // remove '\n' if needed
   if (buf[ret-1]=='\n') ret--;
   return std::string(buf, buf+ret);
 }
+
+void
+Driver_usbtmc::write(const std::string & msg) {
+  auto ret = ::write(fd, msg.data(), msg.size());
+  if (ret<0) throw Err() << errpref
+    << "write error: " << strerror(errno);
+}
+
+std::string
+Driver_usbtmc::ask(const std::string & msg) {
+  write(msg+'\n');
+
+  // if we do not have '?' in the message
+  // no answer is needed.
+  if (msg.find('?') == std::string::npos)
+    return std::string();
+
+  return read();
+}
+
+

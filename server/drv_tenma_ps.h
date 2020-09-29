@@ -26,6 +26,9 @@ public:
 
   Driver_tenma_ps(const Opt & opts);
   ~Driver_tenma_ps();
+
+  std::string read() override;
+  void write(const std::string & msg) override;
   std::string ask(const std::string & msg) override;
 };
 

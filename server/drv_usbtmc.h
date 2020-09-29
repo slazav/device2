@@ -23,6 +23,9 @@ class Driver_usbtmc: public Driver {
 public:
   Driver_usbtmc(const Opt & opts);
   ~Driver_usbtmc();
+
+  std::string read() override;
+  void write(const std::string & msg) override;
   std::string ask(const std::string & msg) override;
 };
 

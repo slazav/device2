@@ -38,34 +38,46 @@ Driver_tenma_ps::~Driver_tenma_ps() {
   ::close(fd);
 }
 
-
 std::string
-Driver_tenma_ps::ask(const std::string & msg) {
+Driver_tenma_ps::read() {
+  char buf[4096];
+  auto ret = ::read(fd,buf,sizeof(buf));
+  if (ret<0) throw Err() << errpref
+    << "read error: " << strerror(errno);
 
+  return std::string(buf, buf+ret);
+}
+
+void
+Driver_tenma_ps::write(const std::string & msg){
   // to upper case
   std::string m(msg);
   std::transform(m.begin(),m.end(),m.begin(),::toupper);
 
-  ssize_t ret = write(fd, m.data(), m.size());
+  auto ret = ::write(fd, m.data(), m.size());
   if (ret<0) throw Err() << errpref
     << "write error: " << strerror(errno);
 
   // delay is needed after writing
   usleep(del);
+}
+
+
+std::string
+Driver_tenma_ps::ask(const std::string & msg) {
+  write(msg); // no newline!
 
   // if we do not have '?' in the message
   // no answer is needed.
   if (msg.find('?') == std::string::npos)
     return std::string();
 
-  char buf[4096];
-  ret = read(fd,buf,sizeof(buf));
-  if (ret<0) throw Err() << errpref
-    << "read error: " << strerror(errno);
+  auto ret = read();
 
   // convert binary status byte to a number
-  if (msg == "STATUS?" && ret>0) {
-    return type_to_str((int)buf[0]);
+  if (msg == "STATUS?" && ret.size()>0) {
+    return type_to_str((int)ret[0]);
   }
-  return std::string(buf, buf+ret);
+
+  return ret;
 }
