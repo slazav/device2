@@ -13,7 +13,7 @@
 // strerror
 #include <cstring>
 
-Driver_usbtmc::Driver_usbtmc(const Opt & opts): Driver(opts) {
+Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   dev = opts.get("dev");
   read_timeout = opts.get<double>("read_timeout", 0);
   if (dev == "") throw Err() << "Parameter -dev is empty or missing";

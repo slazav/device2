@@ -9,10 +9,6 @@
 // base class
 
 class Driver {
-protected:
-  Opt opts;
-  Driver(const Opt & opts): opts(opts) {}
-
 public:
   // Create and return a device driver (static function).
   // Parameter `args` contains parameters from the configuration file.

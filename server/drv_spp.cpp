@@ -33,7 +33,7 @@ Driver_spp::read_spp(double timeout){
 }
 
 
-Driver_spp::Driver_spp(const Opt & opts): Driver(opts) {
+Driver_spp::Driver_spp(const Opt & opts) {
   prog = opts.get("prog");
   open_timeout = opts.get<double>("open_timeout", 20.0);
   read_timeout = opts.get<double>("read_timeout", 5.0);

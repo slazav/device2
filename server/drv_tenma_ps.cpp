@@ -11,7 +11,7 @@
 #include <cstring>
 
 
-Driver_tenma_ps::Driver_tenma_ps(const Opt & opts): Driver(opts) {
+Driver_tenma_ps::Driver_tenma_ps(const Opt & opts) {
   dev = opts.get("dev");
   if (dev == "") throw Err() << "Parameter -dev is empty or missing";
   del=250000; // 0.25s

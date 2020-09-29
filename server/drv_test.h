@@ -13,7 +13,7 @@
 class Driver_test: public Driver {
   bool opened;
 public:
-  Driver_test(const Opt & opts): Driver(opts) {}
+  Driver_test(const Opt & opts) {}
   void open()  override {opened=true;}
   void close() override {opened=false;}
   std::string ask(const std::string & msg) override {
