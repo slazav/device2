@@ -67,10 +67,6 @@ main(){
       "bad configuration file test_data/e1.txt at line 1: "
       "expected: <device name> <driver name> [-<parameter> <value>]");
 
-    assert_err(dm.read_conf("test_data/e2.txt"),
-      "bad configuration file test_data/e2.txt at line 1: "
-      "unknown driver: b");
-
     assert_err(dm.read_conf("test_data/e3.txt"),
       "bad configuration file test_data/e3.txt at line 2: "
       "even-size list of [-<parameter> <value>] pairs expected");

@@ -11,7 +11,6 @@
 Device::Device( const std::string & dev_name,
         const std::string & drv_name,
         const Opt & drv_args):
-  drv(Driver::create(drv_name, drv_args)),
   dev_name(dev_name),
   drv_name(drv_name),
   drv_args(drv_args),
