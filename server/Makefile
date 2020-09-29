@@ -3,7 +3,7 @@ PROGRAMS := device_d device_c
 MOD_HEADERS := http_server.h dev_manager.h device.h\
                drv.h drv_spp.h drv_test.h drv_usbtmc.h\
                drv_serial.h drv_net.h\
-               drv_serial_tenma_ps.h drv_serial_asm340.h
+               drv_serial_tenma_ps.h drv_serial_asm340.h drv_serial_simple.h
 
 MOD_SOURCES := http_server.cpp dev_manager.cpp device.cpp\
                drv.cpp drv_spp.cpp drv_usbtmc.cpp\

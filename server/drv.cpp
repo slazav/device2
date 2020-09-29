@@ -6,6 +6,7 @@
 #include "drv_serial.h"
 #include "drv_serial_asm340.h"
 #include "drv_serial_tenma_ps.h"
+#include "drv_serial_simple.h"
 
 std::shared_ptr<Driver>
 Driver::create(const std::string & name, const Opt & args){
@@ -15,6 +16,7 @@ Driver::create(const std::string & name, const Opt & args){
   if (name == "serial")          return std::shared_ptr<Driver>(new Driver_serial(args));
   if (name == "serial_asm340")   return std::shared_ptr<Driver>(new Driver_serial_asm340(args));
   if (name == "serial_tenma_ps") return std::shared_ptr<Driver>(new Driver_serial_tenma_ps(args));
+  if (name == "serial_simple")   return std::shared_ptr<Driver>(new Driver_serial_simple(args));
   if (name == "net")             return std::shared_ptr<Driver>(new Driver_net(args));
   throw Err() << "unknown driver: " << name;
 }
