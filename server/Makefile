@@ -2,11 +2,11 @@ PROGRAMS := device_d device_c
 
 MOD_HEADERS := http_server.h dev_manager.h device.h\
                drv.h drv_spp.h drv_tenma_ps.h drv_test.h drv_usbtmc.h\
-               drv_serial.h drv_net.h io_serial.h io_net.h
+               drv_serial.h drv_net.h
 
 MOD_SOURCES := http_server.cpp dev_manager.cpp device.cpp\
                drv.cpp drv_spp.cpp drv_tenma_ps.cpp drv_usbtmc.cpp\
-               drv_serial.cpp drv_net.cpp io_serial.cpp io_net.cpp
+               drv_serial.cpp drv_net.cpp
 
 SIMPLE_TESTS := dev_manager drv_spp
 OTHER_TESTS := device_d.test1\
