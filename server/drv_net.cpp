@@ -14,7 +14,8 @@
 // based on the example in
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
 Driver_net::Driver_net(const Opt & opts) {
-  opts.check_unknown({"addr","port","timeout","bufsize","errpref"});
+  opts.check_unknown({"addr","port","timeout","bufsize","errpref",
+    "add_ch", "trim_ch"});
   int res;
 
   //prefix for error messages
@@ -25,9 +26,7 @@ Driver_net::Driver_net(const Opt & opts) {
   if (addr == "") throw Err() << errpref
     << "Parameter -addr is empty or missing";
 
-  std::string port = opts.get("port", "");
-  if (port == "") throw Err() << errpref
-    << "Parameter -port is empty or missing";
+  std::string port = opts.get("port", "5025");
 
   errpref += addr + ":" + port + ": ";
 
@@ -62,6 +61,8 @@ Driver_net::Driver_net(const Opt & opts) {
   // set timeout
   timeout = opts.get("timeout", 5.0);
 
+  add    = opts.get("add_ch",  0xA);
+  trim   = opts.get("trim_ch", 0xA);
 }
 
 Driver_net::~Driver_net() {
@@ -91,15 +92,23 @@ Driver_net::read() {
   // Read data
   int fl=0;
   ssize_t ret = ::recv(sockfd, buf, sizeof(buf), fl);
-  if (ret<0) throw Err() << errpref << "read error: " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "read error: " << strerror(errno);
+
+  if (trim>0 && buf[ret-1]==trim) ret--;
   return std::string(buf, buf+ret);
 }
 
 void
 Driver_net::write(const std::string & msg) {
+
+  std::string m = msg;
+  if (add > 0) m+=(char)add;
+
   int fl = MSG_NOSIGNAL;
-  ssize_t ret = ::send(sockfd, msg.data(), msg.size(), fl);
-  if (ret<0) throw Err() << errpref << "write error: " << strerror(errno);
+  ssize_t ret = ::send(sockfd, m.data(), m.size(), fl);
+  if (ret<0) throw Err() << errpref
+    << "write error: " << strerror(errno);
 }
 
 std::string
