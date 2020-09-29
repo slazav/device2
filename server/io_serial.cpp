@@ -12,6 +12,60 @@
 #include <cstring>
 
 
+// If option "oname" exists, use its bool value
+// to set par bits according to the mask.
+void
+set_opt(const Opt & opts,
+        const std::string & oname,
+        unsigned int * par, const unsigned int mask){
+
+  if (opts.exists(oname)){
+    if (opts.get(oname, true)) *par |= mask;
+    else *par &= ~mask;
+  }
+}
+
+// convert integer baud rate to mask.
+// return -1 on error
+int
+baud_to_mask(int b){
+  switch (b) {
+    case     0: return B0;
+    case    50: return B50;
+    case    75: return B75;
+    case   110: return B110;
+    case   134: return B134;
+    case   150: return B150;
+    case   200: return B200;
+    case   300: return B300;
+    case   600: return B600;
+    case  1200: return B1200;
+    case  1800: return B1800;
+    case  2400: return B2400;
+    case  4800: return B4800;
+    case  9600: return B9600;
+    case 19200: return B19200;
+    case 38400: return B38400;
+    // Extra output baud rates (not in POSIX)
+    case 57600: return B57600;
+    case 115200: return B115200;
+    case 230400: return B230400;
+    case 460800: return B460800;
+    case 500000: return B500000;
+    case 576000: return B576000;
+    case 921600: return B921600;
+    case 1000000: return B1000000;
+    case 1152000: return B1152000;
+    case 1500000: return B1500000;
+    case 2000000: return B2000000;
+    case 2500000: return B2500000;
+    case 3000000: return B3000000;
+    case 3500000: return B3500000;
+    case 4000000: return B4000000;
+  }
+  return -1;
+}
+
 IOSerial::IOSerial(const Opt & opts) {
   int ret;
 
@@ -43,51 +97,185 @@ IOSerial::IOSerial(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't get serial port parameters: " << strerror(errno);
 
-  // set CLOCAL+CREAD flags
-  options.c_cflag |= CLOCAL|CREAD;
+  // baud rate
 
-  // set speed (should be done with cfset([io]?)speed)
-  if (opts.exists("baud")){
-    int pbaud = 0; // convert to posix mask
-    switch (opts.get<int>("baud", 9600)) {
-      case     0: pbaud =     B0; break;
-      case    50: pbaud =    B50; break;
-      case    75: pbaud =    B75; break;
-      case   110: pbaud =   B110; break;
-      case   134: pbaud =   B134; break;
-      case   150: pbaud =   B150; break;
-      case   200: pbaud =   B200; break;
-      case   300: pbaud =   B300; break;
-      case   600: pbaud =   B600; break;
-      case  1200: pbaud =  B1200; break;
-      case  1800: pbaud =  B1800; break;
-      case  2400: pbaud =  B2400; break;
-      case  4800: pbaud =  B4800; break;
-      case  9600: pbaud =  B9600; break;
-      case 19200: pbaud = B19200; break;
-      case 38400: pbaud = B38400; break;
-      // Extra output baud rates (not in POSIX)
-      case 57600: pbaud = B57600; break;
-      case 115200: pbaud = B115200; break;
-      case 230400: pbaud = B230400; break;
-      case 460800: pbaud = B460800; break;
-      case 500000: pbaud = B500000; break;
-      case 576000: pbaud = B576000; break;
-      case 921600: pbaud = B921600; break;
-      case 1000000: pbaud = B1000000; break;
-      case 1152000: pbaud = B1152000; break;
-      case 1500000: pbaud = B1500000; break;
-      case 2000000: pbaud = B2000000; break;
-      case 2500000: pbaud = B2500000; break;
-      case 3000000: pbaud = B3000000; break;
-      case 3500000: pbaud = B3500000; break;
-      case 4000000: pbaud = B4000000; break;
-      default: throw Err()
+  // set speed
+  if (opts.exists("speed")){
+    int pbaud = baud_to_mask(opts.get<int>("speed", -1));
+    if (pbaud==-1) throw Err()
         << errpref << "unknown baud setting: "
         << opts.get("baud");
-    }
     cfsetspeed(&options, pbaud);
   }
+
+  // set input speed
+  if (opts.exists("ispeed")){
+    int pbaud = baud_to_mask(opts.get<int>("ispeed", -1));
+    if (pbaud==-1) throw Err()
+        << errpref << "unknown baud setting: "
+        << opts.get("baud");
+    cfsetispeed(&options, pbaud);
+  }
+
+  // set output speed
+  if (opts.exists("ospeed")){
+    int pbaud = baud_to_mask(opts.get<int>("ospeed", -1));
+    if (pbaud==-1) throw Err()
+        << errpref << "unknown baud setting: "
+        << opts.get("baud");
+    cfsetospeed(&options, pbaud);
+  }
+
+  // control options
+
+  set_opt(opts, "clocal",  &options.c_cflag, CLOCAL);
+  set_opt(opts, "cread",   &options.c_cflag, CREAD);
+  set_opt(opts, "crtscts", &options.c_cflag, CRTSCTS);
+
+  if (opts.exists("cs")){
+    int v=0;
+    switch (opts.get("cs", 0)){
+      case 5:  v=CS5; break;
+      case 6:  v=CS6; break;
+      case 7:  v=CS7; break;
+      case 8:  v=CS8; break;
+      default: throw Err() << errpref
+        << "character size should be in [5..8]: " << opts.get("cs");
+    }
+    options.c_cflag &= ~CSIZE;
+    options.c_cflag |= v;
+  }
+  set_opt(opts, "cstopb", &options.c_cflag, CSTOPB);
+  set_opt(opts, "hup",    &options.c_cflag, HUPCL);
+  set_opt(opts, "parenb", &options.c_cflag, PARENB);
+  set_opt(opts, "parodd", &options.c_cflag, PARODD);
+  set_opt(opts, "cmspar", &options.c_cflag, CMSPAR);
+
+  // input settings
+
+  set_opt(opts, "icrnl",  &options.c_iflag, ICRNL);
+  set_opt(opts, "inlcr",  &options.c_iflag, INLCR);
+  set_opt(opts, "igncr",  &options.c_iflag, IGNCR);
+  set_opt(opts, "iuclc",  &options.c_iflag, IUCLC);
+  set_opt(opts, "iutf8",  &options.c_iflag, IUTF8);
+  set_opt(opts, "brkint", &options.c_iflag, BRKINT);
+  set_opt(opts, "ignbrk", &options.c_iflag, IGNBRK);
+  set_opt(opts, "imaxbel",&options.c_iflag, IMAXBEL);
+  set_opt(opts, "inpck",  &options.c_iflag, INPCK);
+  set_opt(opts, "ignpar", &options.c_iflag, IGNPAR);
+  set_opt(opts, "istrip", &options.c_iflag, ISTRIP);
+  set_opt(opts, "parmrk", &options.c_iflag, PARMRK);
+  set_opt(opts, "ixany",  &options.c_iflag, IXANY);
+  set_opt(opts, "ixoff",  &options.c_iflag, IXOFF);
+  set_opt(opts, "ixon",   &options.c_iflag, IXON);
+
+
+  // Output settins
+
+  if (opts.exists("bs")){
+    int v = 0;
+    switch (opts.get("bs", -1)){
+      case 0: v = BS0; break;
+      case 1: v = BS1; break;
+      default: throw Err() << errpref
+        << "backspace delay style should be in [0..1]: " << opts.get("bs");
+    }
+    options.c_oflag &= ~BSDLY;
+    options.c_oflag |= v;
+  }
+
+  if (opts.exists("cr")){
+    int v = 0;
+    switch (opts.get("cr", -1)){
+      case 0: v = CR0; break;
+      case 1: v = CR1; break;
+      case 2: v = CR2; break;
+      case 3: v = CR3; break;
+      default: throw Err() << errpref
+        << "carriage return delay style should be in [0..3]: " << opts.get("cr");
+    }
+    options.c_oflag &= ~CRDLY;
+    options.c_oflag |= v;
+  }
+
+  if (opts.exists("ff")){
+    int v = 0;
+    switch (opts.get("ff", -1)){
+      case 0: v = FF0; break;
+      case 1: v = FF1; break;
+      default: throw Err() << errpref
+        << "form feed style should be in [0..1]: " << opts.get("ff");
+    }
+    options.c_oflag &= ~FFDLY;
+    options.c_oflag |= v;
+  }
+
+  if (opts.exists("nl")){
+    int v = 0;
+    switch (opts.get("nl", -1)){
+      case 0:  v = NL0; break;
+      case 1:  v = NL1; break;
+      default: throw Err() << errpref
+        << "newline delay style should be in [0..1]: " << opts.get("nl");
+    }
+    options.c_oflag &= ~NLDLY;
+    options.c_oflag |= v;
+  }
+
+  if (opts.exists("tab")){
+    int v = 0;
+    switch (opts.get("tab", -1)){
+      case 0: v = TAB0; break;
+      case 1: v = TAB1; break;
+      case 2: v = TAB2; break;
+      case 3: v = TAB3; break;
+      default: throw Err() << errpref
+        << "tab delay style should be in [0..3]: " << opts.get("tab");
+    }
+    options.c_oflag &= ~TABDLY;
+    options.c_oflag |= v;
+  }
+
+  if (opts.exists("vt")){
+    int v = 0;
+    switch (opts.get("vt", -1)){
+      case 0:  v = VT0; break;
+      case 1:  v = VT1; break;
+      default: throw Err() << errpref
+        << "vertical tab delay style should be in [0..1]: " << opts.get("vt");
+    }
+    options.c_oflag &= ~VTDLY;
+    options.c_oflag |= v;
+  }
+
+  set_opt(opts, "ocrnl",  &options.c_oflag, OCRNL);
+  set_opt(opts, "onlcr",  &options.c_oflag, ONLCR);
+  set_opt(opts, "onlret", &options.c_oflag, ONLRET);
+  set_opt(opts, "onocr",  &options.c_oflag, ONOCR);
+  set_opt(opts, "ofdel",  &options.c_oflag, OFDEL);
+  set_opt(opts, "ofill",  &options.c_oflag, OFILL);
+  set_opt(opts, "olcuc",  &options.c_oflag, OLCUC);
+  set_opt(opts, "opost",  &options.c_oflag, OPOST);
+
+  // Local settings
+
+  set_opt(opts, "echo",    &options.c_lflag, ECHO);
+  set_opt(opts, "echoctl", &options.c_lflag, ECHOCTL);
+  set_opt(opts, "echoe",   &options.c_lflag, ECHOE);
+  set_opt(opts, "echok",   &options.c_lflag, ECHOK);
+  set_opt(opts, "echoke",  &options.c_lflag, ECHOKE);
+  set_opt(opts, "echonl",  &options.c_lflag, ECHONL);
+  set_opt(opts, "echoprt", &options.c_lflag, ECHOPRT);
+  set_opt(opts, "extproc", &options.c_lflag, EXTPROC);
+  set_opt(opts, "flusho",  &options.c_lflag, FLUSHO);
+  set_opt(opts, "icanon",  &options.c_lflag, ICANON);
+  set_opt(opts, "iexten",  &options.c_lflag, IEXTEN);
+  set_opt(opts, "isig",    &options.c_lflag, ISIG);
+  set_opt(opts, "noflsh",  &options.c_lflag, NOFLSH);
+  set_opt(opts, "tostop",  &options.c_lflag, TOSTOP);
+  set_opt(opts, "xcase",   &options.c_lflag, XCASE);
+
+  // combination settings
 
   // set parity
   if (opts.exists("parity")){
@@ -116,7 +304,6 @@ IOSerial::IOSerial(const Opt & opts) {
      << "unknown parity setting "
      << "(expected 8N1, 7E1, 7O1, or 7S1): " << par;
   }
-
   // enable parity checking and stripping of the parity bit
   if (options.c_cflag & PARENB)
     options.c_iflag |= (INPCK | ISTRIP);
@@ -130,33 +317,36 @@ IOSerial::IOSerial(const Opt & opts) {
   }
 
   // software flow control
-  if (opts.exists("sfc")){
-    if (opts.get("sfc", true))
-      options.c_iflag |= (IXON | IXOFF | IXANY);
-    else
-      options.c_iflag &= ~(IXON | IXOFF | IXANY);
-  }
+  set_opt(opts, "sfc", &options.c_iflag, IXON | IXOFF | IXANY);
 
-  // raw output
-  // todo: toupper, cr-nl conversions
-  options.c_oflag &= ~OPOST;
+  // nl conversion
+  set_opt(opts, "nlcnv", &options.c_iflag, ICRNL);
+  set_opt(opts, "nlcnv", &options.c_oflag, ONLCR);
+
+  // case conversion
+  set_opt(opts, "lcase", &options.c_iflag, IUCLC);
+  set_opt(opts, "lcase", &options.c_oflag, OLCUC);
 
   // set timeout
   if (opts.exists("timeout")){
     double timeout = opts.get<double>("timeout", 5.0);
     if (timeout < 0 || timeout > 25.5)
       throw Err() << errpref << "timeout 0..25.5 s expected";
-    options.c_cc[VMIN]  = 0;
     options.c_cc[VTIME] = timeout*10; // convert to 1/10 of seconds
   }
 
-  // set parameters
+  // set vmin
+  if (opts.exists("vmin")){
+    int v = opts.get<>("vmin", 0);
+    if (v < 0 || v > 255)
+      throw Err() << errpref << "vmin should be in [0..255]";
+    options.c_cc[VMIN]  = v;
+  }
+
+  // write parameters
   ret=tcsetattr(fd, TCSANOW, &options);
   if (ret<0) throw Err() << errpref
     << "can't set serial port parameters: " << strerror(errno);
-
-  // set bufsize
-  bufsize = opts.get("bufsize", 4096);
 }
 
 
@@ -167,10 +357,12 @@ IOSerial::~IOSerial() {
 
 std::string
 IOSerial::read() {
-  char buf[bufsize];
+  char buf[4096]; // limit of the serial driver
   ssize_t ret = ::read(fd,buf,sizeof(buf));
   if (ret<0) throw Err() << errpref
     << "read error: " << strerror(errno);
+  if (ret==0) throw Err() << errpref
+    << "read timeout";
   return std::string(buf, buf+ret);
 }
 
