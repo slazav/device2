@@ -1,0 +1,58 @@
+#ifndef DRV_SERIAL_VS_LD_H
+#define DRV_SERIAL_VS_LD_H
+
+/*************************************************/
+/*
+ * Driver for Agilent VS leak detector.
+ * Use null-modem cable/adapter!
+ *
+ * Driver is not tested and probably not working!
+ * It was some non-trivial problems with echo and with
+ * detecting communication errors.
+ *
+
+Options:
+
+  Serial port setup.
+
+  -dev <str>     -- Serial device filename (e.g. /dev/ttyUSB0)
+                    Required.
+
+  -timeout <v>   -- Read timeout, seconds [0 .. 25.5]
+                    Default: 5.0
+
+  -errpref <str> -- error prefix (default "Agilent VS: ")
+
+  -idn <str>     -- override output of *idn? command
+                    Default: "Agilent VS leak detector"
+*/
+
+#include "drv_serial.h"
+
+class Driver_serial_vs_ld: public Driver_serial {
+  Opt add_opts(const Opt & opts){
+    opts.check_unknown({"dev", "timeout", "sfc", "errpref", "idn"});
+    Opt o(opts);
+    o.put("speed",  9600);  // baud rate
+    o.put("parity", "8N1"); // character size, parity, stop bit
+    o.put("cread",  1);     // always set cread=1
+    o.put("clocal", 1);     // always set clocal=1
+    o.put("vmin",   0);  // should be set with timeout
+    o.put("ndelay", 0);  // should be set with timeout
+    o.put("sfc",    0);  // software flow control
+    o.put("raw",    1);  // raw mode!
+    o.put("delay", 0.1); // 100ms delay after write
+    o.put("opost", 0);   // no output postprocessing
+    o.put("add_ch",  0xA); // add NL to each sent message
+    o.put("trim_ch", 0xA); // trim NL from each recieved message
+    // set defaults (only it no values are set by user)
+    o.put_missing("timeout", 5.0);
+    o.put_missing("errpref", "Agilent VS: ");
+    o.put_missing("idn", "Agilent VS leak detector");
+    return o;
+  }
+public:
+  Driver_serial_vs_ld(const Opt & opts): Driver_serial(add_opts(opts)){}
+};
+
+#endif

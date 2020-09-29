@@ -6,6 +6,7 @@
 #include "drv_net_gpib_prologix.h"
 #include "drv_serial.h"
 #include "drv_serial_asm340.h"
+#include "drv_serial_vs_ld.h"
 #include "drv_serial_tenma_ps.h"
 #include "drv_serial_simple.h"
 
@@ -26,6 +27,9 @@ Driver::create(const std::string & name, const Opt & args){
 
   if (name == "serial_asm340")
     return std::shared_ptr<Driver>(new Driver_serial_asm340(args));
+
+  if (name == "serial_vs_ld")
+    return std::shared_ptr<Driver>(new Driver_serial_vs_ld(args));
 
   if (name == "serial_tenma_ps")
     return std::shared_ptr<Driver>(new Driver_serial_tenma_ps(args));
