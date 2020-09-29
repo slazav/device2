@@ -14,6 +14,7 @@
 //  -prog          -- program name
 //  -open_timeout  -- timeout for opening
 //  -read_timeout  -- timeout for reading
+//  -errpref -- error prefix (default "spp: ")
 
 class Driver_spp: public Driver {
   std::shared_ptr<IOFilter> flt;
@@ -21,6 +22,7 @@ class Driver_spp: public Driver {
   char ch; // protocol special character
   int ver; // protocol version
   double open_timeout, read_timeout;
+  std::string errpref; // error prefix
 
   // read SPP message until #OK or #Error line
   std::string read_spp(double timeout = -1);
@@ -28,8 +30,7 @@ class Driver_spp: public Driver {
 public:
 
   Driver_spp(const Opt & opts);
-  void open() override;
-  void close() override;
+  ~Driver_spp();
   std::string ask(const std::string & msg) override;
 };
 

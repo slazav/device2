@@ -3,22 +3,6 @@
 
 #include "drv.h"
 
-//#include <string>
-//#include <map>
-//#include <memory>
-//#include <cstring>
-
-//#include "log/log.h"
-//#include "opt/opt.h"
-//#include "iofilter/iofilter.h"
-
-//#include "tmc.h"
-//#include <unistd.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <sys/ioctl.h>
-//#include <fcntl.h>
-
 /*************************************************/
 // usbtmc driver
 // This driver supports devices connected via usbtmc kernel driver.
@@ -29,17 +13,16 @@
 // in the message.
 // Options:
 //  -dev -- serial device filename (e.g. /dev/usbtmc0)
-//  -read_timeout  -- timeout for reading, seconds (default 0 - do not change)
+//  -read_timeout -- timeout for reading, seconds (default - do not change)
+//  -errpref -- error prefix (default "usbtmc: ")
 
 class Driver_usbtmc: public Driver {
-  std::string dev; // serial device name
-  int fd;          // file descriptor
-  double read_timeout; // read timeout, s
+  int fd;              // file descriptor
+  std::string errpref; // error prefix
 
 public:
   Driver_usbtmc(const Opt & opts);
-  void open() override;
-  void close() override;
+  ~Driver_usbtmc();
   std::string ask(const std::string & msg) override;
 };
 

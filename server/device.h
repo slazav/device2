@@ -19,7 +19,7 @@
 
 class Device {
 
-  // Device driver
+  // Device driver (non-null if device is in use)
   std::shared_ptr<Driver> drv;
 
   // Connections which use the device

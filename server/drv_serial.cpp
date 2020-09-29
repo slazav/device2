@@ -11,13 +11,11 @@
 // strerror
 #include <cstring>
 
-Driver_serial::Driver_serial(const Opt & opts): opts(opts) {}
+Driver_serial::Driver_serial(const Opt & opts): opts(opts) {
+  serial.reset(new IOSerial(opts));
+}
 
-void
-Driver_serial::open() { serial.reset(new IOSerial(opts)); }
-
-void
-Driver_serial::close() { serial.reset(); }
+Driver_serial::~Driver_serial() { serial.reset(); }
 
 std::string
 Driver_serial::ask(const std::string & msg) {

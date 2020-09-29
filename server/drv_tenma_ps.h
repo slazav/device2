@@ -11,21 +11,21 @@
 // specific delays and without newline characters.
 // Options:
 //  -dev -- serial device filename (e.g. /dev/ttyACM0)
+//  -errpref -- error prefix (default "tenma_ps: ")
 //
 // See:
 // https://sigrok.org/wiki/Korad_KAxxxxP_series
 // https://sigrok.org/gitweb/?p=libsigrok.git (src/hardware /korad-kaxxxxp/)
 
 class Driver_tenma_ps: public Driver {
-  std::string dev; // serial device name
   int fd;          // file descriptor
   int del;         // delay between write and read, us
+  std::string errpref; // error prefix
 
 public:
 
   Driver_tenma_ps(const Opt & opts);
-  void open() override;
-  void close() override;
+  ~Driver_tenma_ps();
   std::string ask(const std::string & msg) override;
 };
 

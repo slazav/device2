@@ -16,12 +16,6 @@ public:
   static std::shared_ptr<Driver> create(
     const std::string & name, const Opt & args);
 
-  // Open device.
-  virtual void open() = 0;
-
-  // Close device.
-  virtual void close() = 0;
-
   // Send message to the device, get answer
   virtual std::string ask(const std::string & msg) = 0;
 

@@ -19,8 +19,7 @@ class Driver_serial: public Driver {
 public:
 
   Driver_serial(const Opt & opts);
-  void open() override;
-  void close() override;
+  ~Driver_serial();
   std::string ask(const std::string & msg) override;
 };
 

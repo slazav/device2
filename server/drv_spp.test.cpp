@@ -10,65 +10,36 @@ main(){
   try{
 
     Opt o;
-    {
-      o.put("prog", "echo a");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: unknown protocol, header expected: echo a");
-    }
+    o.put("prog", "echo a");
+    assert_err(Driver_spp d(o), "spp: echo a: not an SPP program, header expected");
 
-    {
-      o.put("prog", "echo '#SAA1'");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: unknown protocol, header expected: echo '#SAA1'");
-    }
+    o.put("prog", "echo '#SAA1'");
+    assert_err(Driver_spp d(o), "spp: echo '#SAA1': not an SPP program, header expected");
 
-    {
-      o.put("prog", "echo '#SPP1a'");
-      Driver_spp d(o);
-      assert_err(d.open(), "can't parse value: \"1a\"");
-    }
+    o.put("prog", "echo '#SPP1a'");
+    assert_err(Driver_spp d(o), "can't parse value: \"1a\"");
 
-    {
-      o.put("prog", "echo '#SPP1'");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: no #OK or #Error message: echo '#SPP1'");
-    }
+    o.put("prog", "echo '#SPP1'");
+    assert_err(Driver_spp d(o), "SPP: no #OK or #Error message: echo '#SPP1'");
 
-    {
-      o.put("prog", "echo '#SPP1\naaa\nbbb'");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: no #OK or #Error message: echo '#SPP1\naaa\nbbb'");
-    }
+    o.put("prog", "echo '#SPP1\naaa\nbbb'");
+    assert_err(Driver_spp d(o), "SPP: no #OK or #Error message: echo '#SPP1\naaa\nbbb'");
 
-    {
-      o.put("prog", "echo '#SPP1\n#\n'");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#\n'");
-    }
+    o.put("prog", "echo '#SPP1\n#\n'");
+    assert_err(Driver_spp d(o), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#\n'");
 
-    {
-      o.put("prog", "echo '#SPP1\n#xxx\n'");
-      Driver_spp d(o);
-      assert_err(d.open(), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#xxx\n'");
-    }
+    o.put("prog", "echo '#SPP1\n#xxx\n'");
+    assert_err(Driver_spp d(o), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#xxx\n'");
 
-    {
-      o.put("prog", "echo '#SPP1\naaa\nbbb\n#Error: something wrong'");
-      Driver_spp d(o);
-      assert_err(d.open(), "something wrong");
-    }
+    o.put("prog", "echo '#SPP1\naaa\nbbb\n#Error: something wrong'");
+    assert_err(Driver_spp d(o), "something wrong");
 
-    {
-      o.put("prog", "echo '#SPP1\naaa\nbbb\n#Fatal: something wrong'");
-      Driver_spp d(o);
-      assert_err(d.open(), "something wrong");
-    }
+    o.put("prog", "echo '#SPP1\naaa\nbbb\n#Fatal: something wrong'");
+    assert_err(Driver_spp d(o), "something wrong");
 
     {
       o.put("prog", "echo '#SPP1\naaa\nbbb\n#OK'");
       Driver_spp d(o);
-      d.open();
-      d.close();
     }
 
   }

@@ -36,7 +36,6 @@ Device::use(const uint64_t conn){
   auto lk = get_lock();
   if (users.empty()) { // device needs to be opened
     drv = Driver::create(drv_name, drv_args);
-    drv->open();
     Log(2) << "conn:" << conn << " open device: " << dev_name;
   }
   users.insert(conn);
@@ -55,7 +54,6 @@ Device::release(const uint64_t conn){
 
   // if device is used by only this connection close it
   if (users.size()==1){
-    drv->close();
     drv.reset();
     Log(2) << "conn:" << conn << " close device: " << dev_name;
   }

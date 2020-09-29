@@ -12,26 +12,29 @@
 
 
 Driver_tenma_ps::Driver_tenma_ps(const Opt & opts) {
-  dev = opts.get("dev");
-  if (dev == "") throw Err() << "Parameter -dev is empty or missing";
+  //prefix for error messages
+  errpref = opts.get("errpref", "usbtmc: ");
+
+  auto dev = opts.get("dev");
+  if (dev == "") throw Err() << errpref
+    << "parameter -dev is empty or missing";
+
+  errpref += dev + ": ";
+
   del=250000; // 0.25s
-}
 
-
-void
-Driver_tenma_ps::open() {
   fd = ::open(dev.c_str(), O_RDWR);
-  if (fd<0) throw Err() << "tenma_ps driver: can't open device: "
-                        << dev << ": " << strerror(errno);
+  if (fd<0) throw Err() << errpref
+    << "can't open device: " << strerror(errno);
+
   // set non-blocking mode
   int ret = fcntl(fd, F_SETFL, FNDELAY);
-  if (ret<0) throw Err() << "tenma_ps driver: can't do fcntl: "
-                         << dev << ": " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "can't do fcntl: " << strerror(errno);
 }
 
 
-void
-Driver_tenma_ps::close() {
+Driver_tenma_ps::~Driver_tenma_ps() {
   ::close(fd);
 }
 
@@ -44,8 +47,8 @@ Driver_tenma_ps::ask(const std::string & msg) {
   std::transform(m.begin(),m.end(),m.begin(),::toupper);
 
   ssize_t ret = write(fd, m.data(), m.size());
-  if (ret<0) throw Err() << "tenma_ps driver: write error: "
-                         << dev << ": " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "write error: " << strerror(errno);
 
   // delay is needed after writing
   usleep(del);
@@ -57,8 +60,8 @@ Driver_tenma_ps::ask(const std::string & msg) {
 
   char buf[4096];
   ret = read(fd,buf,sizeof(buf));
-  if (ret<0) throw Err() << "tenma_ps driver: read error: "
-                         << dev << ": " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "read error: " << strerror(errno);
 
   // convert binary status byte to a number
   if (msg == "STATUS?" && ret>0) {

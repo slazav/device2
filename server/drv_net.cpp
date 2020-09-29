@@ -11,13 +11,13 @@
 // strerror
 #include <cstring>
 
-Driver_net::Driver_net(const Opt & opts): opts(opts) {}
+Driver_net::Driver_net(const Opt & opts): opts(opts) {
+  net.reset(new IONet(opts));
+}
 
-void
-Driver_net::open() { net.reset(new IONet(opts)); }
-
-void
-Driver_net::close() { net.reset(); }
+Driver_net::~Driver_net() {
+  net.reset();
+}
 
 std::string
 Driver_net::ask(const std::string & msg) {

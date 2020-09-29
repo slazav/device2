@@ -34,15 +34,18 @@ Driver_spp::read_spp(double timeout){
 
 
 Driver_spp::Driver_spp(const Opt & opts) {
+  //prefix for error messages
+  errpref = opts.get("errpref", "spp: ");
+
   prog = opts.get("prog");
+  if (prog == "") throw Err() << errpref
+    << "parameter -prog is empty or missing";
+
+  errpref += prog + ": ";
+
   open_timeout = opts.get<double>("open_timeout", 20.0);
   read_timeout = opts.get<double>("read_timeout", 5.0);
-  if (prog == "") throw Err() << "Parameter -prog is empty or missing";
-}
 
-
-void
-Driver_spp::open() {
   flt.reset(new IOFilter(prog));
   try {
 
@@ -50,21 +53,26 @@ Driver_spp::open() {
     std::string l;
     flt->getline(l, open_timeout);
     if (l.size()<5 || l[1]!='S' || l[2]!='P' || l[3]!='P')
-      throw Err() << "SPP: unknown protocol, header expected: " << prog;
+      throw Err() << errpref
+        << "not an SPP program, header expected";
     ch  = l[0];
     int ver = str_to_type<int>(l.substr(4));
-    if (ver!=1 && ver!=2) throw Err() << "SPP: unsupported protocol version: " << prog;
+    if (ver!=1 && ver!=2) throw Err() << errpref
+      <<"unsupported SPP version";
     read_spp(open_timeout); // ignore message, throw errors
   }
   catch (Err e) {
-    close();
-    throw e;
+    if (flt){
+      flt->close_input();
+      flt->kill();
+      flt.reset();
+    }
+    throw;
   }
 }
 
 
-void
-Driver_spp::close() {
+Driver_spp::~Driver_spp() {
   if (!flt) return;
   flt->close_input();
   flt->kill();
@@ -74,7 +82,8 @@ Driver_spp::close() {
 
 std::string
 Driver_spp::ask(const std::string & msg) {
-  if (!flt) throw Err() << "SPP: device is closed";
+  if (!flt) throw Err() << errpref
+    << "device is closed";
   flt->ostream() << msg << "\n";
   flt->ostream().flush();
   return read_spp(read_timeout);

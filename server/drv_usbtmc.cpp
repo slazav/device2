@@ -14,35 +14,36 @@
 #include <cstring>
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
-  dev = opts.get("dev");
-  read_timeout = opts.get<double>("read_timeout", 0);
-  if (dev == "") throw Err() << "Parameter -dev is empty or missing";
-}
 
+  //prefix for error messages
+  errpref = opts.get("errpref", "usbtmc: ");
 
-void
-Driver_usbtmc::open() {
+  auto dev = opts.get("dev");
+  if (dev == "") throw Err() << errpref
+    << "parameter -dev is empty or missing";
+
+  errpref += dev + ": ";
+
   fd = ::open(dev.c_str(), O_RDWR);
-  if (fd<0) throw Err() << "usbtmc driver: can't open device: "
-                        << dev << ": " << strerror(errno);
+  if (fd<0) throw Err() << errpref
+    << "can't open device: " << strerror(errno);
 
   // clear input and output buffers
   ssize_t ret = ioctl(fd, USBTMC_IOCTL_CLEAR, NULL);
-  if (ret<0) throw Err() << "usbtmc driver: can't clear device state: "
-                         << dev << ": " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "can't clear device state: " << strerror(errno);
 
   // set timeout (ms)
-  if (read_timeout>0){
-    uint32_t v = read_timeout*1000; // convert to ms
+  if (opts.exists("timeout")) {
+    uint32_t v = opts.get<double>("read_timeout", 0)*1000; // convert to integer ms
     ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
-    if (ret<0) throw Err() << "usbtmc driver: can't set timeout: "
-                           << dev << ": " << strerror(errno);
+    if (ret<0) throw Err() << errpref
+      << "can't set timeout: " << strerror(errno);
   }
 }
 
 
-void
-Driver_usbtmc::close() {
+Driver_usbtmc::~Driver_usbtmc() {
   ::close(fd);
 }
 
@@ -54,8 +55,8 @@ Driver_usbtmc::ask(const std::string & msg) {
   std::string m = msg;
   if (msg[msg.size()-1]!='\n') m+='\n';
   ssize_t ret = write(fd, m.data(), m.size());
-  if (ret<0) throw Err() << "usbtcm driver: write error: "
-                         << dev << ": " << strerror(errno);
+  if (ret<0) throw Err() << errpref
+    << "write error: " << strerror(errno);
 
   // if we do not have '?' in the message
   // no answer is needed.
@@ -70,8 +71,8 @@ Driver_usbtmc::ask(const std::string & msg) {
     // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
     // should be enough, but for me it does not work in some cases.
     ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
-    throw Err() << "usbtmc driver: read error: "
-                << dev << ": " << strerror(en);
+    throw Err() << errpref
+      << "read error: " << strerror(en);
   }
   // remove '\n' is needed
   if (buf[ret-1]=='\n') ret--;

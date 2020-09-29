@@ -16,8 +16,7 @@ class Driver_net: public Driver {
 public:
 
   Driver_net(const Opt & opts);
-  void open() override;
-  void close() override;
+  ~Driver_net();
   std::string ask(const std::string & msg) override;
 };
 
