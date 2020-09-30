@@ -67,7 +67,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     << "Parameter -addr is empty or missing";
   int board = opts.get("board", 0);
 
-  errpref += type_to_str(board) + ":" + type_to_str(addr) + ": ";
+  errpref += std::string("dev:") + type_to_str(board) + "." + type_to_str(addr) + ": ";
 
   int open_timeout = get_timeout(opts.get("open_timeout", "3s"));
   int timeout      = get_timeout(opts.get("timeout", "1s"));
@@ -79,17 +79,20 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
 
   // open device
   dh = ibdev(board, addr, 0, open_timeout, 1, 0);
-  if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+  if (ibsta & ERR) throw Err() << errpref
+    << "opening the device: " << error_text(iberr);
 
   try {
     // set timeout
-    res = ibtmo(dh, timeout);
-    if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+    ibtmo(dh, timeout);
+    if (ibsta & ERR) throw Err() << errpref
+      << "setting timeout: " << error_text(iberr);
 
     // set EOT
     if (opts.exists("eot")){
-      res = ibeot(dh, opts.get("eot", false));
-      if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+      ibeot(dh, opts.get("eot", false));
+      if (ibsta & ERR) throw Err() << errpref
+        << "setting EOT: " << error_text(iberr);
     }
 
     // set EOS
@@ -101,19 +104,21 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
       else if (mode == "read")  ch |= REOS;
       else if (mode != "none")  throw Err() << errpref
         << "unknown -eos_mode value: " << mode;
-      res = ibeos(dh, ch);
-      if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+      ibeos(dh, ch);
+      if (ibsta & ERR) throw Err() << errpref
+        << "setting EOS: " << error_text(iberr);
     }
 
     // set secondary GPIB address
     if (opts.exists("secondary")){
-      res = ibsad(dh, opts.get("secondary", 0));
-      if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+      ibsad(dh, opts.get("secondary", 0));
+      if (ibsta & ERR) throw Err() << errpref
+        << "setting secondary addess: " << error_text(iberr);
     }
 
     bufsize = opts.get("bufsize", 4096);
-    add     = opts.get("add_str",  "");
-    trim    = opts.get("trim_str", "");
+    add     = opts.get("add_str",  "\n");
+    trim    = opts.get("trim_str", "\n");
     idn     = opts.get("idn", "");
   }
   catch (Err & e){
@@ -129,10 +134,11 @@ Driver_gpib::~Driver_gpib() {
 std::string
 Driver_gpib::read() {
   char buf[bufsize];
-  auto res = ibrd(dh, buf, sizeof(buf));
-  if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+  ibrd(dh, buf, sizeof(buf));
+  if (ibsta & ERR) throw Err() << errpref
+    << "read error: " << error_text(iberr);
 
-  auto ret = std::string(buf, buf+res);
+  auto ret = std::string(buf, buf+ibcntl);
 
   // -trim option
   if (trim.size()>0 &&
@@ -148,8 +154,9 @@ Driver_gpib::write(const std::string & msg) {
   std::string m = msg;
   if (add.size()>0) m+=add;
 
-  auto ret = ibcmd(dh, m.data(), m.size());
-  if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
+  auto ret = ibwrt(dh, m.data(), m.size());
+  if (ibsta & ERR) throw Err() << errpref
+    << "write error: " << error_text(iberr);
 }
 
 std::string
