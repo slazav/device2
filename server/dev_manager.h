@@ -33,7 +33,12 @@ class DevManager {
   std::shared_lock<mutex_t> get_sh_lock() {
     return std::shared_lock<mutex_t>(data_mutex);}
 
+  std::string devfile; // device list file
+
 public:
+
+  // Constructor. Reading configuration.
+  DevManager(const std::string & devfile);
 
   // number of devices (for tests)
   size_t size() const {return devices.size();}

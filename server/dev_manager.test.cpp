@@ -54,7 +54,7 @@ main(){
     /********************************************/
     // reading configuration file
 
-    DevManager dm;
+    DevManager dm("");
 
     assert_err(dm.read_conf("test_data/e0.txt"), // missing file
       "can't open configuration: test_data/e0.txt");

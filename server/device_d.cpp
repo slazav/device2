@@ -180,13 +180,8 @@ main(int argc, char ** argv) {
         Log(1) << "Starting device_d in console mode, pid=" << pid;
     }
 
-
-
     // create device manager
-    DevManager dm;
-
-    // read configuration file
-    dm.read_conf(devfile);
+    DevManager dm(devfile);
 
     HTTP_Server srv(addr, port, &dm);
     Log(1) << "Starting HTTP server at "

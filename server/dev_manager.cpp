@@ -11,6 +11,17 @@
 #include "dev_manager.h"
 
 /*************************************************/
+DevManager::DevManager(const std::string & devfile):devfile(devfile){
+  try {
+    read_conf(devfile);
+  }
+  catch (Err & e){
+    Log(1) << "Can't read device list: " << e.str();
+  }
+}
+
+
+/*************************************************/
 std::vector<std::string>
 DevManager::parse_url(const std::string & url){
   std::vector<std::string> ret(3);
@@ -153,6 +164,13 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     for (auto const & d:devices)
       ret += d.first + "\n";
     return ret;
+  }
+
+  // reload -- reload device list
+  if (act == "reload"){
+    read_conf(devfile);
+    return std::string("Device configuration reloaded: ") +
+      type_to_str(devices.size()) + " devices";
   }
 
   // ping -- do nothing

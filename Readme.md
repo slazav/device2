@@ -61,6 +61,9 @@ Supported actions:
 
 * `info/<device>` -- Print information about a device.
 
+* `reload` -- Reload device configuration. If case of errors in the file
+old configuration is kept.
+
 * `ask/<device>/<message>` -- Send message to a device, return answer.
 
 * `use/<device>` -- Use a device in this connection. Usually a device is
@@ -164,6 +167,12 @@ Device name should be non-empty and should not contain ` `, `\n`, `\t`,
 `\` and `/` characters.
 
 Parameters are driver-specific.
+
+If the file contains errors server prints error message in the log and
+keep old configuration (if any). If after starting the server you see no
+devices in the `list` action output, try to do `reload` and see error
+message.
+
 
 ### Avalable drivers:
 
@@ -431,6 +440,7 @@ Usage:
 * `device_c [<options>] use_srv`         -- SPP interface to the server
 * `device_c [<options>] (list|devices)`  -- print list of available devices
 * `device_c [<options>] info <dev>`      -- print information about device
+* `device_c [<options>] reload`          -- reload device configuration
 * `device_c [<options>] monitor <dev>`   -- monitor all communication of the device
 * `device_c [<options>] ping`            -- check if the server is working
 * `device_c [<options>] get_time`        -- get server system time
