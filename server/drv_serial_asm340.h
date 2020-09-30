@@ -3,26 +3,28 @@
 
 /*************************************************/
 /*
- * Driver for Pfeiffer Adixen ASM340 leak detector.
+ * Driver `serial_asm340` -- Pfeiffer Adixen ASM340 leak detector
  *
 
-Options:
+Leak detector should be in Advanced I/O mode and connected with
+null-modem cable.
 
-  Serial port setup.
+Parameters:
 
-  -dev <str>     -- Serial device filename (e.g. /dev/ttyUSB0)
-                    Required.
+* `-dev <v>`       -- Serial device filename (e.g. /dev/ttyUSB0)
+                      Required.
 
-  -timeout <v>   -- Read timeout, seconds [0 .. 25.5]
-                    Default: 5.0
+* `-timeout <v>`   -- Read timeout, seconds [0 .. 25.5]
+                      Default: 5.0
 
-  -sfc (0|1)     -- Software flow control (both 0 and 1 should work).
-                    Default: 1
+* `-sfc (0|1)`     -- Software flow control (both 0 and 1 should work).
+                      Default: 1
 
-  -errpref <str> -- error prefix (default "ASM340: ")
+* `-errpref <str>` -- Prefix for error messages.
+                      Default "ASM340: "
 
-  -idn <str>     -- override output of *idn? command
-                    Default: "Adixen ASM340 leak detector"
+* `-idn <v>`       -- Override output of *idn? command.
+                      Default: "Adixen ASM340 leak detector"
 */
 
 #include "drv_serial.h"

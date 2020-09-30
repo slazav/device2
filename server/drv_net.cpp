@@ -13,6 +13,7 @@
 
 // based on the example in
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
+
 Driver_net::Driver_net(const Opt & opts) {
   opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn",
     "add_str", "trim_str"});

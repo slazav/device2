@@ -9,7 +9,23 @@
  *  https://www.cmrr.umn.edu/~strupp/serial.html
  *  stty(1), tcsetattr(3)
 
-Options:
+This is a very general driver with lots of parameters (see source code)
+Other serial drivers are based on it. As an example, configuration of
+Pfeiffer ASM340 leak detecter can be written as
+```
+asm340a  serial \
+  -dev /dev/ttyUSB0 -speed 9600 -parity 8N1 -cread 1 -clocal 1\
+  -timeout 2.0 -vmin 0 -ndelay 0 -icrnl 0\
+  -sfc 1 -raw 1 -errpref "ASM340: " -delay 0\
+  -ack_str \x06 -nack_str \x15 -add_str \r -trim_str \r
+```
+
+but there is a special driver which set all needed parameters:
+```
+asm340b  serial_asm340 -dev /dev/ttyUSB0
+```
+
+Parameters:
 
   Serial port setup.
 
@@ -131,11 +147,11 @@ Options:
   -idn <v>       -- Override output of *idn? command.
                     Default: empty string, do not override.
 
-  -add_str <v>   -- Add character to each message sent to the device.
+  -add_str <v>   -- Add string to each message sent to the device.
                     Note: using terminal setting -onlcr you can convert NL to NL+CR
                     Default: empty string
 
-  -trim_str <v>  -- Remove character from the end of recieved messages.
+  -trim_str <v>  -- Remove string from the end of recieved messages.
                     Default: empty string
 
   -ack_str <v>

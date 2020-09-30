@@ -3,27 +3,27 @@
 
 /*************************************************/
 /*
- * Driver for Agilent VS leak detector.
- * Use null-modem cable/adapter!
- *
- * Driver is not tested and probably not working!
- * It was some non-trivial problems with echo.
+ * Driver `serial_vs_ld` -- Agilent VS leak detector
  *
 
-Options:
+Leak detector should be connected with null-modem cable.
 
-  Serial port setup.
+Driver is not tested and probably not working!
+It was some non-trivial problems with echo.
 
-  -dev <str>     -- Serial device filename (e.g. /dev/ttyUSB0)
-                    Required.
+Parameters:
 
-  -timeout <v>   -- Read timeout, seconds [0 .. 25.5]
-                    Default: 5.0
+* `-dev <str>`     -- Serial device filename (e.g. /dev/ttyUSB0)
+                      Required.
 
-  -errpref <str> -- error prefix (default "Agilent VS: ")
+* `-timeout <v>`   -- Read timeout, seconds [0 .. 25.5]
+                      Default: 5.0
 
-  -idn <str>     -- override output of *idn? command
-                    Default: "Agilent VS leak detector"
+* `-errpref <v>`   -- Prefix for error messages.
+                      Default "Agilent VS: "
+
+* `-idn <v>`       -- Override output of *idn? command.
+                      Default: "Agilent VS leak detector"
 */
 
 #include "drv_serial.h"

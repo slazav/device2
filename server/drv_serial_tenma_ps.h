@@ -3,22 +3,21 @@
 
 /*************************************************/
 /*
- * Driver for Korad/Velleman/Tenma power supplies.
+ * Driver `serial_tenma_ps` -- Korad/Velleman/Tenma power supplies
  *
 
 Options:
 
-  Serial port setup.
+* `-dev <v>`      -- Serial device filename (e.g. /dev/ttyACM0)
+                    Required.
 
-  -dev <name>   -- Serial device filename (e.g. /dev/ttyACM0)
-                   Required.
+* `-timeout <v>`  -- Read timeout, seconds [0 .. 25.5]
+                    Default: 5.0
 
-  -timeout <v>  -- Read timeout, seconds [0 .. 25.5]
-                   Default: 5.0
+* `-errpref <v>` -- Prefix for error messages.
+                    Default "TenmaPS: "
 
-  -errpref      -- error prefix (default "TenmaPS: ")
-
-  -idn <str>     -- override output of *idn? command
+* `-idn <v>`     -- Override output of *idn? command.
                     Default: do not override.
 
 */

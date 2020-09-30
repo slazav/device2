@@ -3,8 +3,8 @@
 
 /*************************************************/
 /*
- * Seraldriver with reasonable default settings.
- * Should wirk with old Agilent/HP devices.
+ * Serial driver with reasonable default settings.
+ * Should work with old Agilent/HP devices.
  *
 
 Options:
@@ -20,7 +20,7 @@ Options:
   -sfc (0|1)    -- Software flow control.
                    Default: 1
 
-  -errpref      -- error prefix (default "ASM340: ")
+  -errpref      -- error prefix (default "serial: ")
 
   -idn <str>     -- override output of *idn? command
                     Default: do not override.

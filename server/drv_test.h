@@ -5,10 +5,12 @@
 #include "err/err.h"
 
 /*************************************************/
-// Test driver
-// Configuration options: none
-// Actions:
-//   ask - just return the action argument
+/* Driver `test` -- a dummy driver for tests
+
+Just repeats any message sent to it.
+Parameters: none
+
+*/
 
 class Driver_test: public Driver {
   std::string m;

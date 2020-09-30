@@ -7,28 +7,28 @@
 
 /*************************************************/
 /*
- * Access to a network device.
- * Defaults correspond to LXI raw protocol.
+ * Driver `net` -- network devices
  *
- * see https://beej.us/guide/bgnet/html//index.html
+
+Defaults correspond to LXI raw protocol.
 
 Options:
-  -addr          -- Network address or IP.
-                    Required.
-  -port <N>      -- Port number.
-                    Default: "5025" (lxi raw protocol).
-  -timeout <N>   -- Read timeout, seconds. No timeout if <=0.
-                    Default 5.0.
-  -bufsize <N>   -- Buffer size for reading. Maximum length of read data.
-                    Default: 4096
-  -errpref <str> -- Prefix for error messages.
-                    Default: "IOSerial: "
-  -idn <str>     -- Override output of *idn? command.
-                    Default: empty string, do not override.
-  -add_str <v>   -- Add string to each message sent to the device.
-                    Default: "\n"
-  -trim_str <v>  -- Remove string from the end of recieved messages.
-                    Default: "\n"
+* `-addr`          -- Network address or IP.
+                      Required.
+* `-port <N>`      -- Port number.
+                      Default: "5025" (lxi raw protocol).
+* `-timeout <N>`   -- Read timeout, seconds. No timeout if <=0.
+                      Default 5.0.
+* `-bufsize <N>`   -- Buffer size for reading. Maximum length of read data.
+                      Default: 4096
+* `-errpref <str>` -- Prefix for error messages.
+                      Default: "IOSerial: "
+* `-idn <str>`     -- Override output of *idn? command.
+                      Default: empty string, do not override.
+* `-add_str <v>`   -- Add string to each message sent to the device.
+                      Default: "\n"
+* `-trim_str <v>`  -- Remove string from the end of recieved messages.
+                      Default: "\n"
 */
 
 class Driver_net: public Driver {

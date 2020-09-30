@@ -5,17 +5,26 @@
 #include "iofilter/iofilter.h"
 
 /*************************************************/
-// SPP driver
-// This driver implements "Simple pipe prococol" for comminicating with
-// programs using stdin/stdout unix pipes.
-// Used in a few of my projects (pico_rec, graphene),
-// described in https://github.com/slazav/tcl-device (see Readme.md)
-// Options:
-//  -prog          -- program name
-//  -open_timeout  -- timeout for opening
-//  -read_timeout  -- timeout for reading
-//  -errpref -- error prefix (default "spp: ")
-//  -idn     -- override output of *idn? command (default: do not override)
+/* driver `spp` -- programs following "Simple Pipe protocol"
+
+This driver implements "Simple pipe protocol" for comminicating with
+programs using stdin/stdout unix pipes. The protocol is described in
+https://github.com/slazav/tcl-device (see Readme.md) It is used in a few
+of my projects (pico_rec, graphene), and in `device_c` client program.
+
+Parameters:
+
+* `-prog`          -- program name
+
+* `-open_timeout`  -- timeout for opening
+
+* `-read_timeout`  -- timeout for reading
+
+* `-errpref` -- error prefix (default "spp: ")
+
+* `-idn`     -- override output of *idn? command (default: do not override)
+
+*/
 
 class Driver_spp: public Driver {
   std::shared_ptr<IOFilter> flt;
