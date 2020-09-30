@@ -14,7 +14,7 @@
 #include <cstring>
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
-  opts.check_unknown({"dev", "timeout", "errpref", "idn"});
+  opts.check_unknown({"dev", "timeout", "errpref", "idn", "add", "trim"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "usbtmc: ");
@@ -42,6 +42,8 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
     if (ret<0) throw Err() << errpref
       << "can't set timeout: " << strerror(errno);
   }
+  add     = opts.get("add_str",  "\n");
+  trim    = opts.get("trim_str", "\n");
 }
 
 
@@ -52,8 +54,8 @@ Driver_usbtmc::~Driver_usbtmc() {
 std::string
 Driver_usbtmc::read() {
   char buf[4096];
-  auto ret = ::read(fd,buf,sizeof(buf));
-  if (ret<0){
+  auto res = ::read(fd,buf,sizeof(buf));
+  if (res<0){
     auto en = errno;
     // Recover from timeout.
     // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
@@ -62,15 +64,26 @@ Driver_usbtmc::read() {
     throw Err() << errpref
       << "read error: " << strerror(en);
   }
-  // remove '\n' if needed
-  if (buf[ret-1]=='\n') ret--;
-  return std::string(buf, buf+ret);
+
+  auto ret = std::string(buf, buf+res);
+
+  // -trim option
+  if (trim.size()>0 &&
+      ret.size() >= trim.size() &&
+      ret.substr(ret.size()-trim.size()) == trim){
+      ret.resize(ret.size()-trim.size());
+  }
+  return ret;
 }
 
 void
 Driver_usbtmc::write(const std::string & msg) {
-  auto ret = ::write(fd, msg.data(), msg.size());
-  if (ret<0) throw Err() << errpref
+
+  std::string m = msg;
+  if (add.size()>0) m+=add;
+
+  auto res = ::write(fd, m.data(), m.size());
+  if (res<0) throw Err() << errpref
     << "write error: " << strerror(errno);
 }
 
@@ -78,7 +91,8 @@ std::string
 Driver_usbtmc::ask(const std::string & msg) {
 
   if (idn.size() && strcasecmp(msg.c_str(),"*idn?")==0) return idn;
-  write(msg+'\n');
+
+  write(msg);
 
   // if we do not have '?' in the message
   // no answer is needed.
