@@ -39,7 +39,7 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("ndelay", 0); // should be set with timeout
     o.put("icrnl",  0); // do not convert CR->NL on input
     o.put("raw", 1);     // raw mode!
-    o.put("delay", 0.1); // 100ms delay after write
+    o.put("delay", 0);   // no delay - use ack/nack method
     o.put("opost", 0);   // no output postprocessing
     o.put("ack_str", "\x06"); // trim ack char
     o.put("nack_str","\x15"); // trim nack char, return communication errors
