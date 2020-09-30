@@ -22,7 +22,7 @@ void usage(const GetOptSet & options, bool pod=false){
   pr.usage("[<options>] use_srv         -- SPP interface to the server");
   pr.usage("[<options>] (list|devices)  -- print list of available devices");
   pr.usage("[<options>] info <dev>      -- print information about device");
-  pr.usage("[<options>] log <dev>       -- log all communication of the device");
+  pr.usage("[<options>] monitor <dev>   -- monitor all communication of the device");
   pr.usage("[<options>] ping            -- check if the server is working");
   pr.usage("[<options>] get_time        -- get server system time");
 
@@ -168,7 +168,7 @@ public:
     return;
   }
 
-  void print_log(const std::string & dev, std::ostream & out){
+  void monitor(const std::string & dev, std::ostream & out){
     get("log_start", dev);
     while(1){
       out << get("log_get", dev);
@@ -254,9 +254,9 @@ main(int argc, char ** argv) {
       return 0;
     }
 
-    if (action == "log") {
+    if (action == "monitor") {
       check_par_count(pars, 2);
-      D.print_log(pars[1], std::cout);
+      D.monitor(pars[1], std::cout);
       return 0;
     }
 
