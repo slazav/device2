@@ -1,7 +1,7 @@
 Starting device_d in daemon mode, pid=<...>
 Reading configuration file: test_data/n3.txt
 1 devices configured
-Starting HTTP server at port 8182
+Starting HTTP server at 127.0.0.1:8182
 conn:0 open connection
 conn:0 process request: /ask/spptest/error
 conn:0 open device: spptest

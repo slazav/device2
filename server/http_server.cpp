@@ -1,9 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
-//#include <cstdlib>
-//#include <cstring>
+#include <arpa/inet.h>
 
 #include "err/err.h"
 #include "http_server.h"
@@ -101,14 +99,45 @@ void ConnFunc (void *cls,
 }
 
 HTTP_Server::HTTP_Server(
+      const std::string & addr,
       const int port,
       DevManager * dm) {
 
-  d = MHD_start_daemon(
+  // listen only one address
+  if (addr!=""){
+
+    // convert address to uint32_t
+    std::string str(addr);
+    const char *t = strtok((char*)str.c_str(),".");
+    uint32_t iaddr = 0;
+    while (t != NULL) {
+      iaddr = (iaddr<<8) | (uint8_t)atoi(t);
+      t = strtok(NULL,".");
+    }
+
+    // fill sockaddr_in structure
+    struct sockaddr_in sock;
+    memset (&sock, 0, sizeof (struct sockaddr_in));
+    sock.sin_family = AF_INET;
+    sock.sin_port = htons(port);
+    sock.sin_addr.s_addr = htonl(iaddr);
+
+    d = MHD_start_daemon(
+        MHD_USE_THREAD_PER_CONNECTION,
+        port, NULL, NULL, &ProcessRequest, dm,
+        MHD_OPTION_SOCK_ADDR, &sock,
+        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, dm,
+        MHD_OPTION_END);
+  }
+
+  // listen everything
+  else {
+    d = MHD_start_daemon(
         MHD_USE_THREAD_PER_CONNECTION,
         port, NULL, NULL, &ProcessRequest, dm,
         MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, dm,
         MHD_OPTION_END);
+  }
 
   if (d == NULL)
     throw Err() << "Can't start http server";

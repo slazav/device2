@@ -14,6 +14,7 @@ class HTTP_Server{
 
 public:
   HTTP_Server(
+      const std::string & addr,
       const int port,
       DevManager * dm);
 

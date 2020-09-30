@@ -51,6 +51,7 @@ main(int argc, char ** argv) {
     GetOptSet options;
     options.add("cfgfile",  1,'C', "DEVSERV", "Server configuration file (default: /etc/device/device_d.cfg).");
     options.add("devfile", 1,'D', "DEVSERV", "Device list file (default: /etc/device/devices.cfg).");
+    options.add("addr",    1,'a', "DEVSERV", "IP address to listen. If empty listen everywhere (default: 127.0.0.1).");
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
@@ -79,10 +80,11 @@ main(int argc, char ** argv) {
     // read config file
     std::string cfgfile = opts.get("cfgfile", "/etc/device2/device_d.cfg");
     Opt optsf = read_conf(cfgfile,
-       {"port","logfile","pidfile","devfile","verbose"});
+       {"addr", "port","logfile","pidfile","devfile","verbose"});
     opts.put_missing(optsf);
 
     // extract parameters
+    std::string addr = opts.get("addr", "127.0.0.1");
     int port    = opts.get("port", 8082);
     bool dofork = opts.exists("dofork");
     bool stop   = opts.exists("stop");
@@ -186,8 +188,9 @@ main(int argc, char ** argv) {
     // read configuration file
     dm.read_conf(devfile);
 
-    HTTP_Server srv(port, &dm);
-    Log(1) << "Starting HTTP server at port " << port;
+    HTTP_Server srv(addr, port, &dm);
+    Log(1) << "Starting HTTP server at "
+      << (addr.size() ? addr:"*") << ":" << port;
 
     // set up signals
     {

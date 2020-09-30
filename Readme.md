@@ -114,8 +114,9 @@ Usage:
 
 Options:
 
-* `-C, --cfgfile <arg>`  -- Server configuration file (default: `/etc/device/device_d.cfg`).
-* `-D, --devfile <arg>`  -- Device list file (default: `/etc/device/devices.cfg`).
+* `-C, --cfgfile <arg>` -- Server configuration file (default: `/etc/device/device_d.cfg`).
+* `-D, --devfile <arg>` -- Device list file (default: `/etc/device/devices.cfg`).
+* `-a, --addr <arg>`    -- IP address to listen. If empty listen everywhere (default: `127.0.0.1`).
 * `-p, --port <arg>`    -- TCP port for connections (default: `8082`).
 * `-f, --dofork`        -- Do fork and run as a daemon.
 * `-S, --stop`          -- Stop running daemon (found by pid-file).
@@ -132,7 +133,7 @@ Options:
 
 Server configuration file can be used to override default values for some
 of the command-line options. Following parameters can be set in the
-configuration file: `port`, `logfile`, `pidfile`, `devfile`, `verbose`
+configuration file: `addr`, `port`, `logfile`, `pidfile`, `devfile`, `verbose`
 
 The file contains one line per device. Empty lines and comments (starting
 with `#`) are allowed. A few lines can be joined by adding symbol `\`
