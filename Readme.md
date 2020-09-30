@@ -116,7 +116,7 @@ Options:
 
 * `-C, --cfgfile <arg>` -- Server configuration file (default: `/etc/device/device_d.cfg`).
 * `-D, --devfile <arg>` -- Device list file (default: `/etc/device/devices.cfg`).
-* `-a, --addr <arg>`    -- IP address to listen. If empty listen everywhere (default: `127.0.0.1`).
+* `-a, --addr <arg>`    -- IP address to listen. Use "*" to listen everywhere (default: `127.0.0.1`).
 * `-p, --port <arg>`    -- TCP port for connections (default: `8082`).
 * `-f, --dofork`        -- Do fork and run as a daemon.
 * `-S, --stop`          -- Stop running daemon (found by pid-file).

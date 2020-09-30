@@ -104,7 +104,7 @@ HTTP_Server::HTTP_Server(
       DevManager * dm) {
 
   // listen only one address
-  if (addr!=""){
+  if (addr!="*"){
 
     // convert address to uint32_t
     std::string str(addr);
@@ -140,7 +140,7 @@ HTTP_Server::HTTP_Server(
   }
 
   if (d == NULL)
-    throw Err() << "Can't start http server";
+    throw Err() << "Can't start http server at " << addr << ":" << port;
 }
 
 HTTP_Server::~HTTP_Server(){
