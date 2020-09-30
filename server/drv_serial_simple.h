@@ -43,8 +43,8 @@ class Driver_serial_simple: public Driver_serial {
     o.put("raw",     1); // raw mode!
     o.put("delay", 0.1); // 100ms delay after write
     o.put("opost",   0); // no output postprocessing
-    o.put("add_ch",  0x0A); // add NL to each sent message
-    o.put("trim_ch", 0x0A); // trim NL from each recieved message
+    o.put("add_str", "\n"); // add NL to each sent message
+    o.put("trim_str","\n"); // trim NL from each recieved message
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0); // default timeout
     o.put_missing("sfc", 1);       // default software flow control

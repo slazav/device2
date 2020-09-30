@@ -56,7 +56,7 @@ public:
 
   // set options for net driver
   Opt set_opt(const Opt & opts){
-    // Options "add_ch", "trim_ch" are not needed, we want to use
+    // Options "add_str", "trim_str" are not needed, we want to use
     // default values, or set them here.
     opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn"});
 

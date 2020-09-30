@@ -15,7 +15,7 @@
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
 Driver_net::Driver_net(const Opt & opts) {
   opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn",
-    "add_ch", "trim_ch"});
+    "add_str", "trim_str"});
   int res;
 
   //prefix for error messages
@@ -57,8 +57,8 @@ Driver_net::Driver_net(const Opt & opts) {
 
   bufsize = opts.get("bufsize", 4096);
   timeout = opts.get("timeout", 5.0);
-  add     = opts.get("add_ch",  0xA);
-  trim    = opts.get("trim_ch", 0xA);
+  add     = opts.get("add_str",  "\n");
+  trim    = opts.get("trim_str", "\n");
   idn     = opts.get("idn", "");
 }
 
@@ -81,26 +81,33 @@ Driver_net::read() {
     FD_SET(sockfd, &set);
 
     // Wait for data.
-    int res = pselect(sockfd+1, &set, NULL, NULL, &timeout_s, NULL);
+    auto res = pselect(sockfd+1, &set, NULL, NULL, &timeout_s, NULL);
     if (res == -1) throw Err() << errpref << "select error: " << strerror(errno);
     if (res == 0)  throw Err() << errpref << "read timeout";
   }
 
   // Read data
   int fl=0;
-  ssize_t ret = ::recv(sockfd, buf, sizeof(buf), fl);
-  if (ret<0) throw Err() << errpref
+  auto res = ::recv(sockfd, buf, sizeof(buf), fl);
+  if (res<0) throw Err() << errpref
     << "read error: " << strerror(errno);
 
-  if (trim>0 && buf[ret-1]==trim) ret--;
-  return std::string(buf, buf+ret);
+  auto ret = std::string(buf, buf+res);
+
+  // -trim option
+  if (trim.size()>0 &&
+      ret.size() >= trim.size() &&
+      ret.substr(ret.size()-trim.size()-1) == trim){
+      ret.resize(ret.size()-trim.size());
+  }
+  return ret;
 }
 
 void
 Driver_net::write(const std::string & msg) {
 
   std::string m = msg;
-  if (add > 0) m+=(char)add;
+  if (add.size()>0) m+=add;
 
   int fl = MSG_NOSIGNAL;
   ssize_t ret = ::send(sockfd, m.data(), m.size(), fl);

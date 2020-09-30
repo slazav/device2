@@ -78,7 +78,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
     "echo","echoctl","echoe","echok","echoke","echonl","echoprt","extproc",
     "flusho","icanon","iexten","isig","noflsh","tostop","xcase", // local
     "parity","raw","sfc","nlcnv","lcase","timeout","vmin",
-    "delay","add_ch","trim_ch","ack_ch","nack_ch"});
+    "delay","add_str","trim_str","ack_str","nack_str"});
   int ret;
 
   //prefix for error messages
@@ -361,10 +361,10 @@ Driver_serial::Driver_serial(const Opt & opts) {
     << "can't set serial port parameters: " << strerror(errno);
 
   delay  = opts.get("delay",  0.1);
-  add    = opts.get("add_ch",  -1);
-  trim   = opts.get("trim_ch", -1);
-  ack    = opts.get("ack_ch",  -1);
-  nack   = opts.get("nack_ch", -1);
+  add    = opts.get("add_str");
+  trim   = opts.get("trim_str");
+  ack    = opts.get("ack_str");
+  nack   = opts.get("nack_str");
   idn    = opts.get("idn", "");
 }
 
@@ -376,32 +376,56 @@ Driver_serial::~Driver_serial() {
 
 std::string
 Driver_serial::read() {
-  char buf[4096]; // limit of the serial driver
-  ssize_t ret = ::read(fd,buf,sizeof(buf));
-  if (ret<0) throw Err() << errpref
-    << "read error: " << strerror(errno);
-  if (ret==0) throw Err() << errpref
-    << "read timeout";
 
-  // trim ack char
-  if (ack>0 && buf[ret-1]==ack) ret--;
+  std::string ret;
+  bool fail = false;
 
-  // trim nack char, return error
-  if (nack>0 && buf[ret-1]==nack) {
-    ret--;
-    throw Err() << errpref << "communication error";
+  while(1){
+    // read data, add to ret string
+    char buf[4096]; // limit of the serial driver
+    ssize_t res = ::read(fd,buf,sizeof(buf));
+    if (res<0) throw Err() << errpref
+      << "read error: " << strerror(errno);
+    if (res==0) throw Err() << errpref
+      << "read timeout";
+    ret += std::string(buf, buf+res);
+
+    // stop reading if -ack option is not set
+    if (ack.size()==0) break;
+
+    // if data ends with ack
+    if (ret.size() >= ack.size() &&
+        ret.substr(ret.size()-ack.size()-1) == ack){
+      ret.resize(ret.size()-ack.size());
+      break;
+    }
+
+    // if data ends with nack
+    if (nack.size()>0 &&
+        ret.size() >= nack.size() &&
+        ret.substr(ret.size()-nack.size()-1) == nack){
+      ret.resize(ret.size()-nack.size());
+      fail = true;
+      break;
+    }
+    // read more data if nack or ack are not found.
   }
 
-  // trim trm_ch (NL, CR)
-  if (trim>0 && buf[ret-1]==trim) ret--;
-  return std::string(buf, buf+ret);
+  // -trim option
+  if (trim.size()>0 &&
+      ret.size() >= trim.size() &&
+      ret.substr(ret.size()-trim.size()-1) == trim){
+      ret.resize(ret.size()-trim.size());
+  }
+  if (fail) throw Err() << "nack from the device: " << ret;
+  return ret;
 }
 
 void
 Driver_serial::write(const std::string & msg) {
 
   std::string m = msg;
-  if (add > 0) m+=(char)add;
+  if (add.size() > 0) m+=add;
 
   ssize_t ret = ::write(fd, m.data(), m.size());
   if (ret<0) throw Err() << errpref

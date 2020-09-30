@@ -122,30 +122,29 @@ Options:
 
   Other settings:
 
-  -delay <val>   -- delay after write command, s.
+  -delay <v>     -- Delay after write command, s.
                     Default: 0.1
 
-  -errpref <str> -- Prefix for error messages.
+  -errpref <v>   -- Prefix for error messages.
                     Default: "serial: "
 
-  -idn <str>     -- Override output of *idn? command.
+  -idn <v>       -- Override output of *idn? command.
                     Default: empty string, do not override.
 
-  -add_ch <N>    -- Add character to each message sent to the device.
+  -add_str <v>   -- Add character to each message sent to the device.
                     Note: using terminal setting -onlcr you can convert NL to NL+CR
-                    Default: -1 (no adding)
+                    Default: empty string
 
-  -trim_ch <N>   -- remove character from the end of recieved messages.
-                    Default: -1 (no trimming)
+  -trim_str <v>  -- Remove character from the end of recieved messages.
+                    Default: empty string
 
-
-  -ack_ch <N>    -- Some devices send ack/nack chars at the end of message.
-                    This option set the ack char to trim it.
-                    Default: -1 (no ack char processing)
-
-  -nack_ch <N>   -- Some devices send ack/nack chars at the end of message.
-                    This option set the nack char to trim it and return an error.
-                    Default: -1 (no nack char processing)
+  -ack_str <v>
+  -nack_str <v>  -- Some devices send ack/nack sequences at the end of each message.
+                    It can be ack/nack characters (0x9/0x15), or "ok"/"#?" strings.
+                    if -ack option is set then reading is done until ack (or nack
+                    if it is set too) sequence is met. The sequences are removed
+                    from the output message; error is returned if nack recieved.
+                    Default: empty strings.
 
 Note that most options have no defaults: if such an option is not set
 then the setting is left untouched.
@@ -161,7 +160,7 @@ then the setting is left untouched.
 class Driver_serial: public Driver {
   int fd; // file descriptor
   std::string errpref, idn;
-  int ack,nack,add,trim;
+  std::string ack,nack,add,trim;
   double delay;
 
 public:

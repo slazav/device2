@@ -56,7 +56,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
 
   opts.check_unknown({"addr","board","timeout","open_timeout",
     "eot", "eos", "eos_mode", "secondary", "bufsize",
-    "errpref","idn", "add_ch", "trim_ch"});
+    "errpref","idn", "add_str", "trim_str"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "gpib: ");
@@ -112,8 +112,8 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     }
 
     bufsize = opts.get("bufsize", 4096);
-    add     = opts.get("add_ch",  0xA);
-    trim    = opts.get("trim_ch", 0xA);
+    add     = opts.get("add_str",  "");
+    trim    = opts.get("trim_str", "");
     idn     = opts.get("idn", "");
   }
   catch (Err & e){
@@ -129,17 +129,24 @@ Driver_gpib::~Driver_gpib() {
 std::string
 Driver_gpib::read() {
   char buf[bufsize];
-  auto ret = ibrd(dh, buf, sizeof(buf));
+  auto res = ibrd(dh, buf, sizeof(buf));
   if (ibsta & ERR) throw Err() << errpref << error_text(iberr);
 
-  if (trim>0 && buf[ret-1]==trim) ret--;
-  return std::string(buf, buf+ret);
+  auto ret = std::string(buf, buf+res);
+
+  // -trim option
+  if (trim.size()>0 &&
+      ret.size() >= trim.size() &&
+      ret.substr(ret.size()-trim.size()-1) == trim){
+      ret.resize(ret.size()-trim.size());
+  }
+  return ret;
 }
 
 void
 Driver_gpib::write(const std::string & msg) {
   std::string m = msg;
-  if (add > 0) m+=(char)add;
+  if (add.size()>0) m+=add;
 
   auto ret = ibcmd(dh, m.data(), m.size());
   if (ibsta & ERR) throw Err() << errpref << error_text(iberr);

@@ -43,11 +43,11 @@ Options:
   -idn <str>     -- Override output of *idn? command.
                     Default: empty string, do not override.
 
-  -add_ch <N>    -- Add character to each message sent to the device.
-                    Default: '\n'
+  -add_str <v>   -- Add string to each message sent to the device.
+                    Default: "\n"
 
-  -trim_ch <N>   -- Remove character from the end of recieved messages.
-                    Default: '\n'
+  -trim_str <v>  -- Remove string from the end of recieved messages.
+                    Default: "\n"
 
 */
 
@@ -56,7 +56,7 @@ protected:
   int dh; // GPIB device handler
   size_t bufsize;
   std::string errpref,idn;
-  int add,trim;
+  std::string add,trim;
 
   // convert timeout
   int get_timeout(const std::string & s);
