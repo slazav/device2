@@ -46,7 +46,7 @@ class Driver_serial_asm340: public Driver_serial {
     o.put("ack_str", "\x06"); // trim ack char
     o.put("nack_str","\x15"); // trim nack char, return communication errors
     o.put("add_str", "\r");   // add CR to each sent message
-    o.put("trim_str","\r");   // trim CR from each recieved message
+    o.put("trim_str","\r");   // trim CR from each received message
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0);
     o.put_missing("sfc", 1);

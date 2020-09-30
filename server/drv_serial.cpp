@@ -71,7 +71,7 @@ baud_to_mask(int b){
 Driver_serial::Driver_serial(const Opt & opts) {
   opts.check_unknown({"errpref","idn","dev","ndelay",
     "speed","ispeed","ospeed", // speed
-    "clocal","cread","crtscts","cs","cstopb","hup", "parenb","parodd","cmspar", //contol
+    "clocal","cread","crtscts","cs","cstopb","hup", "parenb","parodd","cmspar", //control
     "icrnl","inlcr","igncr","iuclc","iutf8","brkint","ignbrk","imaxbel",
     "inpck","ignpar","istrip","parmrk","ixany","ixoff","ixon", // input
     "bs","cr","ff","nl","tab","vt","ocrnl","onlcr","onlret","onocr",
@@ -139,7 +139,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
     cfsetospeed(&options, pbaud);
   }
 
-  // control options
+  // Control settings
 
   set_opt(opts, "clocal",  &options.c_cflag, CLOCAL);
   set_opt(opts, "cread",   &options.c_cflag, CREAD);
@@ -164,7 +164,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   set_opt(opts, "parodd", &options.c_cflag, PARODD);
   set_opt(opts, "cmspar", &options.c_cflag, CMSPAR);
 
-  // input settings
+  // Input settings
 
   set_opt(opts, "icrnl",  &options.c_iflag, ICRNL);
   set_opt(opts, "inlcr",  &options.c_iflag, INLCR);
@@ -183,7 +183,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   set_opt(opts, "ixon",   &options.c_iflag, IXON);
 
 
-  // Output settins
+  // Output settings
 
   if (opts.exists("bs")){
     int v = 0;

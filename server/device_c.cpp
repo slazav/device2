@@ -62,7 +62,7 @@ public:
     char *act_ = curl_easy_escape(cm, act.data() , act.size());
     char *cmd_ = curl_easy_escape(cm, cmd.data() , cmd.size());
 
-    // build url, free unneded strings
+    // build url, free unneeded strings
     std::string url = server + "/" + act_;
     if  (dev != "") url += std::string("/") + dev_;
     if  (cmd != "") url += std::string("/") + cmd_;

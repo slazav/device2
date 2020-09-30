@@ -31,7 +31,7 @@ Parameters:
 * `-add_str <v>`  -- Add string to each message sent to the device.
                      Default: "\n"
 
-* `-trim_str <v>` -- Remove string from the end of recieved messages.
+* `-trim_str <v>` -- Remove string from the end of received messages.
                      Default: "\n"
 
 */

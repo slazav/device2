@@ -59,7 +59,7 @@ main(int argc, char ** argv) {
       "0 - write nothing; "
       "1 - write some information on server start/stop; "
       "2 - write about opening/closing connections and devices; "
-      "3 - write all messages sent to devices and recieved from them. "
+      "3 - write all messages sent to devices and received from them. "
       " (default: 1).");
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
       "(default: /var/log/device_d.log in daemon mode, '-' in console mode.");
@@ -133,7 +133,7 @@ main(int argc, char ** argv) {
       if (!pf.fail()){
         int pid;
         pf >> pid;
-        throw Err() << "device_d already runing (pid-file exists): " << pid;
+        throw Err() << "device_d already running (pid-file exists): " << pid;
       }
     }
 

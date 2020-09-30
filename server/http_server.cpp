@@ -128,7 +128,7 @@ HTTP_Server::HTTP_Server(
   }
 
   // test mode - only one connection at a time, to
-  // have reproducable logs
+  // have reproducible logs
   if (test){
     ops.push_back((MHD_OptionItem)
       { MHD_OPTION_CONNECTION_LIMIT, 1, NULL });

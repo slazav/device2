@@ -8,9 +8,9 @@ experimental setups. Previous version was a tcl library (
 https://github.com/slazav/tcl-device ) with a few annoying limitations.
 
 There is a server which work with "devices". They can be physical devices
-connected in varous ways or programs with special interface. Each device
+connected in various ways or programs with special interface. Each device
 has a unique name, which is listed in the server configuration file.
-Server knowns how to open a device, send it a message and recieve answer.
+Server knows how to open a device, send it a message and receive answer.
 
 Clients can connect to the server using HTTP protocol and send messages to
 devices. This architecture has many advantages comparing to direct connections
@@ -30,7 +30,7 @@ to the server if it wants to use a device without closing/opening it.
 
 * Any client can monitor all messages for any device.
 
-* Remote access to devices can be easiy implemented in this system by
+* Remote access to devices can be easily implemented in this system by
 either making a tunnel for HTTP connections, or by attaching the
 remote client program, `device_c` to the local server as a device.
 
@@ -93,7 +93,7 @@ is locked by somebody else, or if it is not locked.
 * `log_start/<device>` -- Any user can see all communications of every device.
 To do it one should start with `log_start` action. The buffer of size
 1024 lines is created for this connection, all messages send to the
-device, all answers and errors recieved will be written to the buffer
+device, all answers and errors received will be written to the buffer
 (with "<<", ">>", and "EE" prefixes). If the buffer already exists it will
 be cleared.
 
@@ -105,7 +105,7 @@ is stopped return error.
 
 * `ping` -- Check connection to the server. Returns nothing.
 
-* `get_time` -- Get sysem time (unix seconds with microsecond precision)
+* `get_time` -- Get system time (unix seconds with microsecond precision)
 
 
 ### Starting the server
@@ -125,7 +125,7 @@ Options:
   - 0 - write nothing;
   - 1 - write some information on server start/stop;
   - 2 - write about opening/closing connections and devices;
-  - 3 - write all messages sent to devices and recieved from them.
+  - 3 - write all messages sent to devices and received from them.
 * `-l, --logfile <arg>` -- Log file, "-" for stdout.
   (default: `/var/log/device_d.log` in daemon mode, "-" in console mode.
 * `-P, --pidfile <arg>` -- Pid file (default: `/var/run/device_d.pid`)
@@ -152,7 +152,7 @@ should have the form:
 
 Default location of the device configuration file is
 `/etc/device2/devices.cfg` It can be changed by with server command-line
-option `-D` or in the server onfiguration file.
+option `-D` or in the server configuration file.
 
 The file contains one line per device. Empty lines and comments (starting
 with `#`) are allowed. A few lines can be joined by adding symbol `\`
@@ -175,13 +175,13 @@ devices in the `list` action output, try to do `reload` and see error
 message.
 
 
-### Avalable drivers:
+### Available drivers:
 
 * `test` -- a dummy driver for tests.
 
 * `spp` -- a "Simple Pipe protocol", talking with programs. Works.
 
-* `usbtmc` -- for USB devises connecte via usbtmc kernel module
+* `usbtmc` -- for USB devises connect via usbtmc kernel module
 (Agilent/Kesight devices). Works.
 
 * `serial` -- RS232 connections with full control of the serial
@@ -219,7 +219,7 @@ Parameters: none
 
 ### Driver `spp` -- programs following "Simple Pipe protocol"
 
-This driver implements "Simple pipe protocol" for comminicating with
+This driver implements "Simple pipe protocol" for communicating with
 programs using stdin/stdout unix pipes. The protocol is described in
 https://github.com/slazav/tcl-device (see Readme.md) It is used in a few
 of my projects (pico_rec, graphene), and in `device_c` client program.
@@ -264,7 +264,7 @@ Parameters:
 * `-add_str <v>`  -- Add string to each message sent to the device.
                      Default: "\n"
 
-* `-trim_str <v>` -- Remove string from the end of recieved messages.
+* `-trim_str <v>` -- Remove string from the end of received messages.
                      Default: "\n"
 
 
@@ -310,7 +310,7 @@ Parameters:
 * `-add_str <v>`   -- Add string to each message sent to the device.
                       Default: "\n"
 
-* `-trim_str <v>`  -- Remove string from the end of recieved messages.
+* `-trim_str <v>`  -- Remove string from the end of received messages.
                       Default: "\n"
 
 ###  Driver `net` -- network devices
@@ -335,7 +335,7 @@ Options:
                       Default: empty string, do not override.
 * `-add_str <v>`   -- Add string to each message sent to the device.
                       Default: "\n"
-* `-trim_str <v>`  -- Remove string from the end of recieved messages.
+* `-trim_str <v>`  -- Remove string from the end of received messages.
                       Default: "\n"
 
 ### Driver `net_gpib_prologix` -- devices connected via Prologix gpib2eth converter
@@ -362,7 +362,7 @@ Parameters:
 
 This is a very general driver with lots of parameters (see source code)
 Other serial drivers are based on it. As an example, configuration of
-Pfeiffer ASM340 leak detecter can be written as
+Pfeiffer ASM340 leak detected can be written as
 ```
 asm340a  serial \
   -dev /dev/ttyUSB0 -speed 9600 -parity 8N1 -cread 1 -clocal 1\

@@ -43,7 +43,7 @@ class Driver_serial_vs_ld: public Driver_serial {
     o.put("delay", 0.1); // 100ms delay after write
     o.put("opost", 0);   // no output postprocessing
     o.put("add_str",  "\n"); // add NL to each sent message
-    o.put("trim_str", "\n"); // trim NL from each recieved message
+    o.put("trim_str", "\n"); // trim NL from each received message
     o.put("ack_str",  "ok"); // ack sequence
     o.put("nack_str", "#?"); // nack sequence
     // set defaults (only it no values are set by user)

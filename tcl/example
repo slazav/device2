@@ -10,4 +10,5 @@ puts [Device2::get_time]
 # old interface
 Device test
 puts [test cmd *IDN?AAAAA A B C]
+puts [test cmd "*IDN?AAAAA A B C"]
 DeviceDelete test

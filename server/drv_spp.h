@@ -7,7 +7,7 @@
 /*************************************************/
 /* driver `spp` -- programs following "Simple Pipe protocol"
 
-This driver implements "Simple pipe protocol" for comminicating with
+This driver implements "Simple pipe protocol" for communicating with
 programs using stdin/stdout unix pipes. The protocol is described in
 https://github.com/slazav/tcl-device (see Readme.md) It is used in a few
 of my projects (pico_rec, graphene), and in `device_c` client program.

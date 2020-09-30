@@ -11,7 +11,7 @@
 
 This is a very general driver with lots of parameters (see source code)
 Other serial drivers are based on it. As an example, configuration of
-Pfeiffer ASM340 leak detecter can be written as
+Pfeiffer ASM340 leak detector can be written as
 ```
 asm340a  serial \
   -dev /dev/ttyUSB0 -speed 9600 -parity 8N1 -cread 1 -clocal 1\
@@ -39,9 +39,9 @@ Parameters:
                    Default: do not change.
 
   -speed <N>    -- Baud rate (both input and output), integer value.
-                   Posix values: 0,50,75,110,134,150,200,300,600,1200,
+                   POSIX values: 0,50,75,110,134,150,200,300,600,1200,
                      1800,2400,4800,9600,19200,38400.
-                   Non-posix falues: 57600, 115200, 230400, 460800,
+                   Non-POSIX values: 57600, 115200, 230400, 460800,
                      500000, 576000, 921600, 1000000, 1152000, 1500000,
                      2000000, 2500000, 3000000, 3000000, 3500000, 4000000.
                    Default: do not change.
@@ -154,7 +154,7 @@ Parameters:
                     Note: using terminal setting -onlcr you can convert NL to NL+CR
                     Default: empty string
 
-  -trim_str <v>  -- Remove string from the end of recieved messages.
+  -trim_str <v>  -- Remove string from the end of received messages.
                     Default: empty string
 
   -ack_str <v>
@@ -162,7 +162,7 @@ Parameters:
                     It can be ack/nack characters (0x9/0x15), or "ok"/"#?" strings.
                     if -ack option is set then reading is done until ack (or nack
                     if it is set too) sequence is met. The sequences are removed
-                    from the output message; error is returned if nack recieved.
+                    from the output message; error is returned if nack received.
                     Default: empty strings.
 
 Note that most options have no defaults: if such an option is not set
