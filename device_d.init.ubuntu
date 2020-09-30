@@ -17,7 +17,7 @@ NAME=device_d
 
 PORT=8082
 PIDFILE=/var/run/device_d.pid
-CONFFILE=/etc/device2/devices.cfg
+CONFFILE=/etc/device2/device_d.cfg
 
 DAEMON=/usr/bin/device_d
 DAEMON_OPTS="-f -p $PORT -C $CONFFILE -P $PIDFILE"
