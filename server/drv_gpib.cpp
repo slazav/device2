@@ -1,5 +1,6 @@
 #include <cstring>
 #include "drv_gpib.h"
+#include "drv_utils.h"
 
 const char*
 error_text(int ecode) {
@@ -140,12 +141,7 @@ Driver_gpib::read() {
 
   auto ret = std::string(buf, buf+ibcntl);
 
-  // -trim option
-  if (trim.size()>0 &&
-      ret.size() >= trim.size() &&
-      ret.substr(ret.size()-trim.size()) == trim){
-      ret.resize(ret.size()-trim.size());
-  }
+  trim_str(ret,trim); // -trim option
   return ret;
 }
 
@@ -166,10 +162,8 @@ Driver_gpib::ask(const std::string & msg) {
 
   write(msg);
 
-  // if we do not have '?' in the message
-  // no answer is needed.
-  if (msg.find('?') == std::string::npos)
-    return std::string();
+  // if there is no '?' in the message no answer is needed.
+  if (no_question(msg)) return std::string();
 
   return read();
 }

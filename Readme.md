@@ -241,8 +241,10 @@ Parameters:
 This driver supports devices connected via usbtmc kernel driver. It
 should work with all usual Agilent/Keysight devices connected via USB.
 Read timeout is set internally in the driver (5s by default?) but can be
-modified by -timeout parameter. Driver reads answer from the device only
-if there is a question mark '?' in the message.
+modified by -timeout parameter.
+
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
 
 Parameters:
 
@@ -266,6 +268,9 @@ Parameters:
 
 
 ### Driver "gpib" -- GPIB devices using linux-gpib library
+
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
 
 Parameters:
 
@@ -308,6 +313,9 @@ Parameters:
                       Default: "\n"
 
 ###  Driver `net` -- network devices
+
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
 
 Defaults correspond to LXI raw protocol.
 
@@ -366,6 +374,9 @@ but there is a special driver which set all needed parameters:
 ```
 asm340b  serial_asm340 -dev /dev/ttyUSB0
 ```
+
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
 
 ### Driver `serial_asm340` -- Pfeiffer Adixen ASM340 leak detector
 

@@ -25,6 +25,9 @@ but there is a special driver which set all needed parameters:
 asm340b  serial_asm340 -dev /dev/ttyUSB0
 ```
 
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
+
 Parameters:
 
   Serial port setup.

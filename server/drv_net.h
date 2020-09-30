@@ -12,7 +12,11 @@
 
 Defaults correspond to LXI raw protocol.
 
-Options:
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
+
+Parameters:
+
 * `-addr`          -- Network address or IP.
                       Required.
 * `-port <N>`      -- Port number.

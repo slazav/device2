@@ -9,8 +9,10 @@
 This driver supports devices connected via usbtmc kernel driver. It
 should work with all usual Agilent/Keysight devices connected via USB.
 Read timeout is set internally in the driver (5s by default?) but can be
-modified by -timeout parameter. Driver reads answer from the device only
-if there is a question mark '?' in the message.
+modified by -timeout parameter.
+
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
 
 Parameters:
 

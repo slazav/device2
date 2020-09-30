@@ -10,6 +10,9 @@
  * Driver "gpib" -- GPIB devices using linux-gpib library
  *
 
+Driver reads answer from the device only if there is a question mark '?'
+in the message.
+
 Parameters:
 
 * `-addr <N>`      -- GPIB address.

@@ -1,4 +1,5 @@
 #include "drv_net.h"
+#include "drv_utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,12 +96,7 @@ Driver_net::read() {
 
   auto ret = std::string(buf, buf+res);
 
-  // -trim option
-  if (trim.size()>0 &&
-      ret.size() >= trim.size() &&
-      ret.substr(ret.size()-trim.size()) == trim){
-      ret.resize(ret.size()-trim.size());
-  }
+  trim_str(ret,trim); // -trim option
   return ret;
 }
 
@@ -123,10 +119,8 @@ Driver_net::ask(const std::string & msg) {
 
   write(msg);
 
-  // if we do not have '?' in the message
-  // no answer is needed.
-  if (msg.find('?') == std::string::npos)
-    return std::string();
+  // if there is no '?' in the message no answer is needed.
+  if (no_question(msg)) return std::string();
 
   return read();
 }

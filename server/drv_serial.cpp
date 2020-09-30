@@ -1,4 +1,5 @@
 #include "drv_serial.h"
+#include "drv_utils.h"
 
 // read/write/open/close/fctl
 #include <unistd.h>
@@ -394,29 +395,15 @@ Driver_serial::read() {
     if (ack.size()==0) break;
 
     // if data ends with ack
-    if (ret.size() >= ack.size() &&
-        ret.substr(ret.size()-ack.size()) == ack){
-      ret.resize(ret.size()-ack.size());
-      break;
-    }
+    if (trim_str(ret, ack)) {break;}
 
     // if data ends with nack
-    if (nack.size()>0 &&
-        ret.size() >= nack.size() &&
-        ret.substr(ret.size()-nack.size()) == nack){
-      ret.resize(ret.size()-nack.size());
-      fail = true;
-      break;
-    }
+    if (trim_str(ret,nack)) {fail=true; break;}
+
     // read more data if nack or ack are not found.
   }
 
-  // -trim option
-  if (trim.size()>0 &&
-      ret.size() >= trim.size() &&
-      ret.substr(ret.size()-trim.size()) == trim){
-      ret.resize(ret.size()-trim.size());
-  }
+  trim_str(ret,trim); // -trim option
   if (fail) throw Err() << "nack from the device: " << ret;
   return ret;
 }
@@ -441,10 +428,8 @@ Driver_serial::ask(const std::string & msg) {
 
   write(msg);
 
-  // if we do not have '?' in the message
-  // no answer is needed.
-  if (msg.find('?') == std::string::npos)
-    return std::string();
+  // if there is no '?' in the message no answer is needed.
+  if (no_question(msg)) return std::string();
 
   return read();
 }
