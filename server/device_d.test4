@@ -9,7 +9,7 @@ port=8182
 srv="-s localhost:$port"
 
 # try to stop the server
-./device_d -C '' --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+./device_d -C test_data/serv_conf --stop &>/dev/null ||:
 
 assert_cmd "./device_c $srv ask b text"\
   "Error: Couldn't connect to server" 1
@@ -19,7 +19,7 @@ rm -f log.txt
 ####################
 # run the server (-v 3!)
 
-assert_cmd "./device_d -C test_data/serv_conf --devfile test_data/n2.txt --dofork" "" 0
+assert_cmd "./device_d -C test_data/serv_conf --test --devfile test_data/n2.txt --dofork" "" 0
 usleep 10000
 
 help=$(./device_c -h ||:)
@@ -61,7 +61,7 @@ Device is open Number of users: 1 You are currently using the device #OK" 0
 
 ####################
 # stop the server
-assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C test_data/serv_conf --stop" "" 0
 
 sed -r 's/pid=[0-9]+/pid=<...>/
         s/answer: ([0-9]+)\.([0-9]+)/answer xxxxxxxxxx.xxxxxx/' -i log.txt
@@ -71,7 +71,7 @@ assert_diff test_data/log2.txt log.txt
 ####################
 # run the server (-v 0)
 
-assert_cmd "./device_d -C test_data/serv_conf --devfile test_data/n3.txt -v 0 --dofork" "" 0
+assert_cmd "./device_d -C test_data/serv_conf --test --devfile test_data/n3.txt -v 0 --dofork" "" 0
 usleep 10000
 
 assert_cmd "./device_c $srv ask spptest error" "Error: some error" 1
@@ -79,6 +79,6 @@ assert_cmd "./device_c $srv ask spptest test"  "Q: test" 0
 assert_cmd "./device_c $srv ask spptest wait" "Error: Read timeout" 1
 
 # stop the server
-assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C test_data/serv_conf --stop" "" 0
 
 rm -f log.txt

@@ -101,11 +101,21 @@ void ConnFunc (void *cls,
 HTTP_Server::HTTP_Server(
       const std::string & addr,
       const int port,
+      const bool test,
       DevManager * dm) {
+
+  // create option structure
+  std::vector<struct MHD_OptionItem> ops;
+
+  // server flags
+  int flags = MHD_USE_THREAD_PER_CONNECTION;
+
+  // notifications about opening/closing connections
+  ops.push_back((MHD_OptionItem)
+    {MHD_OPTION_NOTIFY_CONNECTION, (intptr_t)&ConnFunc, dm});
 
   // listen only one address
   if (addr!="*"){
-
     // fill sockaddr_in structure
     struct sockaddr_in sock;
     memset (&sock, 0, sizeof (struct sockaddr_in));
@@ -113,22 +123,26 @@ HTTP_Server::HTTP_Server(
     sock.sin_port = htons(port);
     sock.sin_addr.s_addr = htonl(str_to_type_ip4(addr));
 
-    d = MHD_start_daemon(
-        MHD_USE_THREAD_PER_CONNECTION,
-        port, NULL, NULL, &ProcessRequest, dm,
-        MHD_OPTION_SOCK_ADDR, &sock,
-        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, dm,
-        MHD_OPTION_END);
+    ops.push_back((MHD_OptionItem)
+      { MHD_OPTION_SOCK_ADDR, (intptr_t)&sock, NULL });
   }
 
-  // listen everything
-  else {
-    d = MHD_start_daemon(
-        MHD_USE_THREAD_PER_CONNECTION,
-        port, NULL, NULL, &ProcessRequest, dm,
-        MHD_OPTION_NOTIFY_CONNECTION, &ConnFunc, dm,
-        MHD_OPTION_END);
+  // test mode - only one connection at a time, to
+  // have reproducable logs
+  if (test){
+    ops.push_back((MHD_OptionItem)
+      { MHD_OPTION_CONNECTION_LIMIT, 1, NULL });
+    flags |= MHD_USE_ITC;
   }
+
+  // terminating option
+  ops.push_back((MHD_OptionItem)
+      { MHD_OPTION_END, 0, NULL });
+
+  d = MHD_start_daemon(
+      flags, port, NULL, NULL, &ProcessRequest, dm,
+      MHD_OPTION_ARRAY, ops.data(),
+      MHD_OPTION_END);
 
   if (d == NULL)
     throw Err() << "Can't start http server at " << addr << ":" << port;

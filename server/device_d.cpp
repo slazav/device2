@@ -64,6 +64,7 @@ main(int argc, char ** argv) {
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
       "(default: /var/log/device_d.log in daemon mode, '-' in console mode.");
     options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/device_d.pid)");
+    options.add("test",    0,0,   "DEVSERV", "Test mode with connection number limited to 1.");
     options.add("help",    0,'h', "DEVSERV", "Print help message and exit.");
     options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format and exit.");
 
@@ -92,6 +93,7 @@ main(int argc, char ** argv) {
     logfile = opts.get("logfile");
     pidfile = opts.get("pidfile", "/var/run/device_d.pid");
     devfile = opts.get("devfile", "/etc/device2/devices.cfg");
+    bool test = opts.get("test", false);
 
     // default log file
     if (logfile==""){
@@ -183,9 +185,10 @@ main(int argc, char ** argv) {
     // create device manager
     DevManager dm(devfile);
 
-    HTTP_Server srv(addr, port, &dm);
-    Log(1) << "Starting HTTP server at "
+    HTTP_Server srv(addr, port, test, &dm);
+    Log(1) << "HTTP server is running at "
       << addr << ":" << port;
+    if (test) Log(1) << "TESTING MODE";
 
     // set up signals
     {

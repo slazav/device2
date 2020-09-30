@@ -129,6 +129,7 @@ Options:
 * `-l, --logfile <arg>` -- Log file, "-" for stdout.
   (default: `/var/log/device_d.log` in daemon mode, "-" in console mode.
 * `-P, --pidfile <arg>` -- Pid file (default: `/var/run/device_d.pid`)
+* `--test`              -- Test mode with connection number limited to 1.
 * `-h, --help`          -- Print help message and exit.
 * `--pod`               -- Print help message in POD format and exit.
 

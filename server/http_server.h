@@ -16,6 +16,7 @@ public:
   HTTP_Server(
       const std::string & addr,
       const int port,
+      bool test, // test mode with single connection
       DevManager * dm);
 
   ~HTTP_Server();
