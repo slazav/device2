@@ -118,7 +118,7 @@ Driver_net::write(const std::string & msg) {
 std::string
 Driver_net::ask(const std::string & msg) {
 
-  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")) return idn;
+  if (idn.size() && strcasecmp(msg.c_str(),"*idn?")==0) return idn;
 
   write(msg);
 
