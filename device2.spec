@@ -45,5 +45,7 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %config %_initdir/device_d
 %dir %_sysconfdir/device2
 %config(noreplace) %_sysconfdir/device2/devices.cfg
+%config(noreplace) %_sysconfdir/device2/device_c.cfg
+%config(noreplace) %_sysconfdir/device2/device_d.cfg
 
 %changelog
