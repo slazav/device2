@@ -21,7 +21,7 @@ namespace eval Device2 {
   proc get {act dev args} {
     set act [http::quoteString $act]
     set dev [http::quoteString $dev]
-    set msg [http::quoteString $args]
+    set msg [http::quoteString [join $args { }]]
     set url "$Device2::addr/$act/$dev/$msg"
     set token [::http::geturl $url -keepalive true]
     set code [::http::ncode $token]
