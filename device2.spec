@@ -32,6 +32,7 @@ tar -xvf modules.tar
 %makeinstall initdir=%buildroot%_initdir
 mkdir -p %buildroot%_sharedstatedir/device_d
 
+
 %post
 %post_service device_d
 
@@ -47,5 +48,6 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %config(noreplace) %_sysconfdir/device2/devices.cfg
 %config(noreplace) %_sysconfdir/device2/device_c.cfg
 %config(noreplace) %_sysconfdir/device2/device_d.cfg
+%_tcldatadir/Device2
 
 %changelog

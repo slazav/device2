@@ -1,0 +1,13 @@
+#!/usr/bin/tclsh
+source device2.tcl
+
+# new interface
+puts [Device2::ask test repeat this]
+puts [Device2::ask test "repeat that"]
+puts [Device2::release test]
+puts [Device2::get_time]
+
+# old interface
+Device test
+puts [test cmd *IDN?AAAAA A B C]
+DeviceDelete test
