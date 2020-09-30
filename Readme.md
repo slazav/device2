@@ -551,4 +551,26 @@ You are currently using the device
 #OK
 ```
 
+### Remote use and how to crash the server
+
+There are two ways how to configure remote access to your devices. First,
+you can connect to the remote server by HTTP protocol. Note that device
+server does not have any security features, and it's not safe to allow
+connections from outside. But it should be safe to make an ssh tunnel to
+the remote server.
+
+Other option is to use external devices connected to the local server.
+The `device_c` program implements SPP protocol when using in `use_dev`
+and `use_srv` modes. Thus it can be used as a device. If you have device
+servers running on both computers and want to access remote device
+`mydev`, just write in the local configuration something like this:
+```
+mydev   spp -prog "ssh comp2 device_c use_dev mydev"
+```
+
+Now it should be obvious how to crash the server: connect a device to itself!
+```
+mydev   spp -prog "device_c use_dev mydev"
+```
+
 ---
