@@ -40,13 +40,11 @@ remote client program, `device_c` to the local server as a device.
 ### HTTP communication with the server
 
 Clients communicate with the server using GET requests of HTTP protocol.
-URLs with up to three components are used:
-`<action>/<device>/<message>`. For example, a request to
-`http://<server>:<port>/ask/generator/FREQ?`" sends phrase `FREQ?` to the
-device `generator` and returns answer.
+URLs with up to three components are used: `<action>/<device>/<message>`.
+(Note that symbol `/` is not allowed in device names). For example, a
+request to `http://<server>:<port>/ask/generator/FREQ?`" sends phrase
+`FREQ?` to the device `generator` and returns answer.
 
-TODO: ban `/` character in the device name, or transfer messages via
-URL arguments.
 
 On success a response with code 200 and answer of the device in the
 message body is returned. On error a response with code 400 is returned.
@@ -161,6 +159,10 @@ should have the form:
 ```
 <device name> <driver name> [-<parameter> <value> ...]
 ```
+
+Device name should be non-empty and should not contain ` `, `\n`, `\t`,
+`\` and `/` characters.
+
 Parameters are driver-specific.
 
 ### Avalable drivers:

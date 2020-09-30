@@ -194,6 +194,14 @@ DevManager::read_conf(const std::string & file){
       std::string dev = vs[0];
       std::string drv = vs[1];
       std::vector<std::string> args(vs.begin()+2, vs.end());
+
+      if (dev=="")
+        throw Err() << "empty device name";
+
+      if (strcspn(dev.c_str(), " \n\t/\\")!=dev.size())
+        throw Err() << "symbols ' ', '\\n', '\\t', '/', and '\\' "
+          << "are not allowed in device name: " << dev;
+
       if ((vs.size()-2)%2 != 0) throw Err()
         << "even-size list of [-<parameter> <value>] pairs expected";
       Opt opt;
