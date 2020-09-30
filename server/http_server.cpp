@@ -106,21 +106,12 @@ HTTP_Server::HTTP_Server(
   // listen only one address
   if (addr!="*"){
 
-    // convert address to uint32_t
-    std::string str(addr);
-    const char *t = strtok((char*)str.c_str(),".");
-    uint32_t iaddr = 0;
-    while (t != NULL) {
-      iaddr = (iaddr<<8) | (uint8_t)atoi(t);
-      t = strtok(NULL,".");
-    }
-
     // fill sockaddr_in structure
     struct sockaddr_in sock;
     memset (&sock, 0, sizeof (struct sockaddr_in));
     sock.sin_family = AF_INET;
     sock.sin_port = htons(port);
-    sock.sin_addr.s_addr = htonl(iaddr);
+    sock.sin_addr.s_addr = htonl(str_to_type_ip4(addr));
 
     d = MHD_start_daemon(
         MHD_USE_THREAD_PER_CONNECTION,
