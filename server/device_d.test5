@@ -9,7 +9,7 @@ port=8182
 srv="-s localhost:$port"
 
 # try to stop the server
-./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+./device_d -C '' --stop --port $port --pidfile pid.tmp &>/dev/null ||:
 
 assert_cmd "./device_c $srv ask b text"\
   "Error: Couldn't connect to server" 1
@@ -69,6 +69,6 @@ Q4? \
 
 ####################
 # stop the server
-assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
 
 

@@ -8,7 +8,7 @@
 port=8182
 
 # try to stop the server
-./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+./device_d -C '' --stop --port $port --pidfile pid.tmp &>/dev/null ||:
 
 assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
   "failed: Connection refused." 4
@@ -16,7 +16,7 @@ assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
 rm -f log.txt
 
 # run the server
-assert_cmd "./device_d --port $port --pidfile pid.tmp --devfile test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
+assert_cmd "./device_d -C '' --port $port --pidfile pid.tmp --devfile test_data/n2.txt --logfile log.txt -v 3 --dofork" "" 0
 usleep 10000
 
 a=$(wget localhost:$port/ask/x/text -O - -nv -S 2>&1 | grep Error ||:)
@@ -44,6 +44,6 @@ a=$(wget localhost:$port/use/a -O - -q ||:)
 assert_cmd "echo $a" "" 0
 
 # stop the server
-assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
 sed -r 's/pid=[0-9]+/pid=<...>/' -i log.txt
 assert_diff test_data/log1.txt log.txt

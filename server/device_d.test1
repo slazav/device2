@@ -5,16 +5,16 @@
 # use non-standard port to avoid collisions with running server
 port=8182
 
-assert_cmd "./device_d -x"\
+assert_cmd "./device_d -C '' -x"\
   "Error: unknown option: -x" 1
 
-assert_cmd "./device_d x"\
+assert_cmd "./device_d -C ''  x"\
   "Error: unexpected argument: x" 1
 
-assert_cmd "./device_d -P wrong/pid/file -p $port"\
+assert_cmd "./device_d -C ''  -P wrong/pid/file -p $port"\
   "Error: can't open pid-file: wrong/pid/file" 1
 
-assert_cmd "./device_d -p a"\
+assert_cmd "./device_d -C ''  -p a"\
   "Error: can't parse value: \"a\"" 1
 
 #####################
@@ -23,7 +23,7 @@ assert_cmd "./device_d -p a"\
 
 #####################
 # run server in normal mode (background)
-./device_d --pidfile pid.tmp -p $port -v 0 --devfile test_data/n1.txt &
+./device_d -C '' --pidfile pid.tmp -p $port -v 0 --devfile test_data/n1.txt &
 
 pid=$!
 # wait until server write its pid-file and check it
@@ -43,10 +43,10 @@ fi
 
 #####################
 # same in daemon mode
-assert_cmd "./device_d -p $port --pidfile pid.tmp --devfile test_data/n1.txt --logfile log.txt --dofork"\
+assert_cmd "./device_d -C '' -p $port --pidfile pid.tmp --devfile test_data/n1.txt --logfile log.txt --dofork"\
     "" 0
 # pid file should exist when device_d exits. No waiting is needed
-assert_cmd "./device_d --stop -p $port --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C '' --stop -p $port --pidfile pid.tmp" "" 0
 
 sleep 0.1
 if [ -f pid.tmp ]; then
@@ -54,7 +54,7 @@ if [ -f pid.tmp ]; then
   exit 1
 fi
 
-assert_cmd "./device_d --stop -p $port --pidfile pid.tmp"\
+assert_cmd "./device_d -C '' --stop -p $port --pidfile pid.tmp"\
    "Error: can't open pid-file: pid.tmp" 1
 
 

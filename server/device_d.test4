@@ -9,7 +9,7 @@ port=8182
 srv="-s localhost:$port"
 
 # try to stop the server
-./device_d --stop --port $port --pidfile pid.tmp &>/dev/null ||:
+./device_d -C '' --stop --port $port --pidfile pid.tmp &>/dev/null ||:
 
 assert_cmd "./device_c $srv ask b text"\
   "Error: Couldn't connect to server" 1
@@ -61,7 +61,7 @@ Device is open Number of users: 1 You are currently using the device #OK" 0
 
 ####################
 # stop the server
-assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
 
 sed -r 's/pid=[0-9]+/pid=<...>/
         s/answer: ([0-9]+)\.([0-9]+)/answer xxxxxxxxxx.xxxxxx/' -i log.txt
@@ -79,6 +79,6 @@ assert_cmd "./device_c $srv ask spptest test"  "Q: test" 0
 assert_cmd "./device_c $srv ask spptest wait" "Error: Read timeout" 1
 
 # stop the server
-assert_cmd "./device_d --port $port --stop --pidfile pid.tmp" "" 0
+assert_cmd "./device_d -C '' --port $port --stop --pidfile pid.tmp" "" 0
 
 rm -f log.txt
