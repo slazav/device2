@@ -395,7 +395,7 @@ Driver_serial::read() {
 
     // if data ends with ack
     if (ret.size() >= ack.size() &&
-        ret.substr(ret.size()-ack.size()-1) == ack){
+        ret.substr(ret.size()-ack.size()) == ack){
       ret.resize(ret.size()-ack.size());
       break;
     }
@@ -403,7 +403,7 @@ Driver_serial::read() {
     // if data ends with nack
     if (nack.size()>0 &&
         ret.size() >= nack.size() &&
-        ret.substr(ret.size()-nack.size()-1) == nack){
+        ret.substr(ret.size()-nack.size()) == nack){
       ret.resize(ret.size()-nack.size());
       fail = true;
       break;
@@ -414,7 +414,7 @@ Driver_serial::read() {
   // -trim option
   if (trim.size()>0 &&
       ret.size() >= trim.size() &&
-      ret.substr(ret.size()-trim.size()-1) == trim){
+      ret.substr(ret.size()-trim.size()) == trim){
       ret.resize(ret.size()-trim.size());
   }
   if (fail) throw Err() << "nack from the device: " << ret;

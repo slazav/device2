@@ -97,7 +97,7 @@ Driver_net::read() {
   // -trim option
   if (trim.size()>0 &&
       ret.size() >= trim.size() &&
-      ret.substr(ret.size()-trim.size()-1) == trim){
+      ret.substr(ret.size()-trim.size()) == trim){
       ret.resize(ret.size()-trim.size());
   }
   return ret;
