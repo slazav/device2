@@ -1,0 +1,9 @@
+# configurtion file for running server tests
+
+# no-standard port to avoid collisions with running server:
+port 8182
+
+# local pid-file and log-file
+pidfile pid.tmp
+logfile log.txt
+verbose 3

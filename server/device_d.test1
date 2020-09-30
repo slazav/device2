@@ -23,7 +23,7 @@ assert_cmd "./device_d -p a"\
 
 #####################
 # run server in normal mode (background)
-./device_d --pidfile pid.tmp -p $port -v 0 --config test_data/n1.txt &
+./device_d --pidfile pid.tmp -p $port -v 0 --devfile test_data/n1.txt &
 
 pid=$!
 # wait until server write its pid-file and check it
@@ -43,7 +43,7 @@ fi
 
 #####################
 # same in daemon mode
-assert_cmd "./device_d -p $port --pidfile pid.tmp --config test_data/n1.txt --logfile log.txt --dofork"\
+assert_cmd "./device_d -p $port --pidfile pid.tmp --devfile test_data/n1.txt --logfile log.txt --dofork"\
     "" 0
 # pid file should exist when device_d exits. No waiting is needed
 assert_cmd "./device_d --stop -p $port --pidfile pid.tmp" "" 0

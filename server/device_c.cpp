@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 
 #include "read_words/read_words.h"
+#include "read_words/read_conf.h"
 #include "getopt/getopt.h"
 #include "getopt/getopt.h"
 #include "err/err.h"
@@ -215,6 +216,11 @@ main(int argc, char ** argv) {
     // print help message
     if (opts.exists("help")) usage(options);
     if (opts.exists("pod"))  usage(options,true);
+
+    // read config file
+    std::string cfgfile = "/etc/device2/device_c.cfg";
+    Opt optsf = read_conf(cfgfile, {"server"});
+    opts.put_missing(optsf);
 
     // extract parameters
     std::string server = opts.get("server", "http://localhost:8082");

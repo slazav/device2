@@ -9,6 +9,7 @@
 
 
 #include "getopt/getopt.h"
+#include "read_words/read_conf.h"
 #include "err/err.h"
 #include "log/log.h"
 #include "dev_manager.h"
@@ -48,7 +49,8 @@ main(int argc, char ** argv) {
 
     // fill option structure
     GetOptSet options;
-    options.add("config",  1,'C', "DEVSERV", "Device configuration file (default: /etc/device/devices.cfg).");
+    options.add("cfgfile",  1,'C', "DEVSERV", "Server configuration file (default: /etc/device/device_d.cfg).");
+    options.add("devfile", 1,'D', "DEVSERV", "Device list file (default: /etc/device/devices.cfg).");
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
@@ -74,6 +76,12 @@ main(int argc, char ** argv) {
     if (opts.exists("help")) usage(options);
     if (opts.exists("pod"))  usage(options,true);
 
+    // read config file
+    std::string cfgfile = opts.get("cfgfile", "/etc/device2/device_d.cfg");
+    Opt optsf = read_conf(cfgfile,
+       {"port","logfile","pidfile","devfile","verbose"});
+    opts.put_missing(optsf);
+
     // extract parameters
     int port    = opts.get("port", 8082);
     bool dofork = opts.exists("dofork");
@@ -81,7 +89,7 @@ main(int argc, char ** argv) {
     int  verb   = opts.get("verbose", 1);
     logfile = opts.get("logfile");
     pidfile = opts.get("pidfile", "/var/run/device_d.pid");
-    devfile = opts.get("config", "/etc/device2/devices.cfg");
+    devfile = opts.get("devfile", "/etc/device2/devices.cfg");
 
     // default log file
     if (logfile==""){
