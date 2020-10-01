@@ -252,7 +252,7 @@ Read timeout is set internally in the driver (5s by default?) but can be
 modified by -timeout parameter.
 
 Driver reads answer from the device only if there is a question mark '?'
-in the message.
+in the first word of the message.
 
 Parameters:
 
@@ -278,7 +278,7 @@ Parameters:
 ### Driver "gpib" -- GPIB devices using linux-gpib library
 
 Driver reads answer from the device only if there is a question mark '?'
-in the message.
+in the first word of the message.
 
 Parameters:
 
@@ -323,11 +323,12 @@ Parameters:
 ###  Driver `net` -- network devices
 
 Driver reads answer from the device only if there is a question mark '?'
-in the message.
+in the first word of the message.
 
-Defaults correspond to LXI raw protocol.
+Defaults parameters correspond to LXI raw protocol.
 
-Options:
+Parameters:
+
 * `-addr`          -- Network address or IP.
                       Required.
 * `-port <N>`      -- Port number.
@@ -367,13 +368,13 @@ Parameters:
 
 ### Driver `serial` -- Serial devices
 
-This is a very general driver with lots of parameters (see source code)
+This is a very general driver with lots of parameters (see source code).
 Other serial drivers are based on it. As an example, configuration of
 Pfeiffer ASM340 leak detected can be written as
 ```
 asm340a  serial \
   -dev /dev/ttyUSB0 -speed 9600 -parity 8N1 -cread 1 -clocal 1\
-  -timeout 2.0 -vmin 0 -ndelay 0 -icrnl 0\
+  -timeout 2.0 -vmin 0 -ndelay 0 -icrnl 0 -opost 1 -lcase 1\
   -sfc 1 -raw 1 -errpref "ASM340: " -delay 0\
   -ack_str \x06 -nack_str \x15 -add_str \r -trim_str \r
 ```
@@ -382,9 +383,6 @@ but there is a special driver which set all needed parameters:
 ```
 asm340b  serial_asm340 -dev /dev/ttyUSB0
 ```
-
-Driver reads answer from the device only if there is a question mark '?'
-in the message.
 
 ### Driver `serial_asm340` -- Pfeiffer Adixen ASM340 leak detector
 
@@ -584,7 +582,7 @@ servers running on both computers and want to access remote device
 mydev   spp -prog "ssh comp2 device_c use_dev mydev"
 ```
 This approach allows you to mix local and remote devices on your
-computer and access them throug the local server.
+computer and access them through the local server.
 
 Now it should be obvious how to crash the server: connect a device to itself!
 ```
