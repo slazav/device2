@@ -92,7 +92,7 @@ Driver_usbtmc::ask(const std::string & msg) {
   write(msg);
 
   // if there is no '?' in the message no answer is needed.
-  if (!check_read_cond(msg, READCOND_QMARK)) return std::string();
+  if (!check_read_cond(msg, READCOND_QMARK1W)) return std::string();
 
   return read();
 }
