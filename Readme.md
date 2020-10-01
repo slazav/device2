@@ -458,13 +458,16 @@ Usage:
 * `device_c [<options>] get_time`        -- get server system time
 
 Options:
-* `-s, --server <arg>` -- Server (default: http://localhost:8082).
+* `-s, --server <arg>` -- Server (default: http://localhost).
+* `-p, --port <arg>`   -- Port (default: 8082).
 * `-l, --lock`         -- Lock the device (only for `use_dev` action).
 * `-h, --help`         -- Print help message and exit.
 * `--pod`              -- Print help message in POD format and exit.
 
-Client configuration file (`/etc/device/device_d.cfg`) is similar to the
-server one. The only parameter which can be set in the file is `server`.
+Client configuration file (`/etc/device/device_c.cfg`) is similar to the
+server one.  Following parameters can be set in the configuration file:
+`server`, `port`.
+
 
 ### Examples
 

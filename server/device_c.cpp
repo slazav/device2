@@ -205,7 +205,8 @@ main(int argc, char ** argv) {
     // fill option structure
     GetOptSet options;
     std::string on("DEVCLI");
-    options.add("server",  1,'s', on, "Server (default: http://localhost:8082).");
+    options.add("server",  1,'s', on, "Server (default: http://localhost).");
+    options.add("port",    1,'p', on, "Port (default: 8082).");
     options.add("lock",    0,'l', on, "Lock the device (only for use_dev action).");
     options.add("help",    0,'h', on, "Print help message and exit.");
     options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
@@ -220,16 +221,18 @@ main(int argc, char ** argv) {
 
     // read config file
     std::string cfgfile = "/etc/device2/device_c.cfg";
-    Opt optsf = read_conf(cfgfile, {"server"});
+    Opt optsf = read_conf(cfgfile, {"server", "port"});
     opts.put_missing(optsf);
 
     // extract parameters
-    std::string server = opts.get("server", "http://localhost:8082");
+    std::string server = opts.get("server", "http://localhost");
+    int port = opts.get("port", 8082);
+    auto srv = server + ":" + type_to_str(port);
 
     if (pars.size()==0) usage(options);
     auto & action = pars[0];
 
-    Downloader D(server);
+    Downloader D(srv);
 
     if (action == "ask"){
       check_par_count(pars, 3);

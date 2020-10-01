@@ -6,7 +6,7 @@
 
 # use non-standard port to avoid collisions with running server
 port=8182
-srv="-s localhost:$port"
+srv="-s localhost -p $port"
 
 # try to stop the server
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
