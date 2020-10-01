@@ -53,7 +53,7 @@ restart)
 
 reload|force-reload)
   log_daemon_msg "Reloading configuration files for $DESC" "$NAME"
-  /usr/biv/device_c reload
+  $DAEMON --pidfile "$PIDFILE" --reload
   log_end_msg $?
   ;;
 

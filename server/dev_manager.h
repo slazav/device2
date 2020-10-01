@@ -58,7 +58,13 @@ public:
 
   // Read configuration file, update `devices` map.
   // Throw exception on errors.
-  void read_conf(const std::string & file);
+  void read_conf();
+
+  // Read configunation from other file.
+  // This is now used only in tests.
+  void read_conf(const std::string & fname){
+    devfile = fname; read_conf();
+  }
 
   // Split url (action/argument/message), return vector<string> with 3 elements
   static std::vector<std::string> parse_url(const std::string & url);

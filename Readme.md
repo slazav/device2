@@ -121,6 +121,7 @@ Options:
 * `-p, --port <arg>`    -- TCP port for connections (default: `8082`).
 * `-f, --dofork`        -- Do fork and run as a daemon.
 * `-S, --stop`          -- Stop running daemon (found by pid-file).
+* `-R, --reload`        -- Reload configuration of running daemon (found by pid-file).
 * `-v, --verbose <arg>` -- Verbosity level (default: 1):
   - 0 - write nothing;
   - 1 - write some information on server start/stop;
@@ -133,9 +134,10 @@ Options:
 * `-h, --help`          -- Print help message and exit.
 * `--pod`               -- Print help message in POD format and exit.
 
-Server configuration file can be used to override default values for some
-of the command-line options. Following parameters can be set in the
-configuration file: `addr`, `port`, `logfile`, `pidfile`, `devfile`, `verbose`
+Configuration file: Server configuration file can be used to override
+default values for some of the command-line options. Following parameters
+can be set in the configuration file: `addr`, `port`, `logfile`,
+`pidfile`, `devfile`, `verbose`
 
 The file contains one line per device. Empty lines and comments (starting
 with `#`) are allowed. A few lines can be joined by adding symbol `\`
@@ -147,6 +149,11 @@ should have the form:
 <parameter name> <parameter value>
 ```
 
+Signal handling: server exits on SIGTERM, SIGINT, SIGQUIT signals. Device
+list is re-read on SIGHUP signal. If `device_d` program is called with
+`--stop`/`--reload` parameter it will send SIGTERM/SIGHUP to a running
+server (found by pid-file). Reloading can be also done by any client
+with `reload` action.
 
 ### Device list file
 

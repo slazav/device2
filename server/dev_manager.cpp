@@ -13,7 +13,7 @@
 /*************************************************/
 DevManager::DevManager(const std::string & devfile):devfile(devfile){
   try {
-    read_conf(devfile);
+    read_conf();
   }
   catch (Err & e){
     Log(1) << "Can't read device list: " << e.str();
@@ -168,7 +168,7 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
 
   // reload -- reload device list
   if (act == "reload"){
-    read_conf(devfile);
+    read_conf();
     return std::string("Device configuration reloaded: ") +
       type_to_str(devices.size()) + " devices";
   }
@@ -194,14 +194,14 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
 
 /*************************************************/
 void
-DevManager::read_conf(const std::string & file){
+DevManager::read_conf(){
   std::map<std::string, Device> ret;
   int line_num[2] = {0,0};
-  std::ifstream ff(file);
+  std::ifstream ff(devfile);
   if (!ff.good()) throw Err()
-    << "can't open configuration: " << file;
+    << "can't open configuration: " << devfile;
 
-  Log(1) << "Reading configuration file: " << file;
+  Log(1) << "Reading configuration file: " << devfile;
 
   try {
     while (1){
@@ -243,7 +243,7 @@ DevManager::read_conf(const std::string & file){
     }
   } catch (Err e){
     throw Err() << "bad configuration file "
-                << file << " at line " << line_num[0] << ": " << e.str();
+                << devfile << " at line " << line_num[0] << ": " << e.str();
   }
 
   Log(1) << ret.size() << " devices configured";

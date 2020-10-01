@@ -38,7 +38,7 @@ status)
   ;;
 
 reload|sreload)
-  /usr/bin/device_c reload
+  $DAEMON --pidfile "$PIDFILE" --reload
   RETVAL=$?
   ;;
 

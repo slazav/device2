@@ -39,8 +39,11 @@ void usage(const GetOptSet & options, bool pod=false){
 }
 
 /*************************************************/
-// signal handler
+// signal handlers
 static void StopFunc(int signum){ throw 0; }
+
+DevManager * dmp = NULL;
+static void ReloadFunc(int signum){ if (dmp) dmp->read_conf(); }
 
 /*************************************************/
 // main function.
@@ -65,6 +68,7 @@ main(int argc, char ** argv) {
     options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: " STR(DEF_PORT) ").");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
+    options.add("reload",  0,'R', "DEVSERV", "Reload configuration of running daemon (found by pid-file).");
     options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: "
       "0 - write nothing; "
       "1 - write some information on server start/stop; "
@@ -99,6 +103,7 @@ main(int argc, char ** argv) {
     int port    = opts.get("port", DEF_PORT);
     bool dofork = opts.exists("dofork");
     bool stop   = opts.exists("stop");
+    bool reload = opts.exists("reload");
     int  verb   = opts.get("verbose", DEF_VERB);
     logfile = opts.get("logfile");
     pidfile = opts.get("pidfile", DEF_PIDFILE);
@@ -114,14 +119,14 @@ main(int argc, char ** argv) {
     Log::set_log_level(verb);
 
     // stop running daemon
-    if (stop) {
+    if (stop || reload) {
       std::ifstream pf(pidfile);
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
       int pid;
       pf >> pid;
 
-      if (kill(pid, SIGTERM) == 0){
+      if (kill(pid, stop? SIGTERM : SIGHUP) == 0){
         int st=0;
         waitpid(pid, &st, 0);
       }
@@ -194,6 +199,7 @@ main(int argc, char ** argv) {
 
     // create device manager
     DevManager dm(devfile);
+    dmp = &dm; // pointer for ReloadFunc
 
     HTTP_Server srv(addr, port, test, &dm);
     Log(1) << "HTTP server is running at "
@@ -208,8 +214,11 @@ main(int argc, char ** argv) {
       sa.sa_flags = SA_RESTART; // Restart functions if interrupted by handler
       if (sigaction(SIGTERM, &sa, NULL) == -1 ||
           sigaction(SIGQUIT, &sa, NULL) == -1 ||
-          sigaction(SIGINT,  &sa, NULL) == -1 ||
-          sigaction(SIGHUP,  &sa, NULL) == -1)
+          sigaction(SIGINT,  &sa, NULL) == -1)
+        throw Err() << "can't set signal handler";
+
+      sa.sa_handler = ReloadFunc;
+      if (sigaction(SIGHUP,  &sa, NULL) == -1)
         throw Err() << "can't set signal handler";
     }
 
