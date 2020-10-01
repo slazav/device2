@@ -11,64 +11,56 @@ WITHOUT_RC_COMPAT=1
 # Source function library.
 . /etc/init.d/functions
 
-PORT=8082
 PIDFILE=/var/run/device_d.pid
 LOCKFILE=/var/lock/subsys/device_d
-CONFFILE=/etc/device2/device_d.cfg
 DAEMON=/usr/bin/device_d
-DAEMON_OPTS="-f -p $PORT -C $CONFFILE -P $PIDFILE"
+DAEMON_OPTS="--dofork --pidfile $PIDFILE"
 RETVAL=0
 USER=root
 
-start() {
-	start_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
-                     --user $USER -- $DAEMON $DAEMON_OPTS $EXTRAOPTIONS
-	RETVAL=$?
-	return $RETVAL
-}
-
-stop()
-{
-	stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
-                    --expect-user $USER -- $DAEMON
-	RETVAL=$?
-	return $RETVAL
-}
-
-restart()
-{
-	stop
-	start
-}
-
 # See how we were called.
 case "$1" in
-	start)
-		start
-		;;
-	stop)
-		stop
-		;;
-	status)
-		status --pidfile "$PIDFILE" --expect-user $USER -- device_d
-		RETVAL=$?
-		;;
-	reload|sreload|restart)
-		restart
-		;;
-	condstop)
-		if [ -e "$LOCKFILE" ]; then
-			stop
-		fi
-		;;
-	condreload|condrestart)
-		if [ -e "$LOCKFILE" ]; then
-			restart
-		fi
-		;;
-	*)
-		msg_usage "${0##*/} {start|stop|status|reload|restart|condstop|condrestart|condreload}"
-		RETVAL=1
+start)
+  start_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
+               --user $USER -- $DAEMON $DAEMON_OPTS
+  RETVAL=$?
+  ;;
+
+stop)
+  stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
+              --expect-user $USER -- $DAEMON
+  RETVAL=$?
+  ;;
+
+status)
+  status --pidfile "$PIDFILE" --expect-user $USER -- device_d
+  RETVAL=$?
+  ;;
+
+reload|sreload)
+  /usr/bin/device_c reload
+  RETVAL=$?
+  ;;
+
+restart)
+  $0 stop
+  $0 start
+  ;;
+
+condstop)
+  if [ -e "$LOCKFILE" ]; then
+    $0 stop
+  fi ;;
+
+condreload|condrestart)
+  if [ -e "$LOCKFILE" ]; then
+    $0 stop
+    $0 start
+  fi ;;
+
+*)
+  msg_usage "${0##*/} {start|stop|status|reload|restart|condstop|condrestart|condreload}"
+  RETVAL=1
 esac
 
 exit $RETVAL

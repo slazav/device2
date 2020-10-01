@@ -15,12 +15,10 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DESC="device_d: HTTP server for accessing devices"
 NAME=device_d
 
-PORT=8082
 PIDFILE=/var/run/device_d.pid
-CONFFILE=/etc/device2/device_d.cfg
 
 DAEMON=/usr/bin/device_d
-DAEMON_OPTS="-f -p $PORT -C $CONFFILE -P $PIDFILE"
+DAEMON_OPTS="--dofork --pidfile $PIDFILE"
 SCRIPTNAME=/etc/init.d/"$NAME"
 
 test -f $DAEMON || exit 0
@@ -28,33 +26,45 @@ test -f $DAEMON || exit 0
 . /lib/lsb/init-functions
 
 case "$1" in
-start)	log_daemon_msg "Starting $DESC" "$NAME"
-        rm -f -- $PIDFILE
-        start-stop-daemon --start --quiet --pidfile $PIDFILE \
+
+start)
+  log_daemon_msg "Starting $DESC" "$NAME"
+  rm -f -- $PIDFILE
+  start-stop-daemon --start --quiet --pidfile $PIDFILE \
                           --exec $DAEMON -- $DAEMON_OPTS
-        log_end_msg $?
-	;;
-stop)	log_daemon_msg "Stopping $DESC" "$NAME"
-        start-stop-daemon --stop --quiet --pidfile $PIDFILE \
-                          --retry 300 \
-                          --exec $DAEMON
-        RETVAL=$?
-        [ $RETVAL -eq 0 ] && [ -e "$PIDFILE" ] && rm -f $PIDFILE
-        log_end_msg $RETVAL
-        ;;
-restart) log_daemon_msg "Restarting $DESC" "$NAME"
-        $0 stop
-        $0 start
-        ;;
-reload|force-reload) log_daemon_msg "Reloading configuration files for $DESC" "$NAME"
-	# $NAME reloads automatically
-        log_end_msg 0
-        ;;
+  log_end_msg $?
+  ;;
+
+stop)
+  log_daemon_msg "Stopping $DESC" "$NAME"
+  start-stop-daemon --stop --quiet --pidfile $PIDFILE \
+                    --retry 300 \
+                    --exec $DAEMON
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && [ -e "$PIDFILE" ] && rm -f $PIDFILE
+  log_end_msg $RETVAL
+  ;;
+
+restart)
+  log_daemon_msg "Restarting $DESC" "$NAME"
+  $0 stop
+  $0 start
+  ;;
+
+reload|force-reload)
+  log_daemon_msg "Reloading configuration files for $DESC" "$NAME"
+  /usr/biv/device_c reload
+  log_end_msg $?
+  ;;
+
 status)
-        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
-        ;;
-*)	log_action_msg "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload}"
-        exit 2
-        ;;
+  status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+  ;;
+
+*)
+  log_action_msg "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload}"
+  exit 2
+  ;;
+
 esac
 exit 0
