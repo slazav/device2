@@ -49,5 +49,6 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %config(noreplace) %_sysconfdir/device2/device_c.cfg
 %config(noreplace) %_sysconfdir/device2/device_d.cfg
 %_tcldatadir/Device2
+%_man1dir/device*
 
 %changelog

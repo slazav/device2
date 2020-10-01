@@ -3,3 +3,4 @@
 *.a
 *.test
 *.test.passed
+*.man

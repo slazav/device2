@@ -24,6 +24,10 @@ PKG_CONFIG := libmicrohttpd libcurl libgpib
 MODDIR := ../modules
 include $(MODDIR)/Makefile.inc
 
+## manpages
+man: device_c.1 device_d.1
+%.1: %
+	$* --pod | pod2man -n $* -c device2 -r device2 > $@
 
 
 
