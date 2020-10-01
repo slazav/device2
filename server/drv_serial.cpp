@@ -367,6 +367,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   ack    = opts.get("ack_str");
   nack   = opts.get("nack_str");
   idn    = opts.get("idn", "");
+  read_cond = str_to_read_cond(opts.get("read_cond", "always"));
 }
 
 
@@ -428,8 +429,7 @@ Driver_serial::ask(const std::string & msg) {
 
   write(msg);
 
-  // if there is no '?' in the message no answer is needed.
-  if (no_question(msg)) return std::string();
+  if (!check_read_cond(msg, read_cond)) return std::string();
 
   return read();
 }

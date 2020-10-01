@@ -10,7 +10,7 @@ MOD_SOURCES := http_server.cpp dev_manager.cpp device.cpp tun.cpp\
                drv.cpp drv_utils.cpp drv_spp.cpp drv_usbtmc.cpp\
                drv_serial.cpp drv_net.cpp drv_gpib.cpp
 
-SIMPLE_TESTS := dev_manager drv_spp
+SIMPLE_TESTS := dev_manager drv_spp drv_utils
 OTHER_TESTS := device_d.test1\
                device_d.test2\
                device_d.test3\

@@ -163,7 +163,7 @@ Driver_gpib::ask(const std::string & msg) {
   write(msg);
 
   // if there is no '?' in the message no answer is needed.
-  if (no_question(msg)) return std::string();
+  if (!check_read_cond(msg, READCOND_QMARK)) return std::string();
 
   return read();
 }

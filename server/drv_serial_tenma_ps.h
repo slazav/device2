@@ -39,6 +39,8 @@ class Driver_serial_tenma_ps: public Driver_serial {
     o.put("delay",0.1); // 100ms delay after write
     o.put("opost",  1); // no output postprocessing, for case conversion
     o.put("olcuc",  1); // convert messages to upper case
+    o.put("read_cond",  "qmark"); // read answers only if ? was in the message
+
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0);
     o.put_missing("errpref", "TenmaPS: ");

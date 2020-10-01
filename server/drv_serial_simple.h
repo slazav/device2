@@ -25,13 +25,18 @@ Options:
   -idn <str>     -- override output of *idn? command
                     Default: do not override.
 
+  -read_cond <v> -- when do we need to read answer from a command:
+                    always, never, qmark (if there is a question mark in the message),
+                    qmark1w (question mark in the first word). Default: qmark1w.
+
+
 */
 
 #include "drv_serial.h"
 
 class Driver_serial_simple: public Driver_serial {
   Opt add_opts(const Opt & opts){
-    opts.check_unknown({"dev", "timeout", "sfc", "errpref"});
+    opts.check_unknown({"dev", "timeout", "sfc", "errpref", "read_cond"});
     Opt o(opts);
     o.put("speed",  9600);  // baud rate
     o.put("parity", "8N1"); // character size, parity, stop bit
@@ -48,6 +53,7 @@ class Driver_serial_simple: public Driver_serial {
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0); // default timeout
     o.put_missing("sfc", 1);       // default software flow control
+    o.put_missing("read_cond", "qmark1w");
     return o;
   }
 public:

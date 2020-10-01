@@ -46,6 +46,7 @@ class Driver_serial_vs_ld: public Driver_serial {
     o.put("trim_str", "\n"); // trim NL from each received message
     o.put("ack_str",  "ok"); // ack sequence
     o.put("nack_str", "#?"); // nack sequence
+    o.put("read_cond", "always");
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0);
     o.put_missing("errpref", "Agilent VS: ");

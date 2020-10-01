@@ -165,6 +165,10 @@ Parameters:
                     from the output message; error is returned if nack received.
                     Default: empty strings.
 
+  -read_cond <v> -- when do we need to read answer from a command:
+                    always, never, qmark (if there is a question mark in the message),
+                    qmark1w (question mark in the first word). Default: always.
+
 Note that most options have no defaults: if such an option is not set
 then the setting is left untouched.
 
@@ -180,6 +184,7 @@ class Driver_serial: public Driver {
   int fd; // file descriptor
   std::string errpref, idn;
   std::string ack,nack,add,trim;
+  int read_cond;
   double delay;
 
 public:
