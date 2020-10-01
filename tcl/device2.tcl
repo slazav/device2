@@ -14,8 +14,8 @@ package require http
 ##  Device2::ask graphene get_time
 
 namespace eval Device2 {
-  # Server address. Should we read it from /etc/device_c.cfg?
-  set addr "http://localhost:8082"
+  # Server address. Updated from /etc/device_c.cfg
+  set addr [exec device_c get_srv]
 
   # nutmeat
   proc get {act dev args} {
