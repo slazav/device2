@@ -41,12 +41,14 @@ DevManager::parse_url(const std::string & url){
 void
 DevManager::conn_open(const uint64_t conn){
   Log(2) << "conn:" << conn << " open connection";
+  conn_names[conn] = std::string("#") + type_to_str(conn);
 }
 
 void
 DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
   for (auto & d:devices) d.second.release(conn);
+  conn_names.erase(conn);
   Log(2) << "conn:" << conn << " close connection";
 }
 
@@ -187,6 +189,30 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     std::ostringstream s;
     s << tv.tv_sec << "." << std::setfill('0') << std::setw(6) << tv.tv_usec;
     return s.str();
+  }
+
+  // set connection name
+  if (act == "set_conn_name"){
+    if (msg!="")
+      throw Err() << "unexpected argument: " << msg;
+    conn_names[conn] = arg;
+    return std::string();
+  }
+
+  // get connection name
+  if (act == "get_conn_name"){
+    if (arg!="")
+      throw Err() << "unexpected argument: " << arg;
+    return conn_names[conn];
+  }
+
+  // list all connection names
+  if (act == "list_conn_names"){
+    if (arg!="")
+      throw Err() << "unexpected argument: " << arg;
+    std::ostringstream ss;
+    for (auto const & c: conn_names) ss << c.second << "\n";
+    return ss.str();;
   }
 
   throw Err() << "unknown action: " << act;

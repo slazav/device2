@@ -35,6 +35,9 @@ class DevManager {
 
   std::string devfile; // device list file
 
+  // connection names
+  std::map<uint64_t, std::string> conn_names;
+
 public:
 
   // Constructor. Reading configuration.

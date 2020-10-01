@@ -57,6 +57,8 @@ commands (e.g. "generator" role has a "set frequency" command).
 
 Supported actions:
 
+* `ask/<device>/<message>` -- Send message to a device, return answer.
+
 * `devices` or `list` -- Show list of all known devices.
 
 * `info/<device>` -- Print information about a device.
@@ -64,7 +66,11 @@ Supported actions:
 * `reload` -- Reload device configuration. If case of errors in the file
 old configuration is kept.
 
-* `ask/<device>/<message>` -- Send message to a device, return answer.
+* `ping` -- Check connection to the server. Returns nothing.
+
+* `get_time` -- Get system time (unix seconds with microsecond precision)
+
+Connection-related actions.
 
 * `use/<device>` -- Use a device in this connection. Usually a device is
 opened (if it is not opened yet) on demand, then `ask` action is called.
@@ -75,6 +81,19 @@ message to it (e.g. to process errors separately).
 to be used by this connection anymore. Device is closed if no other
 connections use it.Normally devices are closed
 when session is ended and no other sessions are using the device.
+
+* `log_start/<device>` -- Any user can see all communications of every device.
+To do it one should start with `log_start` action. The buffer of size
+1024 lines is created for this connection, all messages send to the
+device, all answers and errors received will be written to the buffer
+(with "<<", ">>", and "EE" prefixes). If the buffer already exists it will
+be cleared.
+
+* `log_finish/<device>` -- Stop logging, delete the log buffer for this
+connection.
+
+* `log_get/<device>` -- Get contents of the log buffer, clear it. If logging
+is stopped return error.
 
 * `lock/<device>` -- Lock the device for single use. Normally no locking
 is needed, many clients can communicate with the device without collisions.
@@ -90,23 +109,20 @@ connection, and try to use the same device. Thus it is recommended to
 unlocked device when you finish with it. Command returns errors if device
 is locked by somebody else, or if it is not locked.
 
-* `log_start/<device>` -- Any user can see all communications of every device.
-To do it one should start with `log_start` action. The buffer of size
-1024 lines is created for this connection, all messages send to the
-device, all answers and errors received will be written to the buffer
-(with "<<", ">>", and "EE" prefixes). If the buffer already exists it will
-be cleared.
+* `set_conn_name` -- Set connection name. Each connection to the server
+has a unique number and text name (by default it is "#<conn number>").
+Client can set any name using this function.
 
-* `log_finish/<device>` -- Stop logging, delete the log buffer for this
-connection.
+* `get_conn_name` -- Get connection name.
 
-* `log_get/<device>` -- Get contents of the log buffer, clear it. If logging
-is stopped return error.
+* `list_conn_names` -- List all connections.
+This function could be useful to check if another instance of a program is
+running (set unique name and check that it appears only ones in the list).
 
-* `ping` -- Check connection to the server. Returns nothing.
-
-* `get_time` -- Get system time (unix seconds with microsecond precision)
-
+There is a problem with locks and connection names: if server is
+restarted, connections are reopened and clients do not know about it.
+Locks and connection names will be lost in this situation. Probably,
+these settings should be done in headers of every request.
 
 ### Starting the server
 
@@ -461,6 +477,7 @@ Usage:
 * `device_c [<options>] monitor <dev>`   -- monitor all communication of the device
 * `device_c [<options>] ping`            -- check if the server is working
 * `device_c [<options>] get_time`        -- get server system time
+* `device_c [<options>] get_srv`         -- get server address
 
 Options:
 * `-s, --server <arg>` -- Server (default: localhost).
@@ -588,5 +605,44 @@ Now it should be obvious how to crash the server: connect a device to itself!
 ```
 mydev   spp -prog "device_c use_dev mydev"
 ```
+
+### TCL library
+
+There is a TCL library Device2 for working with the server.
+
+"New" interface:
+
+* `Device2:addr` -- variable with the server address. When library is loading
+it is updated by running `device_c get_srv` and thus syncronized with
+device_c configuration file (TODO: what about -via setting?).
+
+* `Device2:get <action> <device> <msg> ...` -- the most general function
+for communicating with the server.    all extra arguments are joined with `<msg>`.
+
+* `Device2:ask <dev> <msg>`
+* `Device2:list`
+* `Device2:reload`
+* `Device2:ping`
+* `Device2:get_time`
+* `Device2:info <dev>`
+* `Device2:use <dev>`
+* `Device2:release <dev>`
+* `Device2:lock <dev>`
+* `Device2:unlock <dev>`
+* `Device2:log_start <dev>`
+* `Device2:log_finish <dev>`
+* `Device2:log_get <dev>` -- syntactic sugar for all actions
+
+"Old" interface is almost compatable with Device library (https://github.com/slazav/tcl-device).
+For each device `itcl` object with `cmd`, `lock`, `unlock` methods can be created. Methods
+`read` and `write` are missing (they were not widely used and I want to get rid of them).
+```
+Device <name>
+<name> cmd *IDN?
+DeviceDelete <name>
+```
+
+For example, DeviceRole library can be switched to Device2 just by
+replacing `package use Device` by `package use Device2`.
 
 ---
