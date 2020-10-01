@@ -15,6 +15,16 @@
 #include "dev_manager.h"
 #include "http_server.h"
 
+#define DEF_CFGFILE "/etc/device2/device_d.cfg"
+#define DEF_DEVFILE "/etc/device2/devices.cfg"
+#define DEF_PIDFILE "/var/run/device_d.pid"
+#define DEF_LOGFILE "/var/log/device_d.log"
+#define DEF_ADDR    "127.0.0.1"
+#define DEF_PORT    8082
+#define DEF_VERB    1
+
+#define STR(s) STR_(s)
+#define STR_(s) #s
 
 /*************************************************/
 // print help message
@@ -49,10 +59,10 @@ main(int argc, char ** argv) {
 
     // fill option structure
     GetOptSet options;
-    options.add("cfgfile",  1,'C', "DEVSERV", "Server configuration file (default: /etc/device/device_d.cfg).");
-    options.add("devfile", 1,'D', "DEVSERV", "Device list file (default: /etc/device/devices.cfg).");
-    options.add("addr",    1,'a', "DEVSERV", "IP address to listen. Use '*' to listen everywhere (default: 127.0.0.1).");
-    options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: 8082).");
+    options.add("cfgfile", 1,'C', "DEVSERV", "Server configuration file (default: " DEF_CFGFILE ").");
+    options.add("devfile", 1,'D', "DEVSERV", "Device list file (default: " DEF_DEVFILE ").");
+    options.add("addr",    1,'a', "DEVSERV", "IP address to listen. Use '*' to listen everywhere (default: " DEF_ADDR ").");
+    options.add("port",    1,'p', "DEVSERV", "TCP port for connections (default: " STR(DEF_PORT) ").");
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
     options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: "
@@ -60,10 +70,10 @@ main(int argc, char ** argv) {
       "1 - write some information on server start/stop; "
       "2 - write about opening/closing connections and devices; "
       "3 - write all messages sent to devices and received from them. "
-      " (default: 1).");
+      " (default: " STR(DEF_VERB) ").");
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
-      "(default: /var/log/device_d.log in daemon mode, '-' in console mode.");
-    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: /var/run/device_d.pid)");
+      "(default: " DEF_LOGFILE " in daemon mode, '-' in console mode.");
+    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: " DEF_PIDFILE ")");
     options.add("test",    0,0,   "DEVSERV", "Test mode with connection number limited to 1.");
     options.add("help",    0,'h', "DEVSERV", "Print help message and exit.");
     options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format and exit.");
@@ -79,25 +89,25 @@ main(int argc, char ** argv) {
     if (opts.exists("pod"))  usage(options,true);
 
     // read config file
-    std::string cfgfile = opts.get("cfgfile", "/etc/device2/device_d.cfg");
+    std::string cfgfile = opts.get("cfgfile", DEF_CFGFILE);
     Opt optsf = read_conf(cfgfile,
        {"addr", "port","logfile","pidfile","devfile","verbose"});
     opts.put_missing(optsf);
 
     // extract parameters
-    std::string addr = opts.get("addr", "127.0.0.1");
-    int port    = opts.get("port", 8082);
+    std::string addr = opts.get("addr", DEF_ADDR);
+    int port    = opts.get("port", DEF_PORT);
     bool dofork = opts.exists("dofork");
     bool stop   = opts.exists("stop");
-    int  verb   = opts.get("verbose", 1);
+    int  verb   = opts.get("verbose", DEF_VERB);
     logfile = opts.get("logfile");
-    pidfile = opts.get("pidfile", "/var/run/device_d.pid");
-    devfile = opts.get("devfile", "/etc/device2/devices.cfg");
+    pidfile = opts.get("pidfile", DEF_PIDFILE);
+    devfile = opts.get("devfile", DEF_DEVFILE);
     bool test = opts.get("test", false);
 
     // default log file
     if (logfile==""){
-      if (dofork) logfile="/var/log/device_d.log";
+      if (dofork) logfile = DEF_LOGFILE;
       else logfile="-";
     }
     Log::set_log_file(logfile);
