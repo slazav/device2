@@ -27,6 +27,7 @@ void usage(const GetOptSet & options, bool pod=false){
   pr.usage("[<options>] monitor <dev>   -- monitor all communication of the device");
   pr.usage("[<options>] ping            -- check if the server is working");
   pr.usage("[<options>] get_time        -- get server system time");
+  pr.usage("[<options>] get_srv         -- get server address");
 
   pr.head(1, "Options:");
   pr.opts({"DEVCLI"});
@@ -297,6 +298,12 @@ main(int argc, char ** argv) {
     if (action == "get_time"){
       check_par_count(pars, 1);
       std::cout << D.get(action) << "\n";
+      return 0;
+    }
+
+    if (action == "get_srv"){
+      check_par_count(pars, 1);
+      std::cout << srv << "\n";
       return 0;
     }
 
