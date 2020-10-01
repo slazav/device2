@@ -27,6 +27,7 @@ namespace eval Device2 {
     set code [::http::ncode $token]
     set err  [::http::error $token]
     set data [::http::data $token]
+    http::cleanup $token
     if {$code != 200} {error $data}
     return $data
   }
