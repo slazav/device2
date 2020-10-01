@@ -4,6 +4,7 @@
 #include <unistd.h> // usleep
 
 #include <curl/curl.h>
+#include "tun.h"
 
 #include "read_words/read_words.h"
 #include "read_words/read_conf.h"
@@ -205,8 +206,13 @@ main(int argc, char ** argv) {
     // fill option structure
     GetOptSet options;
     std::string on("DEVCLI");
-    options.add("server",  1,'s', on, "Server (default: http://localhost).");
+    options.add("server",  1,'s', on, "Server (default: localhost).");
     options.add("port",    1,'p', on, "Port (default: 8082).");
+    options.add("via",     1,'v', on, "Connect to the server through a tunnel. "
+                                      "Argument: name of the gateway.");
+    options.add("via_cmd", 1,0  , on, "Specify command template for making the tunnel, with $L, $R, $H, "
+                                      "and $G for local port, remote port, remote host and gateway. "
+                                      "Default: /usr/bin/ssh -f -L \"$L\":\"$H\":\"$R\" \"$G\" sleep 20");
     options.add("lock",    0,'l', on, "Lock the device (only for use_dev action).");
     options.add("help",    0,'h', on, "Print help message and exit.");
     options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
@@ -221,14 +227,18 @@ main(int argc, char ** argv) {
 
     // read config file
     std::string cfgfile = "/etc/device2/device_c.cfg";
-    Opt optsf = read_conf(cfgfile, {"server", "port"});
+    Opt optsf = read_conf(cfgfile, {"server", "port", "via", "via_cmd"});
     opts.put_missing(optsf);
 
     // extract parameters
-    std::string server = opts.get("server", "http://localhost");
+    std::string server = opts.get("server", "localhost");
     int port = opts.get("port", 8082);
-    auto srv = server + ":" + type_to_str(port);
+    auto srv = "http://" + server + ":" + type_to_str(port);
 
+    // create a tunnel if needed
+    if (opts.exists("via")) srv = create_tunnel(opts);
+
+    // some non-option arguments needed!
     if (pars.size()==0) usage(options);
     auto & action = pars[0];
 

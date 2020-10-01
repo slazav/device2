@@ -47,11 +47,11 @@ assert_cmd "./device_c $srv ask b text" "text" 0
 
 # spp interfaces
 a="$(echo -e 'a\nb c\nd/e\nf&g\n\n' | ./device_c $srv use_dev b)"
-assert_cmd "echo $a" "#SPP001 Server: localhost:$port Device: b #OK a #OK b c #OK d/e #OK f&g #OK" 0
+assert_cmd "echo $a" "#SPP001 Server: http://localhost:$port Device: b #OK a #OK b c #OK d/e #OK f&g #OK" 0
 
 a="$(echo -e 'list\nlist 1\nerr\nping\nuse b\nask b 123\ninfo b\n' | ./device_c $srv use_srv)"
 assert_cmd "echo $a" \
-"#SPP001 Server: localhost:8182 #OK \
+"#SPP001 Server: http://localhost:8182 #OK \
 a b #OK \
 #Error: unexpected argument: /list/1 \
 #Error: unknown action: err #OK \

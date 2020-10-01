@@ -458,15 +458,20 @@ Usage:
 * `device_c [<options>] get_time`        -- get server system time
 
 Options:
-* `-s, --server <arg>` -- Server (default: http://localhost).
+* `-s, --server <arg>` -- Server (default: localhost).
 * `-p, --port <arg>`   -- Port (default: 8082).
+* `-v, --via <arg>`    -- Connect to the server through a tunnel.
+                          Argument: name of the gateway.
+* `--via_cmd <arg>`    -- Specify command template for making the tunnel, with $L, $R, $H,
+                          and $G for local port, remote port, remote host and gateway.
+                          Default: /usr/bin/ssh -f -L \"$L\":\"$H\":\"$R\" \"$G\" sleep 20
 * `-l, --lock`         -- Lock the device (only for `use_dev` action).
 * `-h, --help`         -- Print help message and exit.
 * `--pod`              -- Print help message in POD format and exit.
 
 Client configuration file (`/etc/device/device_c.cfg`) is similar to the
 server one.  Following parameters can be set in the configuration file:
-`server`, `port`.
+`server`, `port`, `via`, `via_cmd`.
 
 
 ### Examples
@@ -560,7 +565,8 @@ There are two ways how to configure remote access to your devices. First,
 you can connect to the remote server by HTTP protocol. Note that device
 server does not have any security features, and it's not safe to allow
 connections from outside. But it should be safe to make an ssh tunnel to
-the remote server.
+the remote server. This can be done with -via parameter of `device_c`
+command.
 
 Other option is to use external devices connected to the local server.
 The `device_c` program implements SPP protocol when using in `use_dev`
@@ -570,6 +576,8 @@ servers running on both computers and want to access remote device
 ```
 mydev   spp -prog "ssh comp2 device_c use_dev mydev"
 ```
+This approach allows you to mix local and remote devices on your
+computer and access them throug the local server.
 
 Now it should be obvious how to crash the server: connect a device to itself!
 ```

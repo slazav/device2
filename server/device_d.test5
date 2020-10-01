@@ -38,7 +38,7 @@ log_get b' | ./device_c $srv use_srv)"
 
 assert_cmd "echo $a" "\
 #SPP001 \
-Server: localhost:8182 \
+Server: http://localhost:8182 \
 #OK \
 #OK \
 Q1? \
