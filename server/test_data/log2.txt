@@ -19,7 +19,9 @@ conn:3 open connection
 conn:3 process request: /ask/b/text
 conn:3 open device: b
 conn:3 answer: text
+conn:3 process request: /release/b
 conn:3 close device: b
+conn:3 answer: 
 conn:3 close connection
 conn:4 open connection
 conn:4 process request: /devices
@@ -45,7 +47,9 @@ conn:7 open connection
 conn:7 process request: /ask/b/text
 conn:7 open device: b
 conn:7 answer: text
+conn:7 process request: /release/b
 conn:7 close device: b
+conn:7 answer: 
 conn:7 close connection
 conn:8 open connection
 conn:8 process request: /use/b

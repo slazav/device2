@@ -259,6 +259,7 @@ main(int argc, char ** argv) {
     if (action == "ask"){
       check_par_count(pars, 3);
       std::cout << D.get(action, pars[1], pars[2]) << "\n";
+      D.get("release", pars[1]);
       return 0;
     }
 
