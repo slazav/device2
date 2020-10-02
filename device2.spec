@@ -1,5 +1,5 @@
 Name:         device2
-Version:      0.1
+Version:      1.0
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,3 +52,8 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Fri Oct 02 2020 Vladislav Zavjalov <slazav@altlinux.org> 1.0-alt1
+- v1.0 (device_d, device_c, tcl library).
+- Tested drivers: net (with LXI devices), gpib, usbtmc,
+                  serial_asm340, serial_tenma_ps.
+- Not tested: serial_vs_ld, serial_simple, net_gpib_prologix.
