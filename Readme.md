@@ -102,27 +102,36 @@ using it. This is done by the `lock` action, only if
 the device has no other users.
 
 * `unlock/<device>` -- Unlock the device previously locked with the `lock`
-command. Devices are unlocked when the connection is closed, but the
-server keeps the connection longer then it's needed (until new connection
-appears). This can cause a problem if you lock the device, reopen the
-connection, and try to use the same device. Thus it is recommended to
-unlocked device when you finish with it. Command returns errors if device
-is locked by somebody else, or if it is not locked.
+command.
 
-* `set_conn_name` -- Set connection name. Each connection to the server
-has a unique number and text name (by default it is "#<conn number>").
-Client can set any name using this function.
+* `set_conn_name/<name>` -- Set connection name. Each connection to the
+server has a unique number and unique text name (by default it is
+"#<conn_number>"). Client can change the name using this function. Name
+set by user can not start with "#". If name is empty, the default value
+"#<conn_number>" is set. If name already belongs to another connection error
+occures. This feature can be used to detect another instances of the same
+program.
 
 * `get_conn_name` -- Get connection name.
 
 * `list_conn_names` -- List all connections.
-This function could be useful to check if another instance of a program is
-running (set unique name and check that it appears only ones in the list).
 
-There is a problem with locks and connection names: if server is
-restarted, connections are reopened and clients do not know about it.
-Locks and connection names will be lost in this situation. Probably,
-these settings should be done in headers of every request.
+* `release_all` -- Release (and unlock) all devices, reset connection name
+to default value.
+
+There are two problems with locks and unique connection names (and
+generally with session handling):
+
+* If server is restarted, connections are reopened and clients do not
+know about it. Locks and connection names will be lost in this situation.
+It is recommended to update locks and names regularly, e.g. at the
+beginning of each measurement cycle.
+
+* Server can keep the connection when the client program already finished.
+Locks and connection name are still there, and can affect the client if
+it will  restart connection (e.g if the program is restarted). It is
+recommended to run `release_all` action to unlocked devices and reset
+connection name to default value before disconnecting.
 
 ### Starting the server
 

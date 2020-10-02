@@ -41,7 +41,7 @@ DevManager::parse_url(const std::string & url){
 void
 DevManager::conn_open(const uint64_t conn){
   Log(2) << "conn:" << conn << " open connection";
-  conn_names[conn] = std::string("#") + type_to_str(conn);
+  set_conn_name(conn);
 }
 
 void
@@ -51,6 +51,26 @@ DevManager::conn_close(const uint64_t conn){
   conn_names.erase(conn);
   Log(2) << "conn:" << conn << " close connection";
 }
+
+void
+DevManager::set_conn_name(const uint64_t conn,
+  std::string name){
+
+    // check that the name does not start with #
+    if (name.size()>0 && name[0] == '#')
+      throw Err() << "name can not start with #";
+
+    // if name id empty, use default value
+    if (name=="") name = std::string("#") + type_to_str(conn);
+
+    // check if the name already exists:
+    for (auto const & c: conn_names)
+      if (c.first!=conn && c.second==name)
+        throw Err() << "name belongs to another connection";
+
+    conn_names[conn] = name;
+}
+
 
 /*************************************************/
 std::string
@@ -195,7 +215,7 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
   if (act == "set_conn_name"){
     if (msg!="")
       throw Err() << "unexpected argument: " << msg;
-    conn_names[conn] = arg;
+    set_conn_name(conn, arg);
     return std::string();
   }
 
@@ -212,7 +232,16 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
       throw Err() << "unexpected argument: " << arg;
     std::ostringstream ss;
     for (auto const & c: conn_names) ss << c.second << "\n";
-    return ss.str();;
+    return ss.str();
+  }
+
+  // release (and unlock) all devices, reset connection name
+  if (act == "release_all"){
+    if (arg!="")
+      throw Err() << "unexpected argument: " << arg;
+    for (auto & d:devices) d.second.release(conn);
+    set_conn_name(conn);
+    return std::string();
   }
 
   throw Err() << "unknown action: " << act;

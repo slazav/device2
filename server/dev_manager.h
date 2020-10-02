@@ -52,6 +52,12 @@ public:
   // close connection callback:
   void conn_close(const uint64_t conn);
 
+  // Set connection name (name can not start with #, empty string resets
+  // the name to defauld value, #<conn>, in name belongs to another connection
+  // error occures.
+  void set_conn_name(const uint64_t conn, std::string name="");
+
+
   // Process a request from HTTP server.
   // Arguments:
   // - act:  action (URL without arguments in GET request)
