@@ -47,7 +47,7 @@ Driver_spp::Driver_spp(const Opt & opts) {
   errpref += prog + ": ";
 
   open_timeout = opts.get<double>("open_timeout", 20.0);
-  read_timeout = opts.get<double>("read_timeout", 5.0);
+  read_timeout = opts.get<double>("read_timeout", 10.0);
 
   flt.reset(new IOFilter(prog));
   try {
