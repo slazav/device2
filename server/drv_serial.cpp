@@ -79,7 +79,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
     "echo","echoctl","echoe","echok","echoke","echonl","echoprt","extproc",
     "flusho","icanon","iexten","isig","noflsh","tostop","xcase", // local
     "parity","raw","sfc","nlcnv","lcase","timeout","vmin",
-    "delay","add_str","trim_str","ack_str","nack_str"});
+    "delay","add_str","trim_str","ack_str","nack_str", "read_cond"});
   int ret;
 
   //prefix for error messages
