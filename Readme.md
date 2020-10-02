@@ -259,15 +259,15 @@ of my projects (pico_rec, graphene), and in `device_c` client program.
 
 Parameters:
 
-* `-prog`          -- program name
+* `-prog`          -- Program name. Required.
 
-* `-open_timeout`  -- timeout for opening
+* `-open_timeout`  -- Timeout for opening, seconds. Default 20.0.
 
-* `-read_timeout`  -- timeout for reading
+* `-read_timeout`  -- Timeout for reading, seconds. Default: 10.0.
 
-* `-errpref` -- error prefix (default "spp: ")
+* `-errpref` -- Prefix for error messages. Default "spp: ".
 
-* `-idn`     -- override output of *idn? command (default: do not override)
+* `-idn`     -- Override output of *idn? command. Default: do not override.
 
 
 ### Driver `usbtmc` -- USB devices using usbtmc kernel module
@@ -286,7 +286,7 @@ Parameters:
                      Required.
 
 * `-timeout <v>`  -- Timeout for reading, seconds
-                     Default: do not change
+                     Default: 5.0
 
 * `-errpref <v>`  -- Prefix for error messages.
                      Default "usbtmc: ".
@@ -315,7 +315,7 @@ Parameters:
                       Default: 0.
 
 * `-timeout <str>` -- I/O timeout: none, 10us, 30us, 100us ... 300s, 1000s
-                      Default 3s.
+                      Default 10s.
 
 * `-open_timeout <str>` -- Open timeout, same values as for -read_timeout.
                       Default 3s.
@@ -608,8 +608,12 @@ servers running on both computers and want to access remote device
 ```
 mydev   spp -prog "ssh comp2 device_c use_dev mydev"
 ```
-This approach allows you to mix local and remote devices on your
-computer and access them through the local server.
+
+This approach allows you to mix local and remote devices on your computer
+and access them through the local server. Note that in this configuration
+you should have timeouts of the spp driver larger then timeouts of the
+device's driver. Currently default read/open timeouts are:
+10s/20s for spp, 3s/10s for gpib, 5s for serial, usbtmc, and net drivers.
 
 Now it should be obvious how to crash the server: connect a device to itself!
 ```
@@ -627,7 +631,7 @@ it is updated by running `device_c get_srv` and thus syncronized with
 device_c configuration file (TODO: what about -via setting?).
 
 * `Device2:get <action> <device> <msg> ...` -- the most general function
-for communicating with the server.    all extra arguments are joined with `<msg>`.
+for communicating with the server. All extra arguments are joined with `<msg>`.
 
 * `Device2:ask <dev> <msg>`
 * `Device2:list`

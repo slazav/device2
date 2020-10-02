@@ -22,7 +22,7 @@ Parameters:
                       Default: 0.
 
 * `-timeout <str>` -- I/O timeout: none, 10us, 30us, 100us ... 300s, 1000s
-                      Default 3s.
+                      Default 10s.
 
 * `-open_timeout <str>` -- Open timeout, same values as for -read_timeout.
                       Default 3s.

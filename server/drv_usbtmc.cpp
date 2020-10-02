@@ -36,13 +36,11 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't clear device state: " << strerror(errno);
 
-  // set timeout (ms)
-  if (opts.exists("timeout")) {
-    uint32_t v = opts.get<double>("timeout", 0)*1000; // convert to integer ms
-    ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
-    if (ret<0) throw Err() << errpref
-      << "can't set timeout: " << strerror(errno);
-  }
+  uint32_t v = opts.get<double>("timeout", 5.0)*1000; // convert to integer ms
+  ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
+  if (ret<0) throw Err() << errpref
+    << "can't set timeout: " << strerror(errno);
+
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
 }

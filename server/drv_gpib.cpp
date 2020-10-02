@@ -70,8 +70,8 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
 
   errpref += std::string("dev:") + type_to_str(board) + "." + type_to_str(addr) + ": ";
 
-  int open_timeout = get_timeout(opts.get("open_timeout", "3s"));
-  int timeout      = get_timeout(opts.get("timeout", "1s"));
+  int open_timeout = get_timeout(opts.get("open_timeout", "10s"));
+  int timeout      = get_timeout(opts.get("timeout", "3s"));
   bool eot         = opts.get("eot", false);
   int  eos         = opts.get("eos", -1);
   bool secondary   = opts.get("secondary", false);

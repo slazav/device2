@@ -19,8 +19,8 @@ Parameters:
 * `-dev <v>`      -- Serial device filename (e.g. /dev/usbtmc0)
                      Required.
 
-* `-timeout <v>`  -- Timeout for reading, seconds
-                     Default: do not change
+* `-timeout <v>`  -- Timeout for reading, seconds.
+                     Default: 5.0
 
 * `-errpref <v>`  -- Prefix for error messages.
                      Default "usbtmc: ".

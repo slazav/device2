@@ -14,15 +14,15 @@ of my projects (pico_rec, graphene), and in `device_c` client program.
 
 Parameters:
 
-* `-prog`          -- program name
+* `-prog`          -- Program name. Required.
 
-* `-open_timeout`  -- timeout for opening
+* `-open_timeout`  -- Timeout for opening, seconds. Default 20.0.
 
-* `-read_timeout`  -- timeout for reading
+* `-read_timeout`  -- Timeout for reading, seconds. Default: 10.0.
 
-* `-errpref` -- error prefix (default "spp: ")
+* `-errpref` -- Prefix for error messages. Default "spp: ".
 
-* `-idn`     -- override output of *idn? command (default: do not override)
+* `-idn`     -- Override output of *idn? command. Default: do not override.
 
 */
 
