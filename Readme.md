@@ -34,6 +34,9 @@ to the server if it wants to use a device without closing/opening it.
 either making a tunnel for HTTP connections, or by attaching the
 remote client program, `device_c` to the local server as a device.
 
+The server support devices connected via linux-gpib and usbtmc kernel
+drivers; serial and network devices (including LXI); programs with SPP
+interface.
 
 ## Server
 
@@ -69,8 +72,6 @@ old configuration is kept.
 * `ping` -- Check connection to the server. Returns nothing.
 
 * `get_time` -- Get system time (unix seconds with microsecond precision)
-
-Connection-related actions.
 
 * `use/<device>` -- Use a device in this connection. Usually a device is
 opened (if it is not opened yet) on demand, then `ask` action is called.
@@ -561,7 +562,7 @@ get_time
 Use the server for multiple queries. In this mode you have access to all
 server actions and can work with multiple devices. Every input line is
 split into three words: `action`, `device`, and `message`. The
-`read_word` library ( https://github.com/slazav/mapsoft2-libs/tree/master/read_words ) is used
+`read_words` library ( https://github.com/slazav/mapsoft2-libs/tree/master/read_words ) is used
 to enable quotes, escape characters, multiline input etc. For example, if
 you want to use spaces in the message, quote it.
 
@@ -655,3 +656,4 @@ For example, DeviceRole library can be switched to Device2 just by
 replacing `package use Device` by `package use Device2`.
 
 ---
+V.Zavjalov, 2020, slazav at altlinux dot org

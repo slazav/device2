@@ -4,3 +4,4 @@
 *.test
 *.test.passed
 *.man
+*.1
