@@ -88,19 +88,22 @@ public:
   }
 
   // SPP interface to a single device.
-  void use_dev(const std::string & dev, std::istream & in, std::ostream & out, const bool lock){
+  void use_dev(const std::string & dev,
+               std::istream & in, std::ostream & out,
+               const bool lock, const std::string & name){
+
     out << "#SPP001\n"; // command-line protocol, version 001.
     out << "Server: " << server << "\n";
     out << "Device: " << dev << "\n";
-    if (lock) get("lock", dev);
-
-    out.flush();
 
     // Outer try -- exit on errors with #Error message
     // For SPP2 it should be #Fatal
     try {
-      // open device, throw error if needed
+      // open device, set lock and connection name,
+      // throw error if needed
       get("use", dev);
+      if (name !="") get("set_conn_name", name);
+      if (lock) get("lock", dev);
       out << "#OK\n";
       out.flush();
 
@@ -125,7 +128,7 @@ public:
       if (e.str()!="") out << "#Error: " << e.str() << "\n";
       return;
     }
-    get("release", dev);
+    get("release_all");
     return;
   }
 
@@ -168,6 +171,7 @@ public:
       if (e.str()!="") out << "#Error: " << e.str() << "\n";
       return;
     }
+    get("release_all");
     return;
   }
 
@@ -215,6 +219,8 @@ main(int argc, char ** argv) {
                                       "and $G for local port, remote port, remote host and gateway. "
                                       "Default: /usr/bin/ssh -f -L \"$L\":\"$H\":\"$R\" \"$G\" sleep 20");
     options.add("lock",    0,'l', on, "Lock the device (only for use_dev action).");
+    options.add("name",    0,'n', on, "Set connection name (only for use_dev action). "
+                                      "Default: \"device_c(<pid>)\". If empty, reset to server default name");
     options.add("help",    0,'h', on, "Print help message and exit.");
     options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
 
@@ -232,9 +238,11 @@ main(int argc, char ** argv) {
     opts.put_missing(optsf);
 
     // extract parameters
-    std::string server = opts.get("server", "localhost");
+    auto server = opts.get("server", "localhost");
     int port = opts.get("port", 8082);
     auto srv = "http://" + server + ":" + type_to_str(port);
+    auto name = opts.get("name",
+      std::string("device_c(") + type_to_str(getpid())+")");
 
     // create a tunnel if needed
     if (opts.exists("via")) srv = create_tunnel(opts);
@@ -253,7 +261,7 @@ main(int argc, char ** argv) {
 
     if (action == "use_dev"){
       check_par_count(pars, 2);
-      D.use_dev(pars[1], std::cin, std::cout, opts.exists("lock"));
+      D.use_dev(pars[1], std::cin, std::cout, opts.exists("lock"), name);
       return 0;
     }
 

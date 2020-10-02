@@ -51,6 +51,8 @@ conn:8 open connection
 conn:8 process request: /use/b
 conn:8 open device: b
 conn:8 answer: 
+conn:8 process request: /set_conn_name/device_c(<...>)
+conn:8 answer: 
 conn:8 process request: /ask/b/a
 conn:8 answer: a
 conn:8 process request: /ask/b/b c
@@ -59,7 +61,7 @@ conn:8 process request: /ask/b/d/e
 conn:8 answer: d/e
 conn:8 process request: /ask/b/f&g
 conn:8 answer: f&g
-conn:8 process request: /release/b
+conn:8 process request: /release_all
 conn:8 close device: b
 conn:8 answer: 
 conn:8 close connection
@@ -91,6 +93,8 @@ Device is open
 Number of users: 1
 You are currently using the device
 
+conn:9 process request: /release_all
 conn:9 close device: b
+conn:9 answer: 
 conn:9 close connection
 Stopping HTTP server

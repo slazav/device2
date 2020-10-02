@@ -64,7 +64,8 @@ Device is open Number of users: 1 You are currently using the device #OK" 0
 assert_cmd "./device_d -C test_data/serv_conf --stop" "" 0
 
 sed -r 's/pid=[0-9]+/pid=<...>/
-        s/answer: ([0-9]+)\.([0-9]+)/answer xxxxxxxxxx.xxxxxx/' -i log.txt
+        s/answer: [0-9]+\.[0-9]+/answer xxxxxxxxxx.xxxxxx/
+        s/device_c\([0-9+]+\)/device_c(<...>)/' -i log.txt
 assert_diff test_data/log2.txt log.txt
 
 
