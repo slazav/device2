@@ -63,18 +63,30 @@ Driver_usbtmc::~Driver_usbtmc() {
 std::string
 Driver_usbtmc::read() {
   char buf[4096];
-  auto res = ::read(fd,buf,sizeof(buf));
-  if (res<0){
-    auto en = errno;
-    // Recover from timeout.
-    // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
-    // should be enough, but for me it does not work in some cases.
-    ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
-    throw Err() << errpref
-      << "read error: " << strerror(en);
-  }
 
-  auto ret = std::string(buf, buf+res);
+  std::string ret;
+  while (1) {
+    auto res = ::read(fd,buf,sizeof(buf));
+    if (res<0){
+      auto en = errno;
+      // Recover from timeout.
+      // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
+      // should be enough, but for me it does not work in some cases.
+      ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
+      throw Err() << errpref
+        << "read error: " << strerror(en);
+    }
+    ret += std::string(buf, buf+res);
+
+    // Check if more data is available (bit4 - data available)
+    // This loop is needed for some slow operations
+    // (such as Keysight multiplexer read? command)
+    uint8_t stb;
+    res = ioctl(fd,USBTMC488_IOCTL_READ_STB, &stb);
+    if (res<0) throw Err() << errpref
+      << "can't get status byte: " << strerror(errno);
+    if (!(stb & (1<<4))) break;
+  }
 
   trim_str(ret,trim); // -trim option
 
