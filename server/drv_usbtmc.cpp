@@ -36,10 +36,20 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't clear device state: " << strerror(errno);
 
+  // set timeout
   uint32_t v = opts.get<double>("timeout", 5.0)*1000; // convert to integer ms
   ret = ioctl(fd, USBTMC_IOCTL_SET_TIMEOUT, &v);
   if (ret<0) throw Err() << errpref
     << "can't set timeout: " << strerror(errno);
+
+// This should be correct way to recover from read timeouts;
+// But it does not work fo me (Invalid request code)
+//
+//  // Abort I/O operations on timeouts:
+//  uint8_t autoabrt = 1;
+//  ret = ioctl(fd, USBTMC_IOCTL_AUTO_ABORT, &autoabrt);
+//  if (ret<0) throw Err() << errpref
+//    << "can't set IOCTL_AUTO_ABORT: " << strerror(errno);
 
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
