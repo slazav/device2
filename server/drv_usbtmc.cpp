@@ -65,6 +65,7 @@ Driver_usbtmc::read() {
 
   std::string ret;
   while (1) {
+
     auto res = ::read(fd,buf,sizeof(buf));
     if (res<0){
       auto en = errno; // save errno to show the error later
@@ -75,6 +76,10 @@ Driver_usbtmc::read() {
     }
     ret += std::string(buf, buf+res);
 
+    // Sometimes STB is set after a short delay after read
+    // Wait for 10 ms
+    usleep(10000);
+
     // Check if more data is available (bit4 of STB)
     // This loop is needed for some slow operations
     // (such as Keysight multiplexer read? command)
@@ -83,6 +88,7 @@ Driver_usbtmc::read() {
     if (res<0) throw Err() << errpref
       << "can't get status byte: " << strerror(errno);
     if (!(stb & (1<<4))) break;
+
   }
 
   trim_str(ret,trim); // -trim option
