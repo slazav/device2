@@ -42,14 +42,13 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't set timeout: " << strerror(errno);
 
-// This should be correct way to recover from read timeouts;
-// But it does not work fo me (Invalid request code)
-//
-//  // Abort I/O operations on timeouts:
-//  uint8_t autoabrt = 1;
-//  ret = ioctl(fd, USBTMC_IOCTL_AUTO_ABORT, &autoabrt);
-//  if (ret<0) throw Err() << errpref
-//    << "can't set IOCTL_AUTO_ABORT: " << strerror(errno);
+  // Try to turn on auto_abort feature of usbtmc driver to
+  // automatically recover after failed i/o operations.
+  // The feature appeares in 9.2018 and can be missing in
+  // old kernels.
+  uint8_t c = 1;
+  ret = ioctl(fd, USBTMC_IOCTL_AUTO_ABORT, &c);
+  auto_abort = (ret==0);
 
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
@@ -68,17 +67,15 @@ Driver_usbtmc::read() {
   while (1) {
     auto res = ::read(fd,buf,sizeof(buf));
     if (res<0){
-      auto en = errno;
-      // Recover from timeout.
-      // Documentation says that USBTMC_IOCTL_ABORT_BULK_IN
-      // should be enough, but for me it does not work in some cases.
-      ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
+      auto en = errno; // save errno to show the error later
+      // Recover from failed read (if auto_abort is off).
+      if (!auto_abort) ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
       throw Err() << errpref
         << "read error: " << strerror(en);
     }
     ret += std::string(buf, buf+res);
 
-    // Check if more data is available (bit4 - data available)
+    // Check if more data is available (bit4 of STB)
     // This loop is needed for some slow operations
     // (such as Keysight multiplexer read? command)
     uint8_t stb;
@@ -100,8 +97,13 @@ Driver_usbtmc::write(const std::string & msg) {
   if (add.size()>0) m+=add;
 
   auto res = ::write(fd, m.data(), m.size());
-  if (res<0) throw Err() << errpref
-    << "write error: " << strerror(errno);
+  if (res<0){
+    auto en = errno; // save errno to show the error later
+    // Recover from failed read (if auto_abort is off).
+    if (!auto_abort) ioctl(fd,USBTMC_IOCTL_CLEAR,NULL);
+    throw Err() << errpref
+      << "read error: " << strerror(en);
+  }
 }
 
 std::string
