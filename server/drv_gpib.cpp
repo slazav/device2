@@ -84,6 +84,12 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     << "opening the device: " << error_text(iberr);
 
   try {
+
+    // device clear
+    ibclr(dh);
+    if (ibsta & ERR) throw Err() << errpref
+      << "device clear: " << error_text(iberr);
+
     // set timeout
     ibtmo(dh, timeout);
     if (ibsta & ERR) throw Err() << errpref
