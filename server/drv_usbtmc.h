@@ -41,6 +41,7 @@ class Driver_usbtmc: public Driver {
   std::string errpref; // error prefix
   std::string idn;
   std::string add,trim;
+  bool auto_abort;     // can we use auto_abort feature of usbtmc driver?
 
 public:
   Driver_usbtmc(const Opt & opts);
