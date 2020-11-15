@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.0
+Version:      1.1
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,6 +52,12 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Sun Nov 15 2020 Vladislav Zavjalov <slazav@altlinux.org> 1.1-alt1
+v1.1:
+- drv_gpib: clear device buffers after opening
+- drv_usbtmc: fix reading output from some slow operations
+- device_c: release device after a single ask command
+
 * Fri Oct 02 2020 Vladislav Zavjalov <slazav@altlinux.org> 1.0-alt1
 - v1.0 (device_d, device_c, tcl library).
 - Tested drivers: net (with LXI devices), gpib, usbtmc,
