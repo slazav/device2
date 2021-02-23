@@ -15,7 +15,8 @@
 #include <cstring>
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
-  opts.check_unknown({"dev", "timeout", "errpref", "idn", "add_str", "trim_str"});
+  opts.check_unknown({"dev", "timeout", "errpref", "idn", "read_cond",
+                      "add_str", "trim_str"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "usbtmc: ");
@@ -52,6 +53,7 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
 
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
+  read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
 }
 
 
@@ -120,7 +122,7 @@ Driver_usbtmc::ask(const std::string & msg) {
   write(msg);
 
   // if there is no '?' in the message no answer is needed.
-  if (!check_read_cond(msg, READCOND_QMARK1W)) return std::string();
+  if (!check_read_cond(msg, read_cond)) return std::string();
 
   return read();
 }

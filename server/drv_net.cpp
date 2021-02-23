@@ -17,7 +17,7 @@
 
 Driver_net::Driver_net(const Opt & opts) {
   opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn",
-    "add_str", "trim_str"});
+    "read_cond", "add_str", "trim_str"});
   int res;
 
   //prefix for error messages
@@ -62,6 +62,7 @@ Driver_net::Driver_net(const Opt & opts) {
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
   idn     = opts.get("idn", "");
+  read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
 }
 
 Driver_net::~Driver_net() {
@@ -120,7 +121,7 @@ Driver_net::ask(const std::string & msg) {
   write(msg);
 
   // if there is no '?' in the message no answer is needed.
-  if (!check_read_cond(msg, READCOND_QMARK1W)) return std::string();
+  if (!check_read_cond(msg, read_cond)) return std::string();
 
   return read();
 }

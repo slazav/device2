@@ -2,6 +2,7 @@
 #define DRV_USBTMC_H
 
 #include "drv.h"
+#include "drv_utils.h"
 
 /*************************************************/
 /* Driver `usbtmc` -- using usbtmc kernel module
@@ -28,6 +29,10 @@ Parameters:
 * `-idn <v>`      -- Override output of *idn? command.
                      Default: do not override.
 
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                      always, never, qmark (if there is a question mark in the message),
+                      qmark1w (question mark in the first word). Default: qmark1w.
+
 * `-add_str <v>`  -- Add string to each message sent to the device.
                      Default: "\n"
 
@@ -42,6 +47,7 @@ class Driver_usbtmc: public Driver {
   std::string idn;
   std::string add,trim;
   bool auto_abort;     // can we use auto_abort feature of usbtmc driver?
+  read_cond_t read_cond;
 
 public:
   Driver_usbtmc(const Opt & opts);

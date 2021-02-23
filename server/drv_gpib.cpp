@@ -57,7 +57,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
 
   opts.check_unknown({"addr","board","timeout","open_timeout",
     "eot", "eos", "eos_mode", "secondary", "bufsize",
-    "errpref","idn", "add_str", "trim_str"});
+    "errpref", "idn", "read_cond", "add_str", "trim_str"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "gpib: ");
@@ -127,6 +127,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     add     = opts.get("add_str",  "\n");
     trim    = opts.get("trim_str", "\n");
     idn     = opts.get("idn", "");
+    read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
   }
   catch (Err & e){
     ibonl(dh, 0);
@@ -169,7 +170,7 @@ Driver_gpib::ask(const std::string & msg) {
   write(msg);
 
   // if there is no '?' in the message no answer is needed.
-  if (!check_read_cond(msg, READCOND_QMARK1W)) return std::string();
+  if (!check_read_cond(msg, read_cond)) return std::string();
 
   return read();
 }

@@ -3,6 +3,7 @@
 
 #include <gpib/ib.h>
 #include "drv.h"
+#include "drv_utils.h"
 #include "opt/opt.h"
 
 /*************************************************/
@@ -47,6 +48,10 @@ Parameters:
 * `-idn <str>`     -- Override output of *idn? command.
                       Default: empty string, do not override.
 
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                      always, never, qmark (if there is a question mark in the message),
+                      qmark1w (question mark in the first word). Default: qmark1w.
+
 * `-add_str <v>`   -- Add string to each message sent to the device.
                       Default: "\n"
 
@@ -61,6 +66,7 @@ protected:
   size_t bufsize;
   std::string errpref,idn;
   std::string add,trim;
+  read_cond_t read_cond;
 
   // convert timeout
   int get_timeout(const std::string & s);

@@ -294,6 +294,11 @@ Parameters:
 * `-idn <v>`      -- Override output of *idn? command.
                      Default: do not override.
 
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                     `always`, `never`, `qmark` (if there is a question mark in
+                     the message), qmark1w (question mark in the first word).
+                     Default: `qmark1w`.
+
 * `-add_str <v>`  -- Add string to each message sent to the device.
                      Default: "\n"
 
@@ -340,6 +345,11 @@ Parameters:
 * `-idn <str>`     -- Override output of *idn? command.
                       Default: empty string, do not override.
 
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                      `always`, `never`, `qmark` (if there is a question mark in
+                      the message), qmark1w (question mark in the first word).
+                      Default: `qmark1w`.
+
 * `-add_str <v>`   -- Add string to each message sent to the device.
                       Default: "\n"
 
@@ -367,6 +377,10 @@ Parameters:
                       Default: "IOSerial: "
 * `-idn <str>`     -- Override output of *idn? command.
                       Default: empty string, do not override.
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                      `always`, `never`, `qmark` (if there is a question mark in
+                      the message), qmark1w (question mark in the first word).
+                      Default: `qmark1w`.
 * `-add_str <v>`   -- Add string to each message sent to the device.
                       Default: "\n"
 * `-trim_str <v>`  -- Remove string from the end of received messages.
