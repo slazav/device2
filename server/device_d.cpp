@@ -6,7 +6,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h> // wait
-
+#include <unistd.h>
+#include <pwd.h>
 
 #include "getopt/getopt.h"
 #include "read_words/read_conf.h"
@@ -73,6 +74,7 @@ main(int argc, char ** argv) {
     options.add("dofork",  0,'f', "DEVSERV", "Do fork and run as a daemon.");
     options.add("stop",    0,'S', "DEVSERV", "Stop running daemon (found by pid-file).");
     options.add("reload",  0,'R', "DEVSERV", "Reload configuration of running daemon (found by pid-file).");
+    options.add("user",    1,'U', "DEVSERV", "Run as user (default: empty, do not switch user).");
     options.add("verbose", 1,'v', "DEVSERV", "Verbosity level: "
       "0 - write nothing; "
       "1 - write some information on server start/stop; "
@@ -99,7 +101,7 @@ main(int argc, char ** argv) {
     // read config file
     std::string cfgfile = opts.get("cfgfile", DEF_CFGFILE);
     Opt optsf = read_conf(cfgfile,
-       {"addr", "port","logfile","pidfile","devfile","verbose"});
+       {"addr", "port","logfile","pidfile","devfile","user","verbose"});
     opts.put_missing(optsf);
 
     // extract parameters
@@ -113,6 +115,16 @@ main(int argc, char ** argv) {
     pidfile = opts.get("pidfile", DEF_PIDFILE);
     devfile = opts.get("devfile", DEF_DEVFILE);
     bool test = opts.get("test", false);
+    std::string user = opts.get("user", "");
+
+    // switch user if needed
+    if (user!=""){
+      struct passwd *p;
+      if ((p = getpwnam(user.c_str())) == NULL) throw Err()
+         << "unknown user: " << user;
+      if (setuid(p->pw_uid)!=0) throw Err()
+         << "can't switch to another user: " << user << ": " << strerror(errno);
+    }
 
     // default log file
     if (logfile==""){
