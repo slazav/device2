@@ -80,7 +80,7 @@ message to it (e.g. to process errors separately).
 
 * `release/<device>` -- Notify the server that this device is not going
 to be used by this connection anymore. Device is closed if no other
-connections use it.Normally devices are closed
+connections use it. Normally devices are closed
 when session is ended and no other sessions are using the device.
 
 * `log_start/<device>` -- Any user can see all communications of every device.
@@ -148,6 +148,7 @@ Options:
 * `-f, --dofork`        -- Do fork and run as a daemon.
 * `-S, --stop`          -- Stop running daemon (found by pid-file).
 * `-R, --reload`        -- Reload configuration of running daemon (found by pid-file).
+* `-U, --user <arg>`    -- Run as user (default: empty, do not switch user).
 * `-v, --verbose <arg>` -- Verbosity level (default: 1):
   - 0 - write nothing;
   - 1 - write some information on server start/stop;
@@ -163,9 +164,9 @@ Options:
 Configuration file: Server configuration file can be used to override
 default values for some of the command-line options. Following parameters
 can be set in the configuration file: `addr`, `port`, `logfile`,
-`pidfile`, `devfile`, `verbose`
+`pidfile`, `devfile`, `user`, `verbose`
 
-The file contains one line per device. Empty lines and comments (starting
+The file contains one line per parameter. Empty lines and comments (starting
 with `#`) are allowed. A few lines can be joined by adding symbol `\`
 before end of line. Words can be quoted by single or double quotes.
 Special symbols (`#`, `\`, quotes) can be typed by adding `\` in front of
@@ -184,7 +185,7 @@ with `reload` action.
 ### Device list file
 
 Default location of the device configuration file is
-`/etc/device2/devices.cfg` It can be changed by with server command-line
+`/etc/device2/devices.cfg` It can be changed with server command-line
 option `-D` or in the server configuration file.
 
 The file contains one line per device. Empty lines and comments (starting
@@ -277,8 +278,8 @@ should work with all usual Agilent/Keysight devices connected via USB.
 Read timeout is set internally in the driver (5s by default?) but can be
 modified by -timeout parameter.
 
-Driver reads answer from the device only if there is a question mark '?'
-in the first word of the message.
+By default the driver reads answer from the device only if there is a
+question mark '?' in the first word of the message.
 
 Parameters:
 
@@ -308,8 +309,8 @@ Parameters:
 
 ### Driver "gpib" -- GPIB devices using linux-gpib library
 
-Driver reads answer from the device only if there is a question mark '?'
-in the first word of the message.
+By default the driver reads answer from the device only if there is a
+question mark '?' in the first word of the message.
 
 Parameters:
 
@@ -358,8 +359,8 @@ Parameters:
 
 ###  Driver `net` -- network devices
 
-Driver reads answer from the device only if there is a question mark '?'
-in the first word of the message.
+By default the driver reads answer from the device only if there is a
+question mark '?' in the first word of the message.
 
 Defaults parameters correspond to LXI raw protocol.
 
@@ -374,7 +375,7 @@ Parameters:
 * `-bufsize <N>`   -- Buffer size for reading. Maximum length of read data.
                       Default: 4096
 * `-errpref <str>` -- Prefix for error messages.
-                      Default: "IOSerial: "
+                      Default: "Driver_net: "
 * `-idn <str>`     -- Override output of *idn? command.
                       Default: empty string, do not override.
 * `-read_cond <v>` -- When do we need to read answer from a command:
@@ -395,20 +396,20 @@ Parameters:
 * `-addr <v>`      -- Network address or IP.
                       Required.
 * `-port <v>`      -- Port number.
-                      Default: "5025" (lxi raw protocol).
+                      Default: "1234".
 * `-timeout <v>`   -- Read timeout, seconds. No timeout if <=0.
                       Default 5.0.
 * `-bufsize <v>`   -- Buffer size for reading. Maximum length of read data.
                       Default: 4096
 * `-errpref <v>`   -- Prefix for error messages.
-                      Default: "IOSerial: "
+                      Default: "Driver_net: "
 * `-idn <v>`       -- Override output of *idn? command.
                       Default: empty string, do not override.
 * `-addr <v>`      -- GPIB address
 
 ### Driver `serial` -- Serial devices
 
-This is a very general driver with lots of parameters (see source code).
+This is a very general driver with lots of parameters (see source code, see also `stty(1)`).
 Other serial drivers are based on it. As an example, configuration of
 Pfeiffer ASM340 leak detected can be written as
 ```
