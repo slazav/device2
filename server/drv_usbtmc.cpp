@@ -53,6 +53,7 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
 
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
+  idn     = opts.get("idn", "");
   read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
 }
 
