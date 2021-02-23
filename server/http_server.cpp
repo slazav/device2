@@ -6,8 +6,9 @@
 #include "err/err.h"
 #include "http_server.h"
 
-// callback for getting GET arguments (appending them to Opt object)
-int
+// callback (MHD_KeyValueIterator) for getting GET arguments
+// and appending them to Opt object.
+MHD_Result
 AppendToOpt (void *cls,
       enum MHD_ValueKind kind,
       const char *key, const char *value){
@@ -16,8 +17,8 @@ AppendToOpt (void *cls,
 }
 
 
-// callback for processing requests
-int
+// callback (MHD_AccessHandlerCallback) for processing requests
+MHD_Result
 ProcessRequest(void * cls,
       struct MHD_Connection * connection,
       const char * url,
@@ -49,7 +50,7 @@ ProcessRequest(void * cls,
 
   DevManager * dm = (DevManager*)cls;
   struct MHD_Response * response;
-  int ret;
+  MHD_Result ret;
   try {
     Opt opts;
     MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, AppendToOpt, &opts);
