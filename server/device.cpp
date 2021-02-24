@@ -32,7 +32,7 @@ void
 Device::use(const uint64_t conn){
   if (users.count(conn)>0) return; // device is opened and used by this connection
   if (locked) throw Err() << "device is locked";
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   if (users.empty()) { // device needs to be opened
     drv = Driver::create(drv_name, drv_args);
     Log(2) << "conn:" << conn << " open device: " << dev_name;
@@ -42,7 +42,7 @@ Device::use(const uint64_t conn){
 
 void
 Device::release(const uint64_t conn){
-  auto lk = get_lock();
+  auto lk = get_data_lock();
 
   // remove log buffer
   if (log_bufs.count(conn)>0)
@@ -64,7 +64,7 @@ void
 Device::lock(const uint64_t conn){
   // to lock the device we should be its only user.
   if (users.count(conn)==0) use(conn);
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   if (users.size()!=1)
     throw Err() << "Can't lock the device: it is in use";
   locked = true;
@@ -72,7 +72,7 @@ Device::lock(const uint64_t conn){
 
 void
 Device::unlock(const uint64_t conn){
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   if (!locked)
     throw Err() << "device is not locked";
   if (users.count(conn)==0)
@@ -82,19 +82,19 @@ Device::unlock(const uint64_t conn){
 
 void
 Device::log_start(const uint64_t conn){
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   log_bufs[conn] = log_buf_t();
 }
 
 void
 Device::log_finish(const uint64_t conn){
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   log_bufs.erase(conn);
 }
 
 std::string
 Device::log_get(const uint64_t conn){
-  auto lk = get_lock();
+  auto lk = get_data_lock();
   if (log_bufs.count(conn)==0)
     throw Err() << "Logging is off";
   std::string ret;
@@ -126,6 +126,8 @@ Device::ask(const uint64_t conn, const std::string & msg){
   if (users.count(conn)==0) use(conn);
 
   if (locked) throw Err() << "device is locked";
+
+  auto lk = get_cmd_lock();
 
   // if no logging is needed just return answer
   if (log_bufs.size()==0) return drv->ask(msg);

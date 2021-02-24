@@ -25,7 +25,7 @@ class Device {
   // Connections which use the device
   std::set<uint64_t> users;
 
-  // Is the device locked?
+  // Is the device locked by a single user?
   bool locked;
 
   // Device name
@@ -39,8 +39,15 @@ class Device {
   std::mutex data_mutex;
 
   // Get lock for the mutex
-  std::unique_lock<std::mutex> get_lock() {
+  std::unique_lock<std::mutex> get_data_lock() {
     return std::unique_lock<std::mutex>(data_mutex);}
+
+  // Mutex for locking write+read commands
+  std::mutex cmd_mutex;
+
+  // Get lock for the mutex
+  std::unique_lock<std::mutex> get_cmd_lock() {
+    return std::unique_lock<std::mutex>(cmd_mutex);}
 
   // Log buffers: conn -> list(shared_ptr(strings))
   // Each connection can start its own log buffer and
