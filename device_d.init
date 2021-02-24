@@ -4,63 +4,25 @@
 # description: device_d -- HTTP server for accessing devices
 #
 # processname: device_d
-# pidfile: /var/run/device_d.pid
 
-WITHOUT_RC_COMPAT=1
-
-# Source function library.
-. /etc/init.d/functions
-
-PIDFILE=/var/run/device_d.pid
-LOCKFILE=/var/lock/subsys/device_d
 DAEMON=/usr/bin/device_d
-DAEMON_OPTS="--dofork --pidfile $PIDFILE"
+CLIENT=/usr/bin/device_c
 RETVAL=0
-USER=root
 
 # See how we were called.
 case "$1" in
-start)
-  start_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
-               --user $USER -- $DAEMON $DAEMON_OPTS
-  RETVAL=$?
-  ;;
+start)  $DAEMON --dofork; RETVAL=$? ;;
+stop)   $DAEMON --stop; RETVAL=$? ;;
+status) $CLIENT ping && $CLIENT get_srv;  RETVAL=$? ;;
+reload|sreload)  $DAEMON --reload;  RETVAL=$? ;;
+restart) $0 stop; $0 start ;;
 
-stop)
-  stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE"\
-              --expect-user $USER -- $DAEMON
-  RETVAL=$?
-  ;;
-
-status)
-  status --pidfile "$PIDFILE" --expect-user $USER -- device_d
-  RETVAL=$?
-  ;;
-
-reload|sreload)
-  $DAEMON --pidfile "$PIDFILE" --reload
-  RETVAL=$?
-  ;;
-
-restart)
-  $0 stop
-  $0 start
-  ;;
-
-condstop)
-  if [ -e "$LOCKFILE" ]; then
-    $0 stop
-  fi ;;
-
-condreload|condrestart)
-  if [ -e "$LOCKFILE" ]; then
-    $0 stop
-    $0 start
-  fi ;;
-
+condstop) $0 stop ;;
+condreload|condrestart) $DAEMON --reload ;;
 *)
   msg_usage "${0##*/} {start|stop|status|reload|restart|condstop|condrestart|condreload}"
   RETVAL=1
 esac
 
 exit $RETVAL
+
