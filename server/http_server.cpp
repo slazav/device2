@@ -6,6 +6,10 @@
 #include "err/err.h"
 #include "http_server.h"
 
+#if MHD_VERSION < 0x00097002
+#define MHD_Result int
+#endif
+
 // callback (MHD_KeyValueIterator) for getting GET arguments
 // and appending them to Opt object.
 MHD_Result
