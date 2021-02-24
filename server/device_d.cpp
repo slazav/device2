@@ -160,8 +160,9 @@ main(int argc, char ** argv) {
       pf >> pid;
 
       if (kill(pid, stop? SIGTERM : SIGHUP) == 0){
-        int st=0;
-        waitpid(pid, &st, 0);
+        // wait for process termination
+        if (stop)
+          while (kill(pid, 0) == 0) usleep(1000);
       }
       else {
         if (errno == ESRCH){ // no such process, we should remove the pid-file
