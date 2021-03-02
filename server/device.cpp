@@ -125,8 +125,6 @@ Device::ask(const uint64_t conn, const std::string & msg){
   // open device if needed
   if (users.count(conn)==0) use(conn);
 
-  if (locked) throw Err() << "device is locked";
-
   auto lk = get_cmd_lock();
 
   // if no logging is needed just return answer
