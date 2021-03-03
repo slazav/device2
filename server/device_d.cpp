@@ -8,6 +8,7 @@
 #include <sys/wait.h> // wait
 #include <unistd.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include "getopt/getopt.h"
 #include "read_words/read_conf.h"
@@ -119,11 +120,27 @@ main(int argc, char ** argv) {
 
     // switch user if needed
     if (user!=""){
+      // get new user information
       struct passwd *p;
       if ((p = getpwnam(user.c_str())) == NULL) throw Err()
          << "unknown user: " << user;
-      if (setuid(p->pw_uid)!=0) throw Err()
+
+      // set groups
+      int ngroups = 16;
+      gid_t *groups = (gid_t *) malloc (ngroups*sizeof(gid_t));
+
+      if (getgrouplist (p->pw_name, p->pw_gid, groups, &ngroups) < 0){
+        groups = (gid_t *) realloc (groups, ngroups * sizeof (gid_t));
+        getgrouplist (p->pw_name, p->pw_gid, groups, &ngroups);
+      }
+      if (setgroups(ngroups, groups) != 0) throw Err()
+         << "can't set groups for user: " << user << ": " << strerror(errno);
+      free(groups);
+
+      // set uid/gid
+      if (setgid(p->pw_uid)!=0 || setuid(p->pw_uid)!=0) throw Err()
          << "can't switch to another user: " << user << ": " << strerror(errno);
+
     }
 
     // default log file
@@ -143,9 +160,9 @@ main(int argc, char ** argv) {
       pf >> pid;
 
       if (kill(pid, stop? SIGTERM : SIGHUP) == 0){
-        int st=0;
         // wait for process termination
-        while (kill(pid, stop? SIGTERM : SIGHUP) == 0) usleep(1000);
+        if (stop)
+          while (kill(pid, 0) == 0) usleep(1000);
       }
       else {
         if (errno == ESRCH){ // no such process, we should remove the pid-file
@@ -182,7 +199,7 @@ main(int argc, char ** argv) {
       }
 
       // Change the file mode mask
-      umask(0);
+      umask(022);
 
       // Create a new SID for the child process
       sid = setsid();

@@ -75,7 +75,10 @@ itcl::class Device {
     Device2::release $name
   }
 
-  method cmd {args} { Device2::get ask $name {*}$args }
+  method cmd {args} {
+    set data [Device2::get ask $name {*}$args]
+    return [split $data "\n"]
+  }
   method lock   {} { Device2::get lock $name {} }
   method unlock {} { Device2::get unlock $name {} }
 }
