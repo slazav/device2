@@ -32,7 +32,6 @@ ProcessRequest(void * cls,
       size_t * upload_data_size,
                     void ** ptr) {
 
-
   //get connection number
   auto info = MHD_get_connection_info(
     connection, MHD_CONNECTION_INFO_SOCKET_CONTEXT);
@@ -138,16 +137,15 @@ HTTP_Server::HTTP_Server(
     {MHD_OPTION_NOTIFY_CONNECTION, (intptr_t)&ConnFunc, dm});
 
   // listen only one address
+  struct sockaddr_in sock;
   if (addr!="*"){
     // fill sockaddr_in structure
-    struct sockaddr_in sock;
     memset (&sock, 0, sizeof (struct sockaddr_in));
     sock.sin_family = AF_INET;
     sock.sin_port = htons(port);
     sock.sin_addr.s_addr = htonl(str_to_type_ip4(addr));
-
     ops.push_back((MHD_OptionItem)
-      { MHD_OPTION_SOCK_ADDR, (intptr_t)&sock, NULL });
+      { MHD_OPTION_SOCK_ADDR, 0, &sock });
   }
 
   // test mode - only one connection at a time, to
