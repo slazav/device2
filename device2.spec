@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.1
+Version:      1.2
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,6 +52,26 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Wed Mar 03 2021 Vladislav Zavjalov <slazav@altlinux.org> 1.2-alt1
+v1.2 (a few important bugfixes)
+- server:
+  - Fix non-working --addr option. Server was always listening all addresses.
+  - Print client address when opening a connection (with log level >= 2).
+  - When stopping a server (--stop option) wait until the process exits.
+  - Set umask 022 in daemon mode.
+  - Fix locking in read-write operations to avoid mixing answers for different clients.
+  - Fix gcc10 builds with old and new libmicrohttpd (MHD_Result enum appeares in 0x00097002).
+  - Add switching to a different user (--user option).
+  - Simplify initscript: use device_d options instead of start_daemon.
+- drivers:
+  - drv_usbtmc: fix error in -idn parameter handling
+  - drv_gpib, drv_net, drv_usbtmc: add -read_cond parameter with default: qmark1w
+- tcl:
+  - In the legacy Device interface return list of lines instead of text data.
+  - Fix error in Device::lock command.
+- add UDEV.md file with some examples.
+- update Readme.md.
+
 * Sun Nov 15 2020 Vladislav Zavjalov <slazav@altlinux.org> 1.1-alt1
 v1.1:
 - drv_gpib: clear device buffers after opening
