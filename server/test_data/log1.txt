@@ -3,33 +3,33 @@ Reading configuration file: test_data/n2.txt
 2 devices configured
 HTTP server is running at 127.0.0.1:8182
 TESTING MODE
-conn:0 open connection
+conn:0 open connection from 127.0.0.1
 conn:0 process request: /ask/x/text
 conn:0 error: unknown device: x
 conn:0 close connection
-conn:1 open connection
+conn:1 open connection from 127.0.0.1
 conn:1 process request: /x/b/text
 conn:1 error: unknown action: x
 conn:1 close connection
-conn:2 open connection
+conn:2 open connection from 127.0.0.1
 conn:2 process request: /ask/b/text
 conn:2 open device: b
 conn:2 answer: text
 conn:2 close device: b
 conn:2 close connection
-conn:3 open connection
+conn:3 open connection from 127.0.0.1
 conn:3 process request: /devices
 conn:3 answer: a
 b
 
 conn:3 close connection
-conn:4 open connection
+conn:4 open connection from 127.0.0.1
 conn:4 process request: /list
 conn:4 answer: a
 b
 
 conn:4 close connection
-conn:5 open connection
+conn:5 open connection from 127.0.0.1
 conn:5 process request: /info/a
 conn:5 answer: Device: a
 Driver: test
@@ -37,17 +37,17 @@ Device is closed
 Number of users: 0
 
 conn:5 close connection
-conn:6 open connection
+conn:6 open connection from 127.0.0.1
 conn:6 process request: /ask/b/text
 conn:6 open device: b
 conn:6 answer: text
 conn:6 close device: b
 conn:6 close connection
-conn:7 open connection
+conn:7 open connection from 127.0.0.1
 conn:7 process request: /release/b
 conn:7 answer: 
 conn:7 close connection
-conn:8 open connection
+conn:8 open connection from 127.0.0.1
 conn:8 process request: /use/a
 conn:8 open device: a
 conn:8 answer: 

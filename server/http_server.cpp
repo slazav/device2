@@ -52,6 +52,7 @@ ProcessRequest(void * cls,
     return MHD_NO; /* upload data in a GET!? */
   *ptr = NULL; /* clear context pointer */
 
+
   DevManager * dm = (DevManager*)cls;
   struct MHD_Response * response;
   MHD_Result ret;
@@ -89,15 +90,32 @@ void ConnFunc (void *cls,
 
   DevManager * dm = (DevManager*)cls;
 
+  uint64_t cnum;
   switch (toe){
   case MHD_CONNECTION_NOTIFY_STARTED:
+    cnum = cmax++;
     MHD_set_connection_option(connection, MHD_CONNECTION_OPTION_TIMEOUT, 10);
     *socket_context = new uint64_t;
-    *(uint64_t*)*socket_context = cmax++; // set connection number
-    dm->conn_open(*(uint64_t*)*socket_context);
+    *(uint64_t*)*socket_context = cnum; // set connection number
+
+    // print client address
+    if (Log::get_log_level() >= 2){
+      auto info = MHD_get_connection_info(
+        connection, MHD_CONNECTION_INFO_CLIENT_ADDRESS);
+      struct sockaddr_in *sa = (sockaddr_in*)info->client_addr;
+      uint32_t a = ntohl(sa->sin_addr.s_addr);
+      //uint16_t p = ntohs(sa->sin_port);
+      Log(2) << "conn:" << cnum << " open connection from "
+             << ((a>>24)&0xff) << "." << ((a>>16)&0xff) << "."
+             << ((a>>8)&0xff) << "." << (a&0xff);
+    }
+
+    dm->conn_open(cnum);
     break;
   case MHD_CONNECTION_NOTIFY_CLOSED:
-    dm->conn_close(*(uint64_t*)*socket_context);
+    cnum = *(uint64_t*)*socket_context;
+    dm->conn_close(cnum);
+    Log(2) << "conn:" << cnum << " close connection";
     delete (uint64_t*)*socket_context;
     break;
   }

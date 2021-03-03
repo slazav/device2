@@ -40,7 +40,6 @@ DevManager::parse_url(const std::string & url){
 /*************************************************/
 void
 DevManager::conn_open(const uint64_t conn){
-  Log(2) << "conn:" << conn << " open connection";
   set_conn_name(conn);
 }
 
@@ -49,7 +48,6 @@ DevManager::conn_close(const uint64_t conn){
   // go through all devices, close ones which are not needed
   for (auto & d:devices) d.second.release(conn);
   conn_names.erase(conn);
-  Log(2) << "conn:" << conn << " close connection";
 }
 
 void
