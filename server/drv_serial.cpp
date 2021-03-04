@@ -386,6 +386,10 @@ Driver_serial::read() {
     // read data, add to ret string
     char buf[4096]; // limit of the serial driver
     ssize_t res = ::read(fd,buf,sizeof(buf));
+
+    // non-blocking read, no data
+    if (res<0 && errno==EAGAIN) break;
+
     if (res<0) throw Err() << errpref
       << "read error: " << strerror(errno);
     if (res==0) throw Err() << errpref
