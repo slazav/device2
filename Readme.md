@@ -413,20 +413,7 @@ Parameters:
 ### Driver `serial` -- Serial devices
 
 This is a very general driver with lots of parameters (see source code, see also `stty(1)`).
-Other serial drivers are based on it. As an example, configuration of
-Pfeiffer ASM340 leak detected can be written as
-```
-asm340a  serial \
-  -dev /dev/ttyUSB0 -speed 9600 -parity 8N1 -cread 1 -clocal 1\
-  -timeout 2.0 -vmin 0 -ndelay 0 -icrnl 0 -opost 1 -lcase 1\
-  -sfc 1 -raw 1 -errpref "ASM340: " -delay 0\
-  -ack_str \x06 -nack_str \x15 -add_str \r -trim_str \r
-```
-
-but there is a special driver which set all needed parameters:
-```
-asm340b  serial_asm340 -dev /dev/ttyUSB0
-```
+Other serial drivers are based on it.
 
 ### Driver `serial_simple` -- Serial driver with reasonable default settings.
 
@@ -452,6 +439,13 @@ Parameters:
                       always, never, qmark (if there is a question mark in the message),
                       qmark1w (question mark in the first word). Default: qmark1w.
 
+Same as
+```
+serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
+  -vmin 0 -ndelay 0 -icrnl 1 -raw 1 -sfc 1 -delay 0.1\
+  -opost 0 -add_str "\n" -trim_str "\n" -read_cond qmark1w\
+  -timeout 5.0"
+```
 
 ### Driver `serial_asm340` -- Pfeiffer Adixen ASM340 leak detector
 
@@ -475,6 +469,14 @@ Parameters:
 * `-idn <v>`       -- Override output of *idn? command.
                       Default: "Adixen ASM340 leak detector"
 
+Same as
+```
+serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
+  -vmin 0 -ndelay 0 -icrnl 0 -raw 1 -sfc 1 -delay 0\
+  -opost 1 -lcase 1 -ack_str "\x06" -nack_str "\x15"\
+  -add_str "\r" -trim_str "\r" -read_cond always\
+  -timeout 5.0 -errpref "ASM340: " -idn "Adixen ASM340 leak detector"
+```
 
 ### Driver `serial_vs_ld` -- Agilent VS leak detector
 
@@ -514,6 +516,13 @@ Parameters:
 * `-idn <v>`     -- Override output of *idn? command.
                     Default: do not override.
 
+Same as
+```
+serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
+  -vmin 0 -ndelay 0 -sfc 1 -raw 1 -delay 0.1\
+  -opost 1 -olcuc 1 -read_cond qmark\
+  -timeout 5.0 -errpref "TenmaPS: "
+```
 
 ### Driver `serial_et` -- EastTester devices
 
@@ -530,6 +539,14 @@ Parameters:
 
 * `-idn <v>`     -- Override output of *idn? command.
                     Default: do not override.
+
+Same as
+```
+serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
+  -ndelay 1 -sfc 1 -raw 1 -delay 0.1\
+  -add_str \n -trim_str "\n\n" -read_cond always
+  -timeout 2.0 -errpref "EastTester: "
+```
 
 ---
 ## Client
