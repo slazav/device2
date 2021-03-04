@@ -233,7 +233,7 @@ Not tested and probably has some problems.
 Works.
 
 * `serial_simple` -- Serial driver with reasonable default settings.
-Should work with old Agilent/HP devices. Not tested.
+Works with old Agilent/HP/Keythley devices.
 
 * `net` -- Network connections. By default it works with LXI devices.
 
