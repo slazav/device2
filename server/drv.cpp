@@ -8,6 +8,7 @@
 #include "drv_serial_asm340.h"
 #include "drv_serial_vs_ld.h"
 #include "drv_serial_tenma_ps.h"
+#include "drv_serial_et.h"
 #include "drv_serial_simple.h"
 #include "drv_gpib.h"
 
@@ -34,6 +35,9 @@ Driver::create(const std::string & name, const Opt & args){
 
   if (name == "serial_tenma_ps")
     return std::shared_ptr<Driver>(new Driver_serial_tenma_ps(args));
+
+  if (name == "serial_et")
+    return std::shared_ptr<Driver>(new Driver_serial_et(args));
 
   if (name == "serial_simple")
     return std::shared_ptr<Driver>(new Driver_serial_simple(args));

@@ -4,7 +4,7 @@ MOD_HEADERS := http_server.h dev_manager.h device.h tun.h\
                drv.h drv_spp.h drv_utils.h drv_test.h drv_usbtmc.h\
                drv_serial.h drv_net.h drv_gpib.h\
                drv_serial_tenma_ps.h drv_serial_asm340.h drv_serial_simple.h\
-               drv_serial_vs_ld.h drv_net_gpib_prologix.h
+               drv_serial_vs_ld.h drv_net_gpib_prologix.h drv_serial_et.h
 
 MOD_SOURCES := http_server.cpp dev_manager.cpp device.cpp tun.cpp\
                drv.cpp drv_utils.cpp drv_spp.cpp drv_usbtmc.cpp\

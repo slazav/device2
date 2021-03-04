@@ -232,6 +232,9 @@ Not tested and probably has some problems.
 * `serial_tenma_ps` -- Driver for Korad/Velleman/Tenma power supplies.
 Works.
 
+* `serial_et` -- Driver for EastTester devices.
+Works with E4502 LCR meter.
+
 * `serial_simple` -- Serial driver with reasonable default settings.
 Works with old Agilent/HP/Keythley devices.
 
@@ -511,6 +514,22 @@ Parameters:
 * `-idn <v>`     -- Override output of *idn? command.
                     Default: do not override.
 
+
+### Driver `serial_et` -- EastTester devices
+
+Parameters:
+
+* `-dev <v>`      -- Serial device filename (e.g. /dev/ttyACM0)
+                    Required.
+
+* `-timeout <v>`  -- Read timeout, seconds [0 .. 25.5]
+                    Default: 2.0
+
+* `-errpref <v>` -- Prefix for error messages.
+                    Default "EastTester: "
+
+* `-idn <v>`     -- Override output of *idn? command.
+                    Default: do not override.
 
 ---
 ## Client
