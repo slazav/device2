@@ -48,7 +48,6 @@ URLs with up to three components are used: `<action>/<device>/<message>`.
 request to `http://<server>:<port>/ask/generator/FREQ?`" sends phrase
 `FREQ?` to the device `generator` and returns answer.
 
-
 On success a response with code 200 and answer of the device in the
 message body is returned. On error a response with code 400 is returned.
 Error description is written in `Error` header and in the message body.
@@ -554,7 +553,7 @@ serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
 Program `device_c` is a command-line client for working with the server.
 
 Usage:
-* `device_c [<options>] ask <dev> <msg>` -- send message to the device, print answer
+* `device_c [<options>] ask <dev> <msg> ...` -- send message to the device, print answer
 * `device_c [<options>] use_dev <dev>`   -- SPP interface to a device
 * `device_c [<options>] use_srv`         -- SPP interface to the server
 * `device_c [<options>] (list|devices)`  -- print list of available devices
@@ -607,6 +606,13 @@ Send message to a device and get answer. In this case we send `get_time` command
 the `graphene` program:
 ```
 $ device_c ask graphene get_time
+1601282446.214037
+```
+
+Send message to a device and get answer. In this case we send `get_time` command to
+the `graphene` program:
+```
+$ device_c ask graphene create new_db FLOAT "my new database"
 1601282446.214037
 ```
 
