@@ -114,10 +114,9 @@ public:
         // inner try -- continue to a new command with #Error message
         try {
           if (!in) break;
-          std::string arg;
-          getline(in, arg);
-          if (arg.size()==0) continue;
-          out << get("ask", dev, arg) << '\n';
+          auto pars = read_words(in);
+          if (pars.size()==0) break;
+          out << get("ask", dev, join_words(pars)) << '\n';
           out << "#OK\n";
           out.flush();
         }
