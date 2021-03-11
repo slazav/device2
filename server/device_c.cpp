@@ -256,8 +256,10 @@ main(int argc, char ** argv) {
     Downloader D(srv);
 
     if (action == "ask"){
-      check_par_count(pars, 3);
-      std::cout << D.get(action, pars[1], pars[2]) << "\n";
+      if (pars.size()<3)
+        throw Err() << "not enough parameters for \"ask\" action";
+      std::vector<std::string> args(pars.begin()+2, pars.end());
+      std::cout << D.get(action, pars[1], join_words(args)) << "\n";
       D.get("release", pars[1]);
       return 0;
     }
