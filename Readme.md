@@ -359,6 +359,10 @@ Parameters:
 * `-trim_str <v>`  -- Remove string from the end of received messages.
                       Default: "\n"
 
+* `-delay <v>`     -- Delay after write command, s.
+                      Default: 0
+
+
 ###  Driver `net` -- network devices
 
 By default the driver reads answer from the device only if there is a

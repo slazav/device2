@@ -58,6 +58,9 @@ Parameters:
 * `-trim_str <v>`  -- Remove string from the end of received messages.
                       Default: "\n"
 
+* `-delay <v>`     -- Delay after write command, s.
+                      Default: 0
+
 */
 
 class Driver_gpib: public Driver {
@@ -67,6 +70,7 @@ protected:
   std::string errpref,idn;
   std::string add,trim;
   read_cond_t read_cond;
+  double delay;
 
   // convert timeout
   int get_timeout(const std::string & s);

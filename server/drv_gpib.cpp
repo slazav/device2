@@ -1,6 +1,7 @@
 #include <cstring>
 #include "drv_gpib.h"
 #include "drv_utils.h"
+#include <unistd.h>
 
 const char*
 error_text(int ecode) {
@@ -57,7 +58,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
 
   opts.check_unknown({"addr","board","timeout","open_timeout",
     "eot", "eos", "eos_mode", "secondary", "bufsize",
-    "errpref", "idn", "read_cond", "add_str", "trim_str"});
+    "errpref", "idn", "read_cond", "add_str", "trim_str", "delay"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "gpib: ");
@@ -126,6 +127,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     bufsize = opts.get("bufsize", 4096);
     add     = opts.get("add_str",  "\n");
     trim    = opts.get("trim_str", "\n");
+    delay   = opts.get("delay",    0);
     idn     = opts.get("idn", "");
     read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
   }
@@ -160,6 +162,8 @@ Driver_gpib::write(const std::string & msg) {
   auto ret = ibwrt(dh, m.data(), m.size());
   if (ibsta & ERR) throw Err() << errpref
     << "write error: " << error_text(iberr);
+
+  if (delay>0) usleep(delay*1e6);
 }
 
 std::string
