@@ -331,8 +331,9 @@ Parameters:
 * `-eot (1|0)`     -- Enable/disable assertion of EOI line with last data byte
                       Default: do not change
 
-* `-eos_mode <v>`  -- Set end-of-string mode (none, read, write, bin)
-                      Only works with -eos option. Default: none.
+* `-eos_mode <v>`  -- Set end-of-string flags, any combination of R X B
+                      characters for REOS, XEOS, BIN flags.
+                      Only works with -eos option. Default: empty
 
 * `-eos (0..255)`  -- Set end-of-string character.
                       Default: do not change

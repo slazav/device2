@@ -106,12 +106,14 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     // set EOS
     if (opts.exists("eos")){
       int ch    = opts.get("eos", 0) & 0xff;
-      auto mode = opts.get("eos_mode", "none");
-      if      (mode == "bin")   ch |= BIN;
-      else if (mode == "write") ch |= XEOS;
-      else if (mode == "read")  ch |= REOS;
-      else if (mode != "none")  throw Err() << errpref
-        << "unknown -eos_mode value: " << mode;
+      auto mode = opts.get("eos_mode", "");
+      for (const char c:mode){
+        if      (c == 'B') ch |= BIN;
+        else if (c == 'X') ch |= XEOS;
+        else if (c == 'R') ch |= REOS;
+        else throw Err() << errpref
+          << "unknown -eos_mode value (only B X R characters are allowed): " << mode;
+      }
       ibeos(dh, ch);
       if (ibsta & ERR) throw Err() << errpref
         << "setting EOS: " << error_text(iberr);
