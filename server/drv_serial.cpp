@@ -423,7 +423,7 @@ Driver_serial::write(const std::string & msg) {
   if (ret<0) throw Err() << errpref
     << "write error: " << strerror(errno);
 
-  usleep(delay*1e6);
+  if (delay>0) usleep(delay*1e6);
 }
 
 std::string
