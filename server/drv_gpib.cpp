@@ -129,7 +129,7 @@ Driver_gpib::Driver_gpib(const Opt & opts) {
     bufsize = opts.get("bufsize", 4096);
     add     = opts.get("add_str",  "\n");
     trim    = opts.get("trim_str", "\n");
-    delay   = opts.get("delay",    0);
+    delay   = opts.get("delay",    0.0);
     idn     = opts.get("idn", "");
     read_cond = str_to_read_cond(opts.get("read_cond", "qmark1w"));
   }
