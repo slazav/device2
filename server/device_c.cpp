@@ -227,8 +227,8 @@ main(int argc, char ** argv) {
     options.add("pod",     0,0,   on, "Print help message in POD format and exit.");
 
     // parse options
-    std::vector<std::string> pars;
-    Opt opts = parse_options_all(&argc, &argv, options, {}, pars);
+    Opt opts = parse_options(&argc, &argv, options, {}, 0);
+    std::vector<std::string> pars(argv, argv+argc);
 
     // print help message
     if (opts.exists("help")) usage(options);
