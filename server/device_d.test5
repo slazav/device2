@@ -36,7 +36,7 @@ log_get b
 log_finish b
 log_get b' | ./device_c $srv use_srv)"
 
-assert_cmd "echo $a" "\
+assert_cmd "echo \"$a\"" "\
 #SPP001 \
 Server: http://localhost:8182 \
 #OK \
