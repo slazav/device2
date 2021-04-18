@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.2
+Version:      1.3
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,6 +52,20 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Sun Apr 18 2021 Vladislav Zavjalov <slazav@altlinux.org> 1.3-alt1
+v1.3
+- device_c:
+  - use read_words library for `use_dev` command (allow multi-line and quoted strings)
+  - allow multiple argments in `ask` command
+  - options can appear only before a non-option argument
+- drivers:
+  - add serial_et driver for EastTester devices
+  - drv_serial: fix reading in non-blocking mode
+  - drv_gpib: -delay parameter
+  - drv_gpib: argument of -eos_mode option is any combination of X R B flags
+- unlock action: do not return error if device is not locked
+- update Readme.md
+
 * Wed Mar 03 2021 Vladislav Zavjalov <slazav@altlinux.org> 1.2-alt1
 v1.2 (a few important bugfixes)
 - server:
