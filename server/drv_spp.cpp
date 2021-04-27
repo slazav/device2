@@ -13,6 +13,7 @@ Driver_spp::read_spp(double timeout){
     // Err is thrown if error happens.
     // Return -1 on EOF.
     int res = flt->getline(l, timeout);
+    if (res<0) throw Err() << "SPP: unexpected EOF: " << prog;
     // line starts with the special character
     if (l.size()>0 && l[0] == ch){
       if (l.substr(1,7) == "Error: ") throw Err() << l.substr(8);
@@ -28,9 +29,7 @@ Driver_spp::read_spp(double timeout){
       if (ret.size()>0) ret += '\n';
       ret += l;
     }
-    if (res<0) break;
   }
-  throw Err() << "SPP: no #OK or #Error message: " << prog;
 }
 
 

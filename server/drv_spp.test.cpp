@@ -20,10 +20,10 @@ main(){
     assert_err(Driver_spp d(o), "can't parse value: \"1a\"");
 
     o.put("prog", "echo '#SPP1'");
-    assert_err(Driver_spp d(o), "SPP: no #OK or #Error message: echo '#SPP1'");
+    assert_err(Driver_spp d(o), "SPP: unexpected EOF: echo '#SPP1'");
 
     o.put("prog", "echo '#SPP1\naaa\nbbb'");
-    assert_err(Driver_spp d(o), "SPP: no #OK or #Error message: echo '#SPP1\naaa\nbbb'");
+    assert_err(Driver_spp d(o), "SPP: unexpected EOF: echo '#SPP1\naaa\nbbb'");
 
     o.put("prog", "echo '#SPP1\n#\n'");
     assert_err(Driver_spp d(o), "SPP: symbol # in the beginning of a line is not protected: echo '#SPP1\n#\n'");
