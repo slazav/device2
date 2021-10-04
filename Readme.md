@@ -221,8 +221,13 @@ message.
 port. Base for other serial_* drivers.
 
 * `serial_asm340` -- Driver for Pfeiffer Adixen ASM340 leak detector
-connected via RS232. Leak detector should be in Advanced I/O mode
-and connected with null-modem cable. Works.
+connected via RS232 (null-modem cable). Leak detector should be in
+Advanced I/O mode. Works.
+
+* `serial_l300` -- Driver for Phoenix/Leybold L300i leak detector
+connected via RS232 (normal cable, not null-modem). Leak detector
+settings (in `Menu/Settings/Interfaces`): Control locations: ALL or
+RS232; RS232 settings: 19200 LF -- 8N1 -- ASCII. Works.
 
 * `serial_vs_ld` -- Driver for Agilent VS leak detector.
 Leak detector should be connected with null-modem cable.
