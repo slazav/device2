@@ -10,6 +10,8 @@ Leak detector settings:
   Menu/Settings/Interfaces/Control locations:  ALL (or RS232)
   Menu/Settings/Interfaces/RS232:  19200 LF -- 8N1 -- ASCII
 Cable: normal RS232, not null-modem
+Hardware handshake is disabled in the driver,
+there is no need to use special cable to emulate it.
 
 Command set is very similar to one of inficon Modul1000 leak detector.
 
@@ -41,6 +43,7 @@ class Driver_serial_l300: public Driver_serial {
     o.put("icrnl",  0);  // do not convert CR->NL on input
     o.put("raw", 1);     // raw mode!
     o.put("sfc", 1);     // software flow control
+    o.put("crtscts", 0); // no hardware handshake
     o.put("add_str", "\r");   // add CR to each sent message
     o.put("trim_str","\r");   // trim CR from each received message
     o.put("read_cond",  "always");
