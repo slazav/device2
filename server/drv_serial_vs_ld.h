@@ -8,9 +8,6 @@
 
 Leak detector should be connected with null-modem cable.
 
-Driver is not tested and probably not working!
-It was some non-trivial problems with echo.
-
 Parameters:
 
 * `-dev <str>`     -- Serial device filename (e.g. /dev/ttyUSB0)
@@ -40,12 +37,13 @@ class Driver_serial_vs_ld: public Driver_serial {
     o.put("ndelay", 0);  // should be set with timeout
     o.put("sfc",    0);  // software flow control
     o.put("raw",    1);  // raw mode!
+    o.put("crtscts",    0);  // no handshaking
     o.put("delay", 0.1); // 100ms delay after write
     o.put("opost", 0);   // no output postprocessing
-    o.put("add_str",  "\n"); // add NL to each sent message
+    o.put("add_str",  "\r"); // add NL to each sent message
     o.put("trim_str", "\n"); // trim NL from each received message
-    o.put("ack_str",  "ok"); // ack sequence
-    o.put("nack_str", "#?"); // nack sequence
+    o.put("ack_str",  "ok\n"); // ack sequence
+    o.put("nack_str", "#?\n"); // nack sequence
     o.put("read_cond", "always");
     // set defaults (only it no values are set by user)
     o.put_missing("timeout", 5.0);
