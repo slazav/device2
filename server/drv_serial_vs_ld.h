@@ -37,8 +37,9 @@ class Driver_serial_vs_ld: public Driver_serial {
     o.put("ndelay", 0);  // should be set with timeout
     o.put("sfc",    0);  // software flow control
     o.put("raw",    1);  // raw mode!
-    o.put("crtscts",    0);  // no handshaking
+    o.put("crtscts",0);  // no handshaking
     o.put("delay", 0.1); // 100ms delay after write
+    o.put("igncr", 1);   // convert CR->NL on input
     o.put("opost", 0);   // no output postprocessing
     o.put("add_str",  "\r"); // add NL to each sent message
     o.put("trim_str", "\n"); // trim NL from each received message
