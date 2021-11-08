@@ -226,12 +226,11 @@ Advanced I/O mode. Works.
 
 * `serial_l300` -- Driver for Phoenix/Leybold L300i leak detector
 connected via RS232 (normal cable, not null-modem). Leak detector
-settings (in `Menu/Settings/Interfaces`): Control locations: ALL or
+settings (in Menu/Settings/Interfaces): Control locations: ALL or
 RS232; RS232 settings: 19200 LF -- 8N1 -- ASCII. Works.
 
 * `serial_vs_ld` -- Driver for Agilent VS leak detector.
 Leak detector should be connected with null-modem cable.
-Not tested and probably has some problems.
 
 * `serial_tenma_ps` -- Driver for Korad/Velleman/Tenma power supplies.
 Works.
@@ -487,12 +486,44 @@ serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
   -timeout 5.0 -errpref "ASM340: " -idn "Adixen ASM340 leak detector"
 ```
 
+### Driver `serial_l300` -- Phoenix/Leybold L300i leak detector
+
+Leak detector settings:
+- Menu/Settings/Interfaces/Control locations:  ALL or RS232
+- Menu/Settings/Interfaces/RS232:  19200 LF -- 8N1 -- ASCII
+
+Cable: normal RS232, not null-modem.
+Hardware handshake is disabled in the driver,
+there is no need to use special cable to emulate it.
+
+SCPI Command set is very similar to one of inficon Modul1000 leak
+detector.
+
+Parameters:
+
+* `-dev <v>`       -- Serial device filename (e.g. /dev/ttyUSB0)
+                      Required.
+
+* `-timeout <v>`   -- Read timeout, seconds [0 .. 25.5]
+                      Default: 5.0
+
+* `-errpref <str>` -- Prefix for error messages.
+                      Default "ASM340: "
+
+* `-idn <v>`       -- Override output of *idn? command.
+                      Default: "Adixen ASM340 leak detector"
+
+Same as
+```
+serial -speed 19200 -parity "8N1"\
+ -cread  1 -clocal 1 -icrnl 0 -raw 1 -sfc 1 -crtscts 0\
+  -add_str "\r" -trim_str "\r" -read_cond always\
+  -timeout 5.0 -errpref "L300: " -idn "PhoeniXL300"
+```
+
 ### Driver `serial_vs_ld` -- Agilent VS leak detector
 
 Leak detector should be connected with null-modem cable.
-
-Driver is not tested and probably does not work!
-It was some non-trivial problems with echo.
 
 Parameters:
 
@@ -613,14 +644,14 @@ Number of users: 0
 ```
 
 Send message to a device and get answer. In this case we send `get_time` command to
-the `graphene` program:
+the `graphene` device:
 ```
 $ device_c ask graphene get_time
 1601282446.214037
 ```
 
-Send message to a device and get answer. In this case we send `get_time` command to
-the `graphene` program:
+Send message to a device and get answer. Create a database with FLOAT values
+using the `graphene` device:
 ```
 $ device_c ask graphene create new_db FLOAT "my new database"
 1601282446.214037
