@@ -16,7 +16,7 @@
 
 Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   opts.check_unknown({"dev", "timeout", "errpref", "idn", "read_cond",
-                      "add_str", "trim_str"});
+                      "add_str", "trim_str", "delay"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "usbtmc: ");
@@ -51,6 +51,7 @@ Driver_usbtmc::Driver_usbtmc(const Opt & opts) {
   ret = ioctl(fd, USBTMC_IOCTL_AUTO_ABORT, &c);
   auto_abort = (ret==0);
 
+  delay   = opts.get("delay",  0.01);
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
   idn     = opts.get("idn", "");
@@ -113,6 +114,7 @@ Driver_usbtmc::write(const std::string & msg) {
     throw Err() << errpref
       << "read error: " << strerror(en);
   }
+  if (delay>0) usleep(delay*1e6);
 }
 
 std::string

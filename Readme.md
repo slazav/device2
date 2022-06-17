@@ -295,6 +295,9 @@ Parameters:
 * `-timeout <v>`  -- Timeout for reading, seconds
                      Default: 5.0
 
+*  `-delay <v>`   -- Delay after write command, s.
+                     Default: 0.01
+
 * `-errpref <v>`  -- Prefix for error messages.
                      Default "usbtmc: ".
 

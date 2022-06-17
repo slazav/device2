@@ -23,6 +23,9 @@ Parameters:
 * `-timeout <v>`  -- Timeout for reading, seconds.
                      Default: 5.0
 
+*  `-delay <v>`   -- Delay after write command, s.
+                     Default: 0.01
+
 * `-errpref <v>`  -- Prefix for error messages.
                      Default "usbtmc: ".
 
@@ -48,6 +51,7 @@ class Driver_usbtmc: public Driver {
   std::string add,trim;
   bool auto_abort;     // can we use auto_abort feature of usbtmc driver?
   read_cond_t read_cond;
+  double delay;
 
 public:
   Driver_usbtmc(const Opt & opts);
