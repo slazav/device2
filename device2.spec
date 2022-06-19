@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.3
+Version:      1.4
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,6 +52,14 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Sun Jun 19 2022 Vladislav Zavjalov <slazav@altlinux.org> 1.4-alt1
+v1.4
+- Unquote messages for all drivers except spp
+- new driver drv_serial_l300 -- driver for Phoenix/Leybold L300i leak detector
+- fix driver drv_serial_asm340 -- driver for Agilent VS leak detector 
+- driver drv_usbtmc: add -delay option -- waiting after write command (default 0.01)
+- drv_spp: modify error message for unexpected EOF in the stream
+
 * Sun Apr 18 2021 Vladislav Zavjalov <slazav@altlinux.org> 1.3-alt1
 v1.3
 - device_c:
