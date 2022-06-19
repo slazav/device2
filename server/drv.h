@@ -25,6 +25,8 @@ public:
   // Send message to the device, get answer
   virtual std::string ask(const std::string & msg) = 0;
 
+  // Do we need to unquote messages
+  virtual bool unquote() const {return true;}
 };
 
 #endif

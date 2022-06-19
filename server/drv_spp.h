@@ -46,6 +46,7 @@ public:
   std::string read() override;
   void write(const std::string & msg) override;
   std::string ask(const std::string & msg) override;
+  bool unquote() const override {return false;}
 };
 
 #endif
