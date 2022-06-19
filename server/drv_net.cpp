@@ -16,8 +16,8 @@
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
 
 Driver_net::Driver_net(const Opt & opts) {
-  opts.check_unknown({"addr","port","timeout","bufsize","errpref","idn",
-    "read_cond", "add_str", "trim_str"});
+  opts.check_unknown({"addr","port","timeout","bufsize","delay", "errpref",
+    "idn", "read_cond", "add_str", "trim_str"});
   int res;
 
   //prefix for error messages
@@ -59,6 +59,7 @@ Driver_net::Driver_net(const Opt & opts) {
 
   bufsize = opts.get("bufsize", 4096);
   timeout = opts.get("timeout", 5.0);
+  delay   = opts.get("delay",   0.0);
   add     = opts.get("add_str",  "\n");
   trim    = opts.get("trim_str", "\n");
   idn     = opts.get("idn", "");
@@ -111,6 +112,7 @@ Driver_net::write(const std::string & msg) {
   ssize_t ret = ::send(sockfd, m.data(), m.size(), fl);
   if (ret<0) throw Err() << errpref
     << "write error: " << strerror(errno);
+  if (delay>0) usleep(delay*1e6);
 }
 
 std::string

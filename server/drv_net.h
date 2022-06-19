@@ -26,6 +26,8 @@ Parameters:
                       Default 5.0.
 * `-bufsize <N>`   -- Buffer size for reading. Maximum length of read data.
                       Default: 4096
+*  `-delay <v>`    -- Delay after write command, s.
+                      Default: 0.01
 * `-errpref <str>` -- Prefix for error messages.
                       Default: "IOSerial: "
 * `-idn <str>`     -- Override output of *idn? command.
@@ -47,6 +49,7 @@ protected:
   std::string errpref,idn;
   std::string add,trim;
   read_cond_t read_cond;
+  double delay;
 
 public:
 

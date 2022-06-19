@@ -386,6 +386,8 @@ Parameters:
                       Default: "5025" (lxi raw protocol).
 * `-timeout <N>`   -- Read timeout, seconds. No timeout if <=0.
                       Default 5.0.
+*  `-delay <v>`    -- Delay after write command, s.
+                      Default: 0
 * `-bufsize <N>`   -- Buffer size for reading. Maximum length of read data.
                       Default: 4096
 * `-errpref <str>` -- Prefix for error messages.
