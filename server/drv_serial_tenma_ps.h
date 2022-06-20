@@ -34,7 +34,7 @@ class Driver_serial_tenma_ps: public Driver_serial {
     o.put("clocal", 1);     // always set clocal=1
     o.put("vmin",   0); // should be set with timeout
     o.put("ndelay", 0); // should be set with timeout
-    o.put("sfc",    1); // default software flow control
+    o.put("sfc",    0); // important, with sfc=1 Tenma can't send 0 status byte!
     o.put("raw",    1); // raw mode!
     o.put("delay",0.1); // 100ms delay after write
     o.put("opost",  1); // no output postprocessing, for case conversion

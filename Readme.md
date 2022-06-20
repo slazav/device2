@@ -564,10 +564,19 @@ Parameters:
 Same as
 ```
 serial -speed 9600 -parity 8N1 -cread 1 clocal 1\
-  -vmin 0 -ndelay 0 -sfc 1 -raw 1 -delay 0.1\
+  -vmin 0 -ndelay 0 -sfc 0 -raw 1 -delay 0.1\
   -opost 1 -olcuc 1 -read_cond qmark\
   -timeout 5.0 -errpref "TenmaPS: "
 ```
+
+Note important setting:
+
+- `-sfc 0`: Software flow control should be off. This allows receiving
+zero status byte (if OVC, OVP is off and output is off). `-raw 1` is also
+needed to pass special characters.
+
+- `-delay 0.1`: It should be a delay between sending command to the
+device and reading answer.
 
 ### Driver `serial_et` -- EastTester devices
 
