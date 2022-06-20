@@ -16,8 +16,8 @@
 // https://beej.us/guide/bgnet/html//index.html#a-simple-stream-client
 
 Driver_net::Driver_net(const Opt & opts) {
-  opts.check_unknown({"addr","port","timeout","bufsize","delay", "errpref",
-    "idn", "read_cond", "add_str", "trim_str"});
+  opts.check_unknown({"addr","port","timeout","bufsize","delay",
+    "open_delay", "errpref", "idn", "read_cond", "add_str", "trim_str"});
   int res;
 
   //prefix for error messages
@@ -40,6 +40,10 @@ Driver_net::Driver_net(const Opt & opts) {
   res = getaddrinfo(addr.c_str(), port.c_str(), &hints, &servinfo);
   if (res != 0) throw Err() << errpref
     << "getaddrinfo: " << gai_strerror(res);
+
+  // open_delay parameter
+  double open_delay = opts.get("open_delay", 0.0);
+  if (open_delay>0) usleep(open_delay*1e6);
 
   // loop through all the results and connect to the first we can
   int e;
