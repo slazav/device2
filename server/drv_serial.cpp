@@ -12,8 +12,6 @@
 // strerror
 #include <cstring>
 
-
-
 // If option "oname" exists, use its bool value
 // to set par bits according to the mask.
 void
@@ -78,8 +76,8 @@ Driver_serial::Driver_serial(const Opt & opts) {
     "ofdel","ofill","olcuc","opost", // output
     "echo","echoctl","echoe","echok","echoke","echonl","echoprt","extproc",
     "flusho","icanon","iexten","isig","noflsh","tostop","xcase", // local
-    "parity","raw","sfc","nlcnv","lcase","timeout","vmin",
-    "delay","add_str","trim_str","ack_str","nack_str", "read_cond"});
+    "parity","raw","sfc","nlcnv","lcase","timeout","vmin","delay",
+    "add_str","trim_str","ack_str","nack_str","read_cond","flush_on_err"});
   int ret;
 
   //prefix for error messages
@@ -368,6 +366,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   nack   = opts.get("nack_str");
   idn    = opts.get("idn", "");
   read_cond = str_to_read_cond(opts.get("read_cond", "always"));
+  flush_on_err = opts.get<bool>("flush_on_err", true);
 }
 
 
@@ -390,8 +389,12 @@ Driver_serial::read() {
     // non-blocking read, no data
     if (res<0 && errno==EAGAIN) break;
 
-    if (res<0) throw Err() << errpref
-      << "read error: " << strerror(errno);
+    if (res<0){
+      if (flush_on_err) tcflush(fd, TCIOFLUSH);
+      throw Err() << errpref
+        << "read error: " << strerror(errno);
+    }
+
     if (res==0) throw Err() << errpref
       << "read timeout";
     ret += std::string(buf, buf+res);
@@ -420,8 +423,11 @@ Driver_serial::write(const std::string & msg) {
   if (add.size() > 0) m+=add;
 
   ssize_t ret = ::write(fd, m.data(), m.size());
-  if (ret<0) throw Err() << errpref
-    << "write error: " << strerror(errno);
+  if (ret<0){
+    if (flush_on_err) tcflush(fd, TCIOFLUSH);
+    throw Err() << errpref
+      << "write error: " << strerror(errno);
+  }
 
   if (delay>0) usleep(delay*1e6);
 }

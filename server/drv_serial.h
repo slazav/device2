@@ -169,6 +169,9 @@ Parameters:
                     always, never, qmark (if there is a question mark in the message),
                     qmark1w (question mark in the first word). Default: always.
 
+  -flush_on_err 0|1 -- Flush serial buffers if Input/output error happens.
+                    Default: 1
+
 Note that most options have no defaults: if such an option is not set
 then the setting is left untouched.
 
@@ -187,6 +190,7 @@ class Driver_serial: public Driver {
   std::string ack,nack,add,trim;
   read_cond_t read_cond;
   double delay;
+  bool flush_on_err;
 
 public:
 
