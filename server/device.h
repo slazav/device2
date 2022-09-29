@@ -79,6 +79,9 @@ public:
   // Close it if nobody else use it.
   void release(const uint64_t conn);
 
+  // Close device.
+  void close(const uint64_t conn);
+
   // Lock device by a connection.
   // It can be done only if the connection is the only user of the device.
   // If device is locked other connections can not use it.

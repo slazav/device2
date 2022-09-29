@@ -24,6 +24,7 @@ void usage(const GetOptSet & options, bool pod=false){
   pr.usage("[<options>] (list|devices)  -- print list of available devices");
   pr.usage("[<options>] info <dev>      -- print information about device");
   pr.usage("[<options>] reload          -- reload device configuration");
+  pr.usage("[<options>] close <dev>     -- close device (it will be reopened if needed)");
   pr.usage("[<options>] monitor <dev>   -- monitor all communication of the device");
   pr.usage("[<options>] ping            -- check if the server is working");
   pr.usage("[<options>] get_time        -- get server system time");
@@ -291,6 +292,12 @@ main(int argc, char ** argv) {
     if (action == "reload") {
       check_par_count(pars, 1);
       std::cout << D.get(action) << "\n";
+      return 0;
+    }
+
+    if (action == "close"){
+      check_par_count(pars, 2);
+      D.get(action, pars[1]);
       return 0;
     }
 

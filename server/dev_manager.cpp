@@ -193,6 +193,17 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
       type_to_str(devices.size()) + " devices";
   }
 
+  // close -- close device (it will be reopened if needed)
+  if (act == "close"){
+    if (arg=="")
+      throw Err() << "device name expected: " << url;
+    auto lk = get_sh_lock();
+    if (devices.count(arg) == 0)
+      throw Err() << "unknown device: " << arg;
+    devices.find(arg)->second.close(conn);
+    return std::string();
+  }
+
   // ping -- do nothing
   if (act == "ping"){
     return std::string();

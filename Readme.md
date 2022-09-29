@@ -68,6 +68,8 @@ Supported actions:
 * `reload` -- Reload device configuration. If case of errors in the file
 old configuration is kept.
 
+* `close/<device>` -- Close device. It will be reopened if needed.
+
 * `ping` -- Check connection to the server. Returns nothing.
 
 * `get_time` -- Get system time (unix seconds with microsecond precision)
@@ -789,6 +791,7 @@ Usage:
 * `device_c [<options>] (list|devices)`  -- print list of available devices
 * `device_c [<options>] info <dev>`      -- print information about device
 * `device_c [<options>] reload`          -- reload device configuration
+* `device_c [<options>] close`           -- close device (it will be reopened if needed)
 * `device_c [<options>] monitor <dev>`   -- monitor all communication of the device
 * `device_c [<options>] ping`            -- check if the server is working
 * `device_c [<options>] get_time`        -- get server system time
@@ -948,6 +951,7 @@ for communicating with the server. All extra arguments are joined with `<msg>`.
 * `Device2:ask <dev> <msg>`
 * `Device2:list`
 * `Device2:reload`
+* `Device2:close`
 * `Device2:ping`
 * `Device2:get_time`
 * `Device2:info <dev>`

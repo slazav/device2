@@ -45,6 +45,12 @@ assert_cmd "echo $a" "" 0
 a=$(wget localhost:$port/use/a -O - -q ||:)
 assert_cmd "echo $a" "" 0
 
+a=$(wget localhost:$port/close/a -O - -q ||:)
+assert_cmd "echo $a" "" 0
+
+a=$(wget localhost:$port/use/a -O - -q ||:)
+assert_cmd "echo $a" "" 0
+
 # stop the server
 assert_cmd "./device_d -C test_data/serv_conf --stop" "" 0
 sed -r 's/pid=[0-9]+/pid=<...>/' -i log.txt

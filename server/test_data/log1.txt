@@ -53,4 +53,15 @@ conn:8 open device: a
 conn:8 answer: 
 conn:8 close device: a
 conn:8 close connection
+conn:9 open connection from 127.0.0.1
+conn:9 process request: /close/a
+conn:9 close device: a
+conn:9 answer: 
+conn:9 close connection
+conn:10 open connection from 127.0.0.1
+conn:10 process request: /use/a
+conn:10 open device: a
+conn:10 answer: 
+conn:10 close device: a
+conn:10 close connection
 Stopping HTTP server

@@ -61,6 +61,17 @@ Device::release(const uint64_t conn){
 }
 
 void
+Device::close(const uint64_t conn){
+  auto lk = get_data_lock();
+  log_bufs.clear();
+  users.clear();
+  if (locked) locked = false;
+  drv.reset();
+  Log(2) << "conn:" << conn << " close device: " << dev_name;
+}
+
+
+void
 Device::lock(const uint64_t conn){
   // to lock the device we should be its only user.
   if (users.count(conn)==0) use(conn);

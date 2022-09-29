@@ -43,6 +43,7 @@ namespace eval Device2 {
   proc release  {dev} {Device2::get release $dev {}}
   proc lock     {dev} {Device2::get lock    $dev {}}
   proc unlock   {dev} {Device2::get unlock  $dev {}}
+  proc close    {dev} {Device2::get close    $dev {}}
   proc log_start  {dev} {Device2::get log_start  $dev {}}
   proc log_finish {dev} {Device2::get log_finish $dev {}}
   proc log_get    {dev} {Device2::get log_get    $dev {}}
