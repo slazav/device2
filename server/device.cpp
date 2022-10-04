@@ -137,16 +137,13 @@ Device::ask(const uint64_t conn, const std::string & msg){
 
   auto lk = get_cmd_lock();
 
-  // unquote message if needed
-  std::string msg1 = (drv->unquote())? unquote_words(msg) : msg;
-
   // if no logging is needed just return answer
-  if (log_bufs.size()==0) return drv->ask(msg1);
+  if (log_bufs.size()==0) return drv->ask(msg);
 
   // do all logging (message, answer, errors)
-  log_message(">> ", msg1);
+  log_message(">> ", msg);
   try {
-    auto ret = drv->ask(msg1);
+    auto ret = drv->ask(msg);
     log_message("<< ", ret);
     return ret;
   }
