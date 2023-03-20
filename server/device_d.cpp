@@ -182,7 +182,9 @@ main(int argc, char ** argv) {
       if (!pf.fail()){
         int pid;
         pf >> pid;
-        throw Err() << "device_d already running (pid-file exists): " << pid;
+        if (kill(pid, 0) == 0)
+          throw Err() << "device_d already running (pid-file exists): " << pid;
+        remove(pidfile.c_str());
       }
     }
 
