@@ -1,10 +1,10 @@
 Name:         device2
-Version:      1.4
+Version:      1.5
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
 Group:        System
-URL:          https://github.com/slazav/dev_server
+URL:          https://github.com/slazav/device2
 License:      GPL
 
 Packager:     Vladislav Zavjalov <slazav@altlinux.org>
@@ -19,7 +19,6 @@ BuildRequires: linux-gpib-devel
 %description
 Device2 is a client-server system for accessing devices and programs
 in experimental setups.
-device_d: server part, works with devices
 
 %prep
 %setup -q
@@ -52,6 +51,17 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Wed Mar 22 2023 Vladislav Zavjalov <slazav@altlinux.org> 1.5-alt1
+v1.5
+- device_d server start: do not fail if pid-file exists but the process does not
+- Revert "unquote messages for all drivers except spp" (introduced in v1.4)
+- new action: close -- close device (it will be reopened if needed)
+- drv_serial: add flush_on_err parameter, update comments and Readme.md
+- drv_serial_tenma_ps: turn off SFC. This is important if status byte is zero
+- drv_net: -open_delay option, wait before opening connection. May be needed for Siglent devices
+- drv_net: add -delay option -- waiting after write command (default 0)
+- update mapsoft2-lib modules
+
 * Sun Jun 19 2022 Vladislav Zavjalov <slazav@altlinux.org> 1.4-alt1
 v1.4
 - Unquote messages for all drivers except spp
