@@ -11,6 +11,7 @@
 #include <grp.h>
 
 #include "getopt/getopt.h"
+#include "getopt/help_printer.h"
 #include "read_words/read_conf.h"
 #include "err/err.h"
 #include "log/log.h"

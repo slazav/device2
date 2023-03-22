@@ -9,7 +9,7 @@
 #include "read_words/read_words.h"
 #include "read_words/read_conf.h"
 #include "getopt/getopt.h"
-#include "getopt/getopt.h"
+#include "getopt/help_printer.h"
 #include "err/err.h"
 
 
