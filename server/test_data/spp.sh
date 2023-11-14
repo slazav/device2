@@ -7,10 +7,10 @@ echo "Hi!"
 stdbuf -o L echo "#OK"
 
 while read x; do
-  if [ "$x" == "wait"  ];
+  if [ "$x" = "wait"  ];
     then sleep 10;
   fi
-  if [ "$x" == error ]; then
+  if [ "$x" = error ]; then
     stdbuf -o L echo "#Error: some error";
   else
     echo "Q: $x"
