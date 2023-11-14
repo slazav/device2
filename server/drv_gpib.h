@@ -1,7 +1,7 @@
 #ifndef DRV_GPIB_H
 #define DRV_GPIB_H
+#ifdef USE_GPIB
 
-#include <gpib/ib.h>
 #include "drv.h"
 #include "drv_utils.h"
 #include "opt/opt.h"
@@ -86,4 +86,5 @@ public:
   std::string ask(const std::string & msg) override;
 };
 
+#endif
 #endif

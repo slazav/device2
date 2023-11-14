@@ -52,8 +52,10 @@ Driver::create(const std::string & name, const Opt & args){
   if (name == "net_gpib_prologix")
      return std::shared_ptr<Driver>(new Driver_net_gpib_prologix(args));
 
+#ifdef USE_GPIB
   if (name == "gpib")
      return std::shared_ptr<Driver>(new Driver_gpib(args));
+#endif
 
   throw Err() << "unknown driver: " << name;
 }

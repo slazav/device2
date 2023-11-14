@@ -1,3 +1,6 @@
+#ifdef USE_GPIB
+
+#include <gpib/ib.h>
 #include <cstring>
 #include "drv_gpib.h"
 #include "drv_utils.h"
@@ -180,3 +183,5 @@ Driver_gpib::ask(const std::string & msg) {
 
   return read();
 }
+
+#endif

@@ -19,7 +19,21 @@ OTHER_TESTS := device_d.test1\
 
 # use C++14 for shared locks
 CXXFLAGS := -std=gnu++14
-PKG_CONFIG := libmicrohttpd libcurl libgpib
+PKG_CONFIG := libmicrohttpd libcurl
+
+
+# detect libgpib
+# .SHELLSTATUS variable appears in make 4.2. We set it to 0 for earlier
+# versions and switch off the detection
+$(shell true)
+ifneq (${.SHELLSTATUS},0)
+  .SHELLSTATUS := 0
+endif
+$(shell pkg-config --exists libgpib)
+ifeq (${.SHELLSTATUS},0)
+PKG_CONFIG += libgpib
+CXXFLAGS   += -DUSE_GPIB
+endif
 
 MODDIR := ../modules
 include $(MODDIR)/Makefile.inc
@@ -28,6 +42,4 @@ include $(MODDIR)/Makefile.inc
 man: device_c.1 device_d.1
 %.1: %
 	./$* --pod | pod2man -n $* -c device2 -r device2 > $@
-
-
 
