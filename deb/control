@@ -1,0 +1,10 @@
+Source: device2
+Section: System
+Priority: optional
+Maintainer: Vladislav Zavjalov <vl.zavjalov@gmail.com>
+Build-Depends: libmicrohttpd-dev, libjansson-dev, libcurl-dev
+Standards-Version: ${ver}
+
+Package: device2
+Architecture: any
+Description: client-server system for accessing devices and programs

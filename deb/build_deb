@@ -1,0 +1,29 @@
+#!/bin/sh -efu
+
+# Script for building debian package
+
+name=device2
+ver=1.6
+
+DIR="$name-$ver"
+
+rm -rf "$DIR"
+mkdir "$DIR"
+cd "$DIR"
+
+git clone ../../ .
+git submodule init
+git checkout --detach $ver
+git submodule update
+
+rm -f modules.tar update_modules graphene.spec
+rm -rf .git .gear
+
+mkdir debian
+for f in changelog control copyright rules; do
+  sed 's/${ver}/'$ver'/g' ../$f > debian/$f
+done
+
+dpkg-buildpackage
+
+rm -rf "$DIR"
