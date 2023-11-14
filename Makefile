@@ -23,3 +23,7 @@ install: all man
 	install -D -m644 *.cfg      -t ${myconfdir}
 	install -D -m644 tcl/*.tcl  -t ${mytcldir}
 	install -D -m644 ${srcdir}/*.1 -t ${man1dir}
+
+clean:
+	make -C server clean
+	make -C modules clean
