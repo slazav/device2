@@ -17,7 +17,7 @@ rm -f log.txt
 
 # run the server -- spp device
 assert_cmd "./device_d -C test_data/serv_conf --test --devfile test_data/n3.txt --dofork" "" 0
-usleep 10000
+sleep 0.01
 
 a=$(wget localhost:$port/ask/spptest/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0

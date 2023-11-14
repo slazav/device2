@@ -19,7 +19,7 @@ rm -f log.txt
 ####################
 # run the server
 assert_cmd "./device_d -C test_data/serv_conf --devfile test_data/n2.txt -v 0 --dofork" "" 0
-usleep 10000
+sleep 0.01
 
 
 a="$(echo -e '
