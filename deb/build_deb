@@ -1,22 +1,19 @@
 #!/bin/sh -efu
 
-# Script for building debian package
-
 name=device2
 ver=1.6
-
+tag=
 DIR="$name-$ver"
 
-rm -rf "$DIR"
+rm -rf -- "$DIR"
 mkdir "$DIR"
 cd "$DIR"
 
 git clone ../../ .
-git submodule init
-git checkout --detach $ver
-git submodule update
+[ ! -d modules ] || git submodule init
+[ "$tag" = "" ]  || git checkout --detach $tag
+[ ! -d modules ] || git submodule update
 
-rm -f modules.tar update_modules graphene.spec
 rm -rf .git .gear
 
 mkdir debian
@@ -24,6 +21,7 @@ for f in changelog control copyright rules; do
   sed 's/${ver}/'$ver'/g' ../$f > debian/$f
 done
 
-dpkg-buildpackage
+dpkg-buildpackage --build=any
 
-rm -rf "$DIR"
+cd ..
+rm -rf -- "$DIR"
