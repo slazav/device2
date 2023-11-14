@@ -1,9 +1,10 @@
 all:
 	make -C server
 
-prefix     ?= /usr
+DESTDIR    ?=
+prefix     ?= $(DESTDIR)/usr
 bindir     ?= $(prefix)/bin
-sysconfdir ?= /etc
+sysconfdir ?= $(DESTDIR)/etc
 initdir    ?= $(sysconfdir)/init.d
 tcldatadir ?= $(prefix)/share/tcl
 man1dir    ?= $(prefix)/share/man/man1
