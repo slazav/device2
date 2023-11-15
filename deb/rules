@@ -15,6 +15,7 @@ binary-arch:
 	# Install Program Resources
 	mkdir $(DESTDIR)/DEBIAN
 	dpkg-gencontrol -P$(DESTDIR)
+	[ ! -f debian/conffiles ] || cp debian/conffiles  $(DESTDIR)/DEBIAN/conffiles
 	cd $(DESTDIR) && find . -type f ! -regex '.*DEBIAN/.*' -printf '%P\0' | xargs -r0 md5sum > DEBIAN/md5sums
 	dpkg-deb -b $(DESTDIR) ../
 
