@@ -2,13 +2,13 @@ PROGRAMS := device_d device_c
 
 MOD_HEADERS := http_server.h dev_manager.h device.h tun.h\
                drv.h drv_spp.h drv_utils.h drv_test.h drv_usbtmc.h\
-               drv_serial.h drv_net.h drv_gpib.h\
+               drv_serial.h drv_net.h drv_gpib.h drv_vxi.h\
                drv_serial_tenma_ps.h drv_serial_asm340.h drv_serial_simple.h\
                drv_serial_vs_ld.h drv_net_gpib_prologix.h drv_serial_et.h
 
 MOD_SOURCES := http_server.cpp dev_manager.cpp device.cpp tun.cpp\
                drv.cpp drv_utils.cpp drv_spp.cpp drv_usbtmc.cpp\
-               drv_serial.cpp drv_net.cpp drv_gpib.cpp
+               drv_serial.cpp drv_net.cpp drv_gpib.cpp drv_vxi.cpp
 
 SIMPLE_TESTS := dev_manager drv_spp drv_utils
 OTHER_TESTS := device_d.test1\
@@ -35,6 +35,12 @@ PKG_CONFIG += libgpib
 CXXFLAGS   += -DUSE_GPIB
 endif
 
+# VXI, remove if not needed.
+# rpcgen program and libtirpc should be installed.
+CXXFLAGS   += -DUSE_VXI
+
+################
+
 MODDIR := ../modules
 include $(MODDIR)/Makefile.inc
 
@@ -43,3 +49,6 @@ man: device_c.1 device_d.1
 %.1: %
 	./$* --pod | pod2man -n $* -c device2 -r device2 > $@
 
+### vxi11 protocol
+vxi11.h vxi11_clnt.c vxi11_svc.c vxi11_xdr.c: vxi11.x
+	rpcgen $<

@@ -12,6 +12,7 @@
 #include "drv_serial_et.h"
 #include "drv_serial_simple.h"
 #include "drv_gpib.h"
+#include "drv_vxi.h"
 
 std::shared_ptr<Driver>
 Driver::create(const std::string & name, const Opt & args){
@@ -55,6 +56,11 @@ Driver::create(const std::string & name, const Opt & args){
 #ifdef USE_GPIB
   if (name == "gpib")
      return std::shared_ptr<Driver>(new Driver_gpib(args));
+#endif
+
+#ifdef USE_VXI
+  if (name == "vxi")
+     return std::shared_ptr<Driver>(new Driver_vxi(args));
 #endif
 
   throw Err() << "unknown driver: " << name;
