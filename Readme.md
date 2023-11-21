@@ -35,8 +35,8 @@ either making a tunnel for HTTP connections, or by attaching the
 remote client program, `device_c` to the local server as a device.
 
 The server support devices connected via linux-gpib and usbtmc kernel
-drivers; serial and network devices (including LXI); programs with SPP
-interface.
+drivers; serial and network devices (including VXI11 and raw LXI);
+programs with SPP interface.
 
 ## Server
 

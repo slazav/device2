@@ -4,7 +4,7 @@
 #include <string>
 
 // Trim substring `trim` from the end of `str` (if it is there).
-// Return true if the rimming is done.
+// Return true if the trimming is done.
 bool trim_str(std::string & str, const std::string & trim);
 
 
