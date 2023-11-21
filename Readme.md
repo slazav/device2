@@ -7,7 +7,7 @@ This is a client-server system for accessing devices and programs in
 experimental setups. Previous version was a tcl library (
 https://github.com/slazav/tcl-device ) with a few annoying limitations.
 
-There is a server which work with "devices". They can be physical devices
+There is a server which works with "devices". They can be physical devices
 connected in various ways or programs with special interface. Each device
 has a unique name, which is listed in the server configuration file.
 Server knows how to open a device, send it a message and receive answer.
@@ -75,13 +75,13 @@ old configuration is kept.
 * `get_time` -- Get system time (unix seconds with microsecond precision)
 
 * `use/<device>` -- Use a device in this connection. Usually a device is
-opened (if it is not opened yet) on demand, then `ask` action is called.
+open (if it is not open yet) on demand, then `ask` action is called.
 This action can be used to open and check the device before sending any
 message to it (e.g. to process errors separately).
 
 * `release/<device>` -- Notify the server that this device is not going
 to be used by this connection anymore. Device is closed if no other
-connections use it. Normally devices are closed
+connection uses it. Normally devices are closed
 when session is ended and no other sessions are using the device.
 
 * `log_start/<device>` -- Any user can see all communications of every device.
@@ -251,6 +251,9 @@ Not tested.
 * `gpib` -- for devices connected via linux-gpib library.
 Works.
 
+* `vxi` -- for network devices connected via vxi-11 protocol.
+Works, but have not been tested much.
+
 
 ### Driver `test` -- a dummy driver for tests
 
@@ -372,6 +375,46 @@ Parameters:
 * `-delay <v>`     -- Delay after write command, s.
                       Default: 0
 
+### Driver "vxi" -- network devices via vxi-11 protocol
+
+By default the driver reads answer from the device only if there is a
+question mark '?' in the first word of the message.
+
+Parameters:
+
+* `-addr <N>`      -- IP/hostname.
+                      Required.
+
+* `-name <N>`      -- Instrument name ("instr0", "gpib0,10", etc.).
+                      Required.
+
+* `-rpc_timeout <float>`  -- I/O timeout in seconds.
+                             Default: 2.0
+
+* `-io_timeout <float>`   -- I/O timeout in seconds.
+                             Default: 5.0
+
+* `-lock_timeout <float>` -- I/O timeout in seconds.
+                             Default: 2.0
+
+* `-errpref <str>` -- Prefix for error messages.
+                      Default: "vxi: "
+
+* `-idn <str>`     -- Override output of *idn? command.
+                      Default: empty string, do not override.
+
+* `-read_cond <v>` -- When do we need to read answer from a command:
+                      always, never, qmark (if there is a question mark in the message),
+                      qmark1w (question mark in the first word). Default: qmark1w.
+
+* `-add_str <v>`   -- Add string to each message sent to the device.
+                      Default: "\n"
+
+* `-trim_str <v>`  -- Remove string from the end of received messages.
+                      Default: "\n"
+
+* `-delay <v>`     -- Delay after write command, s.
+                      Default: 0
 
 ###  Driver `net` -- network devices
 
