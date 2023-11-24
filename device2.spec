@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.6
+Version:      1.7
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -51,6 +51,13 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Fri Nov 24 2023 Vladislav Zavjalov <slazav@altlinux.org> 1.7-alt1
+v1.7
+- Add vxi driver
+- deb: simplify deb/rules, fix location of tcl library, add conffiles
+- update Readme.md, add SPP protocol description
+- update modules
+
 * Tue Nov 14 2023 Vladislav Zavjalov <slazav@altlinux.org> 1.6-alt1
 v1.6 a few fixes for Debian/Ubuntu build
 
