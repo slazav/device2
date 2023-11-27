@@ -3,7 +3,7 @@ Section: System
 Priority: optional
 Maintainer: Vladislav Zavjalov <vl.zavjalov@gmail.com>
 Build-Depends: libmicrohttpd-dev, libjansson-dev, libcurl-dev
-Standards-Version: ${ver}
+Standards-Version: 4.0.0
 
 Package: device2
 Architecture: any

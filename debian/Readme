@@ -1,0 +1,8 @@
+This directory contains information for building a Debian package.
+Changelog file is missing because I convert it from spec-file during build.
+Other files are decribed in
+https://www.debian.org/doc/manuals/maint-guide/dreq.en.html
+https://www.debian.org/doc/manuals/maint-guide/dother.en.html
+
+I use alt2deb scripts (see somewhere in my github for building)
+for converting changelog and building.
