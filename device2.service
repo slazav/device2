@@ -7,3 +7,5 @@ RestartSec=1
 ExecStart=device_d
 ExecReload=device_d --stop
 
+[Install]
+WantedBy=multi-user.target
