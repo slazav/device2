@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.7
+Version:      1.8
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -51,6 +51,13 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Thu Jan 18 2024 Vladislav Zavjalov <slazav@altlinux.org> 1.8-alt1
+v1.8
+- Systemd service: add WantedBy=multi-user.target
+  (this is needed to start the server on boot)
+- vxi: important bugfixes: fix for multi-thread usage,
+  fix memory leak and uninitialised values in read(), thanks to valgrind
+
 * Fri Nov 24 2023 Vladislav Zavjalov <slazav@altlinux.org> 1.7-alt1
 v1.7
 - Add vxi driver
