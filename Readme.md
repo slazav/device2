@@ -16,23 +16,24 @@ Clients can connect to the server using HTTP protocol and send messages to
 devices. This architecture has many advantages comparing to direct connections
 between clients and devices:
 
-* Clients know nothing about device connection details, they should use
-only device name to access it. All low-level connection parameters (e.g.
+* Clients know nothing about device connection details, they use only
+device name to access it. All low-level connection parameters (e.g.
 serial port configuration) are managed by the server.
 
 * Multiple clients can access a single device without collisions. All
-needed lockings are done by the server. A client can also lock a device for
-single use, preventing others from accessing it.
+needed lockings are done by the server.
 
-* A device is opened on demand, then the fist client start using it and closed
-then all users disconnected. Client should keep a permanent connection
+* A device opens on demand, when the first client start using it, and close
+when all users disconnect. Client should keep a permanent connection
 to the server if it wants to use a device without closing/opening it.
 
 * Any client can monitor all messages for any device.
 
-* Remote access to devices can be easily implemented in this system by
-either making a tunnel for HTTP connections, or by attaching the
-remote client program, `device_c` to the local server as a device.
+* Remote access to devices can be easily implemented by either making a
+tunnel for HTTP connections (there is no authentification in the server,
+use `ssh` for this), or by attaching the remote client program in
+`use_dev` mode, `ssh -T device_c use_dev <name>` to the local server as
+a device.
 
 The server support devices connected via linux-gpib and usbtmc kernel
 drivers; serial and network devices (including VXI11 and raw LXI);
@@ -53,9 +54,8 @@ message body is returned. On error a response with code 400 is returned.
 Error description is written in `Error` header and in the message body.
 
 The server does not know what it sends to a device and what answer is
-expected, it just provides connection. For the next layer see DeviceRole
-library. It defines certain "roles" for devices with common high-level
-commands (e.g. "generator" role has a "set frequency" command).
+expected, it just provides connection (For the next layer see 
+DeviceRole library, https://github.com/slazav/tcl-device_role).
 
 Supported actions:
 
@@ -77,7 +77,7 @@ old configuration is kept.
 * `use/<device>` -- Use a device in this connection. Usually a device is
 open (if it is not open yet) on demand, then `ask` action is called.
 This action can be used to open and check the device before sending any
-message to it (e.g. to process errors separately).
+message to it (e.g. to process open errors separately).
 
 * `release/<device>` -- Notify the server that this device is not going
 to be used by this connection anymore. Device is closed if no other
