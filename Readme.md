@@ -265,9 +265,9 @@ Parameters: none
 ### Driver `spp` -- programs following "Simple Pipe protocol"
 
 This driver implements "Simple pipe protocol" for communicating with
-programs using stdin/stdout unix pipes. The protocol is described in
-https://github.com/slazav/tcl-device (see Readme.md) It is used in a few
-of my projects (pico_rec, graphene), and in `device_c` client program.
+programs using stdin/stdout unix pipes (see the protocol description at
+the end of this text) It is used in a few of my projects (pico_rec,
+graphene), and in `device_c` client program.
 
 Parameters:
 
@@ -949,12 +949,12 @@ You are currently using the device
 #OK
 ```
 
-### Remote use and how to crash the server
+### Remote use
 
 There are two ways how to configure remote access to your devices. First,
 you can connect to the remote server by HTTP protocol. Note that device
 server does not have any security features, and it's not safe to allow
-connections from outside. But it should be safe to make an ssh tunnel to
+connections from outside. I recommend using an ssh tunnel to
 the remote server. This can be done with -via parameter of `device_c`
 command.
 
@@ -964,7 +964,7 @@ and `use_srv` modes. Thus it can be used as a device. If you have device
 servers running on both computers and want to access remote device
 `mydev`, just write in the local configuration something like this:
 ```
-mydev   spp -prog "ssh comp2 device_c use_dev mydev"
+mydev   spp -prog "ssh -T comp2 device_c use_dev mydev"
 ```
 
 This approach allows you to mix local and remote devices on your computer
@@ -973,7 +973,7 @@ you should have timeouts of the spp driver larger then timeouts of the
 device's driver. Currently default read/open timeouts are:
 10s/20s for spp, 3s/10s for gpib, 5s for serial, usbtmc, and net drivers.
 
-Now it should be obvious how to crash the server: connect a device to itself!
+Do not connect device to itself as it will obviously crash the server.
 ```
 mydev   spp -prog "device_c use_dev mydev"
 ```
@@ -1080,4 +1080,4 @@ abc
 ```
 
 ---
-V.Zavjalov, 2020, slazav at altlinux dot org
+V.Zavjalov, 2020-2024, vl.zavjalov at gmail dot com
