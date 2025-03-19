@@ -12,7 +12,7 @@ srv="-s localhost -p $port"
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
 
 assert_cmd "./device_c $srv ask b text"\
-  "Error: Couldn't connect to server" 1
+  "Error: Could not connect to server" 1
 
 rm -f log.txt
 
@@ -24,7 +24,7 @@ sleep 0.01
 
 help=$(./device_c -h ||:)
 
-assert_cmd "./device_c -s x ping" "Error: Couldn't resolve host name" 1
+assert_cmd "./device_c -s x ping" "Error: Could not resolve hostname" 1
 assert_cmd "./device_c $srv ping a" "Error: unexpected parameter for \"ping\" action: a" 1
 assert_cmd "./device_c $srv" "$help" 1
 assert_cmd "./device_c $srv ping" "" 0

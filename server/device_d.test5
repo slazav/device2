@@ -12,7 +12,7 @@ srv="-s localhost -p $port"
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
 
 assert_cmd "./device_c $srv ask b text"\
-  "Error: Couldn't connect to server" 1
+  "Error: Could not connect to server" 1
 
 rm -f log.txt
 
