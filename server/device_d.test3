@@ -10,7 +10,7 @@ port=8182
 # try to stop the server
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
 
-assert_cmd "wget localhost:$port/ask/b/text -nv -S"\
+assert_cmd "wget http://localhost:$port/ask/b/text -nv -S"\
   "failed: Connection refused." 4
 
 rm -f log.txt
@@ -19,13 +19,13 @@ rm -f log.txt
 assert_cmd "./device_d -C test_data/serv_conf --test --devfile test_data/n3.txt --dofork" "" 0
 sleep 0.01
 
-a=$(wget localhost:$port/ask/spptest/error -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget http://localhost:$port/ask/spptest/error -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: some error" 0
 
-a=$(wget localhost:$port/ask/spptest/test -O - -q 2>&1)
+a=$(wget http://localhost:$port/ask/spptest/test -O - -q 2>&1)
 assert_cmd "echo $a" "Q: test" 0
 
-a=$(wget localhost:$port/ask/spptest/wait -O - -nv -S 2>&1 | grep Error ||:)
+a=$(wget http://localhost:$port/ask/spptest/wait -O - -nv -S 2>&1 | grep Error ||:)
 assert_cmd "echo $a" "Error: Read timeout" 0
 
 # stop the server
