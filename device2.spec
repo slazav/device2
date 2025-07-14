@@ -10,6 +10,7 @@ License:      GPL
 Packager:     Vladislav Zavjalov <slazav@altlinux.org>
 
 Source:       %name-%version.tar
+BuildPreReq: rpm-build-tcl
 BuildRequires: gcc-c++
 BuildRequires: libmicrohttpd-devel
 BuildRequires: libjansson-devel
