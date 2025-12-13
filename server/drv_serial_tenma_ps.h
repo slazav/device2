@@ -37,7 +37,7 @@ class Driver_serial_tenma_ps: public Driver_serial {
     o.put("sfc",    0); // important, with sfc=1 Tenma can't send 0 status byte!
     o.put("raw",    1); // raw mode!
     o.put("delay",0.1); // 100ms delay after write
-    o.put("opost",  1); // no output postprocessing, for case conversion
+    o.put("opost",  1); // output postprocessing, for case conversion
     o.put("olcuc",  1); // convert messages to upper case
     o.put("read_cond",  "qmark"); // read answers only if ? was in the message
 
