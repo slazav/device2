@@ -187,6 +187,7 @@ If option is missing no change is made.
 #include "opt/opt.h"
 
 class Driver_serial: public Driver {
+protected:
   int fd; // file descriptor
   std::string errpref, idn;
   std::string ack,nack,add,trim;
