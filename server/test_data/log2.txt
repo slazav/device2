@@ -95,3 +95,5 @@ conn:9 process request: /release_all
 conn:9 answer: 
 conn:9 close connection
 Stopping HTTP server
+Close device: a
+Close device: b

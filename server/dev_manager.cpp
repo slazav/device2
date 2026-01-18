@@ -20,6 +20,10 @@ DevManager::DevManager(const std::string & devfile):devfile(devfile){
   }
 }
 
+DevManager::~DevManager(){
+  for (auto & d:devices) d.second.close();
+}
+
 /*************************************************/
 std::vector<std::string>
 DevManager::parse_url(const std::string & url){
@@ -199,7 +203,7 @@ DevManager::run(const std::string & url, const Opt & opts, const uint64_t conn){
     auto lk = get_sh_lock();
     if (devices.count(arg) == 0)
       throw Err() << "unknown device: " << arg;
-    devices.find(arg)->second.close(conn);
+    devices.find(arg)->second.close();
     return std::string();
   }
 

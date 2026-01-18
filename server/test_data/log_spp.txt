@@ -17,3 +17,4 @@ conn:2 process request: /ask/spptest/wait
 conn:2 error: Read timeout
 conn:2 close connection
 Stopping HTTP server
+Close device: spptest

@@ -43,6 +43,9 @@ public:
   // Constructor. Reading configuration.
   DevManager(const std::string & devfile);
 
+  // Destructor. Close all devices
+  ~DevManager();
+
   // number of devices (for tests)
   size_t size() const {return devices.size();}
 
