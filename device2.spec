@@ -1,5 +1,5 @@
 Name:         device2
-Version:      1.8
+Version:      1.9
 Release:      alt1
 
 Summary:      client-server system for accessing devices and programs in experimental setups
@@ -52,6 +52,34 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_man1dir/device*
 
 %changelog
+* Sun Jan 18 2026 Vladislav Zavjalov <slazav@altlinux.org> 1.9-alt1
+v1.9
+- spp driver: add closing timeout
+  This is an important fix. Previously device_d was stopping spp program
+  with SIGTERM immediately after closing its output. As a result graphene
+  program sometimes failed to exit properly, leaving broken databases.
+  Now -close_timeout parameter for spp driver is introduced with default
+  value 5s.
+- Do not close unused devices when closing a client connection.
+  The idea is to keep devices connection permanently while clients
+  can connect and disconnect. I do not remember reason why I was
+  closing devices here. It could be that for some bad devices/drivers
+  keeping connection for a long time can cause problems.
+  Mayby some regular and configurable cleanup procedure for device
+  connections should be done in the future.
+- Explicitely close devices when stopping device manager.
+  This is a redundant measure (devices are stopped anyway), it is needed
+  only to have consistent open-close messages in logfiles
+- Add driver `serial_hm310t` for Hanmatec HM310T power supply.
+  This is a special driver which introduces its own scpi-like language
+  on top of device-specific Modbus binary communication protocol.
+  (Previously I was using separate spp programs for implementing
+  high-level text communication)
+- add missing BuildPreReq: rpm-build-tcl when building for Altlinux
+- debian/rules: strip binary files when building for Debian
+- update tests for new wget and libcurl
+- update Readme.md
+
 * Thu Jan 18 2024 Vladislav Zavjalov <slazav@altlinux.org> 1.8-alt1
 v1.8
 - Systemd service: add WantedBy=multi-user.target
