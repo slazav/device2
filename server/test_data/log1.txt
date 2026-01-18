@@ -15,7 +15,6 @@ conn:2 open connection from 127.0.0.1
 conn:2 process request: /ask/b/text
 conn:2 open device: b
 conn:2 answer: text
-conn:2 close device: b
 conn:2 close connection
 conn:3 open connection from 127.0.0.1
 conn:3 process request: /devices
@@ -39,9 +38,7 @@ Number of users: 0
 conn:5 close connection
 conn:6 open connection from 127.0.0.1
 conn:6 process request: /ask/b/text
-conn:6 open device: b
 conn:6 answer: text
-conn:6 close device: b
 conn:6 close connection
 conn:7 open connection from 127.0.0.1
 conn:7 process request: /release/b
@@ -51,7 +48,6 @@ conn:8 open connection from 127.0.0.1
 conn:8 process request: /use/a
 conn:8 open device: a
 conn:8 answer: 
-conn:8 close device: a
 conn:8 close connection
 conn:9 open connection from 127.0.0.1
 conn:9 process request: /close/a
@@ -62,6 +58,5 @@ conn:10 open connection from 127.0.0.1
 conn:10 process request: /use/a
 conn:10 open device: a
 conn:10 answer: 
-conn:10 close device: a
 conn:10 close connection
 Stopping HTTP server

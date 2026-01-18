@@ -7,18 +7,13 @@ conn:0 open connection from 127.0.0.1
 conn:0 process request: /ask/spptest/error
 conn:0 open device: spptest
 conn:0 error: some error
-conn:0 close device: spptest
 conn:0 close connection
 conn:1 open connection from 127.0.0.1
 conn:1 process request: /ask/spptest/test
-conn:1 open device: spptest
 conn:1 answer: Q: test
-conn:1 close device: spptest
 conn:1 close connection
 conn:2 open connection from 127.0.0.1
 conn:2 process request: /ask/spptest/wait
-conn:2 open device: spptest
 conn:2 error: Read timeout
-Stopping HTTP server
-conn:2 close device: spptest
 conn:2 close connection
+Stopping HTTP server

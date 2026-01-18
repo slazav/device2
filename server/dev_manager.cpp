@@ -20,7 +20,6 @@ DevManager::DevManager(const std::string & devfile):devfile(devfile){
   }
 }
 
-
 /*************************************************/
 std::vector<std::string>
 DevManager::parse_url(const std::string & url){
@@ -45,7 +44,7 @@ DevManager::conn_open(const uint64_t conn){
 
 void
 DevManager::conn_close(const uint64_t conn){
-  // go through all devices, close ones which are not needed
+  // go through all devices, say that we are not using them
   for (auto & d:devices) d.second.release(conn);
   conn_names.erase(conn);
 }

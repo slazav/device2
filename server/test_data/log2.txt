@@ -20,7 +20,6 @@ conn:3 process request: /ask/b/text
 conn:3 open device: b
 conn:3 answer: text
 conn:3 process request: /release/b
-conn:3 close device: b
 conn:3 answer: 
 conn:3 close connection
 conn:4 open connection from 127.0.0.1
@@ -45,15 +44,12 @@ Number of users: 0
 conn:6 close connection
 conn:7 open connection from 127.0.0.1
 conn:7 process request: /ask/b/text
-conn:7 open device: b
 conn:7 answer: text
 conn:7 process request: /release/b
-conn:7 close device: b
 conn:7 answer: 
 conn:7 close connection
 conn:8 open connection from 127.0.0.1
 conn:8 process request: /use/b
-conn:8 open device: b
 conn:8 answer: 
 conn:8 process request: /set_conn_name/device_c(<...>)
 conn:8 answer: 
@@ -66,7 +62,6 @@ conn:8 answer: d/e
 conn:8 process request: /ask/b/f&g
 conn:8 answer: f&g
 conn:8 process request: /release_all
-conn:8 close device: b
 conn:8 answer: 
 conn:8 close connection
 conn:9 open connection from 127.0.0.1
@@ -83,7 +78,6 @@ conn:9 error: unknown action: err
 conn:9 process request: /ping
 conn:9 answer: 
 conn:9 process request: /use/b
-conn:9 open device: b
 conn:9 answer: 
 conn:9 process request: /ask/b/123
 conn:9 answer: 123
@@ -98,7 +92,6 @@ Number of users: 1
 You are currently using the device
 
 conn:9 process request: /release_all
-conn:9 close device: b
 conn:9 answer: 
 conn:9 close connection
 Stopping HTTP server
