@@ -19,6 +19,6 @@ conn:2 open connection from 127.0.0.1
 conn:2 process request: /ask/spptest/wait
 conn:2 open device: spptest
 conn:2 error: Read timeout
+Stopping HTTP server
 conn:2 close device: spptest
 conn:2 close connection
-Stopping HTTP server

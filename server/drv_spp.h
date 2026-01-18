@@ -20,6 +20,8 @@ Parameters:
 
 * `-read_timeout`  -- Timeout for reading, seconds. Default: 10.0.
 
+* `-close_timeout`  -- Timeout for closing (before sending SIGTERM), seconds. Default: 5.0.
+
 * `-errpref` -- Prefix for error messages. Default "spp: ".
 
 * `-idn`     -- Override output of *idn? command. Default: do not override.
@@ -31,7 +33,7 @@ class Driver_spp: public Driver {
   std::string prog;
   char ch; // protocol special character
   int ver; // protocol version
-  double open_timeout, read_timeout;
+  double open_timeout, read_timeout, close_timeout;
   std::string errpref; // error prefix
   std::string idn;
 

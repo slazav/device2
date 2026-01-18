@@ -34,7 +34,7 @@ Driver_spp::read_spp(double timeout){
 
 
 Driver_spp::Driver_spp(const Opt & opts) {
-  opts.check_unknown({"prog", "open_timeout", "read_timeout", "errpref", "idn"});
+  opts.check_unknown({"prog", "open_timeout", "read_timeout", "close_timeout", "errpref", "idn"});
 
   //prefix for error messages
   errpref = opts.get("errpref", "spp: ");
@@ -47,6 +47,7 @@ Driver_spp::Driver_spp(const Opt & opts) {
 
   open_timeout = opts.get<double>("open_timeout", 20.0);
   read_timeout = opts.get<double>("read_timeout", 10.0);
+  close_timeout = opts.get<double>("close_timeout", 5.0);
 
   flt.reset(new IOFilter(prog));
   try {
@@ -66,7 +67,7 @@ Driver_spp::Driver_spp(const Opt & opts) {
   catch (Err e) {
     if (flt){
       flt->close_input();
-      flt->kill();
+      flt->term(close_timeout);
       flt.reset();
     }
     throw;
@@ -79,7 +80,7 @@ Driver_spp::Driver_spp(const Opt & opts) {
 Driver_spp::~Driver_spp() {
   if (!flt) return;
   flt->close_input();
-  flt->kill();
+  flt->term(close_timeout);
   flt.reset();
 }
 
