@@ -12,6 +12,7 @@
 #include "drv_serial_et.h"
 #include "drv_serial_simple.h"
 #include "drv_serial_hm310t.h"
+#include "drv_serial_jds6600.h"
 #include "drv_gpib.h"
 #include "drv_vxi.h"
 
@@ -56,6 +57,9 @@ Driver::create(const std::string & name, const Opt & args){
 
   if (name == "serial_hm310t")
      return std::shared_ptr<Driver>(new Driver_serial_hm310t(args));
+
+  if (name == "serial_jds6600")
+     return std::shared_ptr<Driver>(new Driver_serial_jds6600(args));
 
 #ifdef USE_GPIB
   if (name == "gpib")

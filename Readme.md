@@ -242,6 +242,8 @@ Works with E4502 LCR meter.
 
 * `serial_hm310t` -- Driver for Hanmatec HM310T power supply.
 
+* `serial_jds6600` -- Driver for Junctek JDS6600 signal generator.
+
 * `serial_simple` -- Serial driver with reasonable default settings.
 Works with old Agilent/HP/Keythley devices.
 
@@ -882,6 +884,30 @@ Problems:
 * can clear OCP state remotely (by changing current and switching output off), but not OVP
 * "specification and type", "tail classification" registers -- no understanding
 * protection status mask -- doesn not match the documentation. At least OVP and OCP flags work for me
+
+### Driver `serial_jds6600` -- Junctek JDS6600 signal generator
+
+Parameters:
+
+* `-dev <v>`      -- Serial device filename (e.g. /dev/ttyACM0)
+                    Required.
+
+* `-timeout <v>`  -- Read timeout, seconds [0 .. 25.5]
+                    Default: 2.0
+
+* `-errpref <v>` -- Prefix for error messages.
+                    Default "JDS6600: "
+
+* `-idn <v>`     -- Override output of *idn? command.
+                    Default: JDS6600
+
+Same as
+```
+serial -speed 115200 -parity 8N1 -cread 1 -clocal 1\
+  -sfc 0 -onlcr 1 -igncr 1\
+  -add_str '\n' -trim_str '\n' -read_cond always\
+  -errpref "JDS6600: " -idn "JDS6600"
+```
 
 ---
 ## Client
