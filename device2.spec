@@ -43,6 +43,7 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %attr(2770,root,users) %dir %_sharedstatedir/device_d
 %_bindir/device_d
 %_bindir/device_c
+%_bindir/device_ping
 %config %_initdir/device_d
 %dir %_sysconfdir/device2
 %config(noreplace) %_sysconfdir/device2/devices.cfg

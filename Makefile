@@ -21,6 +21,7 @@ man:
 install: all man
 	install -D -m755 ${srcdir}/device_d -t ${bindir}
 	install -D -m755 ${srcdir}/device_c -t ${bindir}
+	install -D -m755 ${srcdir}/device_ping -t ${bindir}
 	install -D -m755 device_d.init ${initdir}/device_d
 	install -D -m644 *.cfg      -t ${myconfdir}
 	install -D -m644 tcl/*.tcl  -t ${mytcldir}

@@ -1,4 +1,4 @@
-PROGRAMS := device_d device_c
+PROGRAMS := device_d device_c device_ping
 
 MOD_HEADERS := http_server.h dev_manager.h device.h tun.h\
                drv.h drv_spp.h drv_utils.h drv_test.h drv_usbtmc.h\
