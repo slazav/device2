@@ -297,9 +297,6 @@ DevManager::read_conf(){
         opt.put(vs[i].substr(1), vs[i+1]);
       }
 
-      // do not allow empty devices
-      if (dev == "") throw Err() << "empty device";
-
       // does this device exists
       if (ret.count(dev)>0) throw Err()
         << "duplicated device name: " << dev;
