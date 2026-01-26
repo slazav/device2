@@ -3,7 +3,7 @@
 
 /*************************************************/
 /*
- * Driver `serial_jds6600` -- JDS6600 signal generator
+ * Driver `serial_jds6600` -- Junctek JDS6600 signal generator
  *
 
 Options:
@@ -20,7 +20,7 @@ Options:
 * `-idn <v>`     -- Override output of *idn? command.
                     Default: JDS6600
 
-Device interfce is some variant of Modbus with test messages:
+Device interfce is some variant of Modbus with text messages:
 ":<command><register>=<comma-separated integer arguments>."
 where command is w,r,i,b, register is 0..99
 
