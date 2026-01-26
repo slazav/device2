@@ -877,6 +877,8 @@ SCPI-like command set on top of it.
 Letter case is ignored. Command for setting modbus address is skipped,
 there is no need for it in the USB device.
 
+*  :r<num> -- read Modbus register
+
 Problems:
 
 * power reading and power protection do not work in my device
@@ -1057,7 +1059,7 @@ generator which can be tested by script `/etc/udev/ping_jds6600`:
 #!/bin/sh
 device_ping \
   serial -dev "/dev/$1" -speed 115200 -parity 8N1 -sfc 0 -onlcr 1 -igncr 1\
-  -add_str '\n' -trim_str '\n' -cread 1 -clocal 1 -- ":r01=."
+  -add_str '\n' -trim_str '\n' -cread 1 -clocal 1 -timeout 0.1 -- ":r01=."
 ```
 With a correct device name the script prints string `:r01=2366400068.` which
 contains device serial number. The udev rule is:

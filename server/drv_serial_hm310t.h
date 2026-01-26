@@ -53,6 +53,8 @@ SCPI-like command set on top of it.
 Letter case is ignored. Command for setting modbus address is skipped,
 there is no need for it in the USB device.
 
+*  :r<num> -- read Modbus register
+
 Problems:
 
 * power reading and power protection do not work in my device
@@ -60,6 +62,36 @@ Problems:
 * can clear OCP state remotely (by changing current and switching output off), but not OVP
 * "specification and type", "tail classification" registers -- no understanding
 * protection status mask -- doesn not match the documentation. At least OVP and OCP flags work for me
+
+Modbus registers:
+
+00 0         -- ?
+01 0     r/w -- output on/off
+02 2     r   -- protect status
+03 3210  r   -- specification and type (?)
+04 19267 r   -- tail classification (?)
+05 563   r   -- decimal point positions
+16 0     r   -- voltage display value
+17 0     r   -- current display value
+18 0     r   -- power display value H
+19 0     r   -- power display value L
+20 3200
+21 10200
+22 4
+23 64256
+32 3840  r/w -- OVP value
+33 10000 r/w -- OCP value
+34 1     r/w -- OPP value H
+35 34464 r/w -- OPP value L
+48 3000  r/w -- set voltage
+49 1000  r/w -- set current
+64 0
+65 1
+66 0
+67 0
+68 0
+39321 1  r/w -- communication address
+
 
 */
 

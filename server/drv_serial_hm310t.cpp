@@ -157,6 +157,12 @@ std::string
 Driver_serial_hm310t::ask(const std::string & msg) {
   if (strcasecmp(msg.c_str(),"*idn?")==0) return idn;
 
+  // raw modbus commands
+  if (msg.size()>2 && msg[0]==':' && msg[1]=='r'){
+    unsigned int reg = str_to_type<unsigned int>(std::string(msg.begin()+2, msg.end()));
+    return type_to_str(modbus_func3(reg));
+  }
+
   // output status (0|1)
   if (strcasecmp(msg.c_str(),"out?")==0) return type_to_str(modbus_func3(0x01));
   // protection status mask (raw data)
