@@ -1057,16 +1057,15 @@ They can not be distinguised by `udev`. One of devices is JDS6600 signal
 generator which can be tested by script `/etc/udev/ping_jds6600`:
 ```
 #!/bin/sh
-device_ping \
-  serial -dev "/dev/$1" -speed 115200 -parity 8N1 -sfc 0 -onlcr 1 -igncr 1\
-  -add_str '\n' -trim_str '\n' -cread 1 -clocal 1 -timeout 0.1 -- ":r01=."
+device_ping serial_jds6600 -dev "/dev/$1" -timeout 0.1 -- ":r01=." |
+  grep -q "^:r01=2366400068\."
 ```
-With a correct device name the script prints string `:r01=2366400068.` which
-contains device serial number. The udev rule is:
+When communicating with the correct device the script reads and checks device
+serial number and returns with zero status. The udev rule is:
 ```
 ACTION=="add", SUBSYSTEM=="tty",\
    ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523",\
-   PROGRAM+="/etc/udev/ping_jds6600 %k", RESULT==":r01=2366400068.*"\
+   PROGRAM+="/etc/udev/ping_jds6600 %k",\
    GROUP="users", MODE="0660", SYMLINK+="jds6600"
 ```
 
