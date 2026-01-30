@@ -2,7 +2,7 @@ Source: device2
 Section: System
 Priority: optional
 Maintainer: Vladislav Zavjalov <vl.zavjalov@gmail.com>
-Build-Depends: libmicrohttpd-dev, libjansson-dev, libcurl-dev
+Build-Depends: libmicrohttpd-dev, libjansson-dev, libcurl4-dev, libtirpc-dev wget
 Standards-Version: 4.0.0
 
 Package: device2
