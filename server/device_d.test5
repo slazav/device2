@@ -5,8 +5,9 @@
 . ../modules/test_lib.sh
 
 # use non-standard port to avoid collisions with running server
+ip=127.0.0.1
 port=8182
-srv="-s localhost -p $port"
+srv="-s $ip -p $port"
 
 # try to stop the server
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
@@ -38,7 +39,7 @@ log_get b' | ./device_c $srv use_srv)"
 
 assert_cmd "echo \"$a\"" "\
 #SPP001 \
-Server: http://localhost:8182 \
+Server: http://$ip:$port \
 #OK \
 #OK \
 Q1? \

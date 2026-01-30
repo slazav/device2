@@ -5,8 +5,9 @@
 . ../modules/test_lib.sh
 
 # use non-standard port to avoid collisions with running server
+ip=127.0.0.1
 port=8182
-srv="-s localhost -p $port"
+srv="-s $ip -p $port"
 
 # try to stop the server
 ./device_d -C test_data/serv_conf --stop &>/dev/null ||:
@@ -48,7 +49,7 @@ assert_cmd "./device_c $srv ask b text" "text" 0
 # spp interfaces
 assert_cmd "echo -e 'a\nb c\nd/e\nf&g\n\n' | ./device_c $srv use_dev b" \
 "#SPP001
-Server: http://localhost:$port
+Server: http://$ip:$port
 Device: b
 #OK
 a
@@ -62,7 +63,7 @@ f&g
 
 assert_cmd "echo -e 'list\nlist 1\nerr\nping\nuse b\nask b 123\ninfo b\n' | ./device_c $srv use_srv" \
 "#SPP001
-Server: http://localhost:8182
+Server: http://$ip:$port
 #OK
 a
 b
