@@ -77,7 +77,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
     "echo","echoctl","echoe","echok","echoke","echonl","echoprt","extproc",
     "flusho","icanon","iexten","isig","noflsh","tostop","xcase", // local
     "parity","raw","sfc","nlcnv","lcase","timeout","vmin","delay",
-    "add_str","trim_str","ack_str","nack_str","read_cond","flush_on_err"});
+    "add_str","trim_str","ack_str","nack_str","read_cond","spp","flush_on_err"});
   int ret;
 
   //prefix for error messages
@@ -359,6 +359,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   if (ret<0) throw Err() << errpref
     << "can't set serial port parameters: " << strerror(errno);
 
+  // other options
   delay  = opts.get("delay",  0.1);
   add    = opts.get("add_str");
   trim   = opts.get("trim_str");
@@ -366,6 +367,7 @@ Driver_serial::Driver_serial(const Opt & opts) {
   nack   = opts.get("nack_str");
   idn    = opts.get("idn", "");
   read_cond = str_to_read_cond(opts.get("read_cond", "always"));
+  spp    = opts.get<bool>("spp");
   flush_on_err = opts.get<bool>("flush_on_err", true);
 }
 
@@ -399,16 +401,44 @@ Driver_serial::read() {
       << "read timeout";
     ret += std::string(buf, buf+res);
 
-    // stop reading if -ack option is not set
-    if (ack.size()==0) break;
+    // With -spp option read until #OK or #Error: <text>
+    if (spp) {
 
-    // if data ends with ack
-    if (trim_str(ret, ack)) {break;}
+      // We want to detect two cases: #OK/Error is in the
+      // beginning of a message, or after a newline.
+      if (ret == "#OK\n") return "";
 
-    // if data ends with nack
-    if (trim_str(ret,nack)) {fail=true; break;}
+      if (trim_str(ret, "\n#OK\n")) return ret;
 
-    // read more data if nack or ack are not found.
+      if (ret.find("#Error: ") == 0){
+        ret.resize(ret.size()-1);
+        throw Err() << ret.substr(8);
+      }
+
+      auto p = ret.find("\n#Error: ");
+      if (p!=ret.npos && trim_str(ret, "\n")){
+        ret.resize(ret.size()-1);
+        throw Err() << ret.substr(p+9);
+      }
+
+      // read more data if needed
+      continue;
+    }
+
+    // if -ack option is set read until ack or nack message:
+    if (ack.size()) {
+      // if data ends with ack
+      if (trim_str(ret, ack)) break;
+
+      // if data ends with nack
+      if (trim_str(ret,nack)) {fail=true; break;}
+
+      // read more data if nack or ack are not found.
+      continue;
+    }
+
+    // overwise stop reading
+    break;
   }
 
   trim_str(ret,trim); // -trim option
@@ -439,7 +469,7 @@ Driver_serial::ask(const std::string & msg) {
 
   write(msg);
 
-  if (!check_read_cond(msg, read_cond)) return std::string();
+  if (!check_read_cond(msg, read_cond) && !spp) return std::string();
 
   return read();
 }

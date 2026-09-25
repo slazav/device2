@@ -650,6 +650,11 @@ If option is missing no change is made.
                       always, never, qmark (there is a question mark in the message),
                       qmark1w (question mark in the first word). Default: always.
 
+* `-spp (0|1)`     -- Serial device implements SPP protocal (all replies are followed
+                      with #OK or #Error <message>). I think, now it works only with
+                      devices with my own firmware, no need to use this option for
+                      anything else. Options -read_cond, -ack_str, -nack_str, -trim_str are ignored.
+
 * `-flush_on_err (0|1)` -- Flush serial buffers if Input/output error happens.
                            Default: 1
 
