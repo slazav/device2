@@ -258,6 +258,9 @@ Works.
 * `vxi` -- for network devices connected via vxi-11 protocol.
 Works, but have not been tested much.
 
+* `i2c` -- communication with linux i2c bus via text commands.
+Tested with cp2112 usb-to-i2c bridge.
+
 
 ### Driver `test` -- a dummy driver for tests
 
