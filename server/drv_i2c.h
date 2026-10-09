@@ -61,8 +61,6 @@ public:
   Driver_i2c(const Opt & opts);
   ~Driver_i2c();
 
-  std::string read() override { return "";}
-  void write(const std::string & msg) override {}
   std::string ask(const std::string & msg) override;
 };
 

@@ -151,9 +151,7 @@ public:
     read_dpt(); // update decimal point positions from the device
   }
 
-  std::string read() override {
-    throw Err() << "serial_hm310t driver: read() is not supported, use ask()"; }
-  void write(const std::string & msg) override;
+  void write(const std::string & msg);
   std::string ask(const std::string & msg) override;
 };
 

@@ -38,12 +38,12 @@ public:
   Driver_net_gpib_prologix(const Opt & opts):
     Driver_net(set_opt(opts)) {}
 
-  std::string read() override {
+  std::string read(){
     sel_device();
     return Driver_net::read();
   }
 
-  void write(const std::string & msg) override {
+  void write(const std::string & msg){
     sel_device();
     Driver_net::write(msg);
   }

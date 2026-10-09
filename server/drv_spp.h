@@ -45,8 +45,8 @@ public:
   Driver_spp(const Opt & opts);
   ~Driver_spp();
 
-  std::string read() override;
-  void write(const std::string & msg) override;
+  std::string read();
+  void write(const std::string & msg);
   std::string ask(const std::string & msg) override;
 };
 

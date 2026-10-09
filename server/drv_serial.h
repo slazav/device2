@@ -206,8 +206,8 @@ public:
   Driver_serial(const Opt & opts);
   ~Driver_serial();
 
-  std::string read() override;
-  void write(const std::string & msg) override;
+  std::string read();
+  void write(const std::string & msg);
   std::string ask(const std::string & msg) override;
 };
 

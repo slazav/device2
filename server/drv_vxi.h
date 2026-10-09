@@ -68,8 +68,8 @@ public:
 
   Driver_vxi(const Opt & opts);
 
-  std::string read() override;
-  void write(const std::string & msg) override;
+  std::string read();
+  void write(const std::string & msg);
   std::string ask(const std::string & msg) override;
 };
 
