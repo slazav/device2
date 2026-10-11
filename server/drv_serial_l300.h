@@ -1,35 +1,6 @@
 #ifndef DRV_SERIAL_L300_H
 #define DRV_SERIAL_L300_H
 
-/*************************************************/
-/*
- * Driver `serial_l300` -- Phoenix/Leybold L300i leak detector
- *
-
-Leak detector settings:
-  Menu/Settings/Interfaces/Control locations:  ALL (or RS232)
-  Menu/Settings/Interfaces/RS232:  19200 LF -- 8N1 -- ASCII
-Cable: normal RS232, not null-modem
-Hardware handshake is disabled in the driver,
-there is no need to use special cable to emulate it.
-
-Command set is very similar to one of inficon Modul1000 leak detector.
-
-Parameters:
-
-* `-dev <v>`       -- Serial device filename (e.g. /dev/ttyUSB0)
-                      Required.
-
-* `-timeout <v>`   -- Read timeout, seconds [0 .. 25.5]
-                      Default: 5.0
-
-* `-errpref <str>` -- Prefix for error messages.
-                      Default "ASM340: "
-
-* `-idn <v>`       -- Override output of *idn? command.
-                      Default: "Adixen ASM340 leak detector"
-*/
-
 #include "drv_serial.h"
 
 class Driver_serial_l300: public Driver_serial {

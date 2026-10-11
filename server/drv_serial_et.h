@@ -1,27 +1,6 @@
 #ifndef DRV_SERIAL_ET_H
 #define DRV_SERIAL_ET_H
 
-/*************************************************/
-/*
- * Driver `serial_et` -- EastTester devices
- *
-
-Options:
-
-* `-dev <v>`      -- Serial device filename (e.g. /dev/ttyACM0)
-                    Required.
-
-* `-timeout <v>`  -- Read timeout, seconds [0 .. 25.5]
-                    Default: 2.0
-
-* `-errpref <v>` -- Prefix for error messages.
-                    Default "EastTester: "
-
-* `-idn <v>`     -- Override output of *idn? command.
-                    Default: do not override.
-
-*/
-
 #include "drv_serial.h"
 
 class Driver_serial_et: public Driver_serial {

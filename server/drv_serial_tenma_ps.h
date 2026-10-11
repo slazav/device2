@@ -1,27 +1,6 @@
 #ifndef DRV_SERIAL_TENMA_PS_H
 #define DRV_SERIAL_TENMA_PS_H
 
-/*************************************************/
-/*
- * Driver `serial_tenma_ps` -- Korad/Velleman/Tenma power supplies
- *
-
-Options:
-
-* `-dev <v>`      -- Serial device filename (e.g. /dev/ttyACM0)
-                    Required.
-
-* `-timeout <v>`  -- Read timeout, seconds [0 .. 25.5]
-                    Default: 5.0
-
-* `-errpref <v>` -- Prefix for error messages.
-                    Default "TenmaPS: "
-
-* `-idn <v>`     -- Override output of *idn? command.
-                    Default: do not override.
-
-*/
-
 #include "drv_serial.h"
 
 class Driver_serial_tenma_ps: public Driver_serial {
