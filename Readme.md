@@ -33,6 +33,9 @@ tunnel for HTTP connections (there is no authentification in the server,
 use `ssh` tunnels for this), or by attaching the remote client program
 to the local server as a device.
 
+I want to mention E.Sergeicheva and D.Zmeev who worked with this system
+in Helsinki and Lancaster. They helped and motivated me a lot.
+
 ## System components
 
 * [device_d](server/device_d.md) -- server program.
