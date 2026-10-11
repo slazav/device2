@@ -14,8 +14,10 @@
 #include "drv_serial_hm310t.h"
 #include "drv_serial_jds6600.h"
 #include "drv_gpib.h"
-#include "drv_i2c.h"
 #include "drv_vxi.h"
+#include "drv_i2c.h"
+#include "drv_i2c_ssd1306.h"
+#include "drv_i2c_bmp280.h"
 
 std::shared_ptr<Driver>
 Driver::create(const std::string & name, const Opt & args){
@@ -74,6 +76,12 @@ Driver::create(const std::string & name, const Opt & args){
 
   if (name == "i2c")
      return std::shared_ptr<Driver>(new Driver_i2c(args));
+
+  if (name == "i2c_ssd1306")
+     return std::shared_ptr<Driver>(new Driver_i2c_ssd1306(args));
+
+  if (name == "i2c_bmp280")
+     return std::shared_ptr<Driver>(new Driver_i2c_bmp280(args));
 
   throw Err() << "unknown driver: " << name;
 }

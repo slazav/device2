@@ -487,11 +487,10 @@ Parameters:
 
 Tested with cp2112 usb-to-i2c bridge.
 
-Driver works with a single i2c bus. Multiple devices can be attached to it,
-this driver and its children can use single bus without collisions.
+i2c driver and its children (i2c_*) can share a single i2c bus or a
+single device without collisions.
 
 Don't forget to load i2c-dev kernel module.
-
 
 Parameters:
 
@@ -529,6 +528,117 @@ writing 4-byte command sequence, no reading:
 ```
 $ device_c ask mydev write 0x80 0x81 0x80 127
 ```
+
+### Driver `i2c_ssd1306` -- i2c communication with display controller SSD1306
+
+This is a standard SSD1306 controller for 128x32, 128x64 OLED displays.
+
+All i2c_* drivers can share a single i2c bus or a single device without collisions.
+
+Parameters:
+
+* `-dev`     -- device path (e.g. /dev/i2c-1). Required.
+
+* `-addr`    -- i2c address. Default 0x3C
+
+* `-H`       -- set display height. Supported values: 32 and 64. Default: 64
+
+* `-idn`     -- Output of *idn? command. Default: "SSD1306".
+
+* `-errpref <str>` -- Prefix for error messages. Default: "i2c_ssd1306: "
+
+Commands introduced bu the driver:
+
+* `init` -- quick init
+* `on (1|0)` -- switch display on and off
+* `white (1|0)` -- switch display white and back
+* `inv (1|0)` -- switch display to inverse mode and back
+* `hflip (1|0)` -- horizontal flip
+* `vflip (1|0)` -- vertical flip
+* `contrast <value>` -- set contrast to 0..255
+* `clear` -- clear display
+* `puts <text> ...` -- write a string (using some 256-bit koi8_r 8x8 font)
+* `crnl` -- carrage return + new line
+* `goto <x> <y>` -- set cursor position
+
+The command set is a bit random, improvements are welcome!
+
+### Driver `i2c_bmp280` -- i2c communication with BMP280 pressure/temperature sensor
+
+All i2c_* drivers can share a single i2c bus or a single device without collisions.
+
+TODO: There is an extension for BME280 (+humidity measurements), but it's not fully supported yet.
+
+Parameters:
+
+* `-dev`     -- device path (e.g. /dev/i2c-1). Required.
+
+* `-addr`    -- i2c address. Default 0x76
+
+* `-bme`     -- BME280, support for humidity readings
+
+* `-idn`     -- Output of *idn? command. Default: "BMP280".
+
+* `-errpref <str>` -- Prefix for error messages. Default: "i2c_bmp280: "
+
+Commands introduced by the driver:
+
+* `id?` -- read id byte (0xD0), should be 0x58 for BMP280, 0x60 for BME280
+
+* `status?` -- read status byte (0xF3):
+  - bit0 -- im_update
+  - bit3 -- measuring
+
+* `ctrl_meas?` --  read ctrl_meas byte (0xF4)
+   - bits 5-7 osrs_t -- Oversampling of temperature data
+     - 000 - Skipped (output set to 0x80000)
+     - 001 - oversampling 1
+     - 010 - oversampling 2
+     - 011 - oversampling 4
+     - 100 - oversampling 8
+     - 101, 110, 111 oversampling 16
+   - bits 2-4 osrs_p -- Oversampling of pressure data
+     - 000 Skipped (output set to 0x80000)
+     - 001 - oversampling 1
+     - 010 - oversampling 2
+     - 011 - oversampling 4
+     - 100 - oversampling 8
+     - 101, 110, 111 - oversampling 16
+   - bits 0-1 mode -- Power mode of the device
+
+* `ctrl_meas <value>` -- set ctrl_meas byte
+
+* `ctrl_hum?` -- read ctrl_hum byte (0xF2), BME280 only
+  - bits 0-2 - osrs_h -- Controls oversampling of humidity data
+    - 000 - Skipped (output set to 0x8000)
+    - 001 - oversampling 1
+    - 010 - oversampling 2
+    - 011 - oversampling 4
+    - 100 - oversampling 8
+    - 101, 110, 111 oversampling 16
+
+* `ctrl_hum <value>` -- set ctrl_meas byte (BME280 only)
+
+* `config?` -- read config byte (0xF5)
+  - bits 5-7, t_sb -- Controls inactive duration tstandby in normal mode.
+  - bits 2-4, filter --  Controls the time constant of the IIR filter.
+  - bit 0, spi3w_en -- Enables 3-wire SPI interface when set to 1.
+
+* `config <value>` -- set config byte
+
+* `init` -- quick init (set ctrl_meas 0xFF, config to 0x00)
+
+* `reset` -- software reset
+
+* `cal?` -- re-read and print calibration data.
+  Normally calibration data is updated once, before the first measurement.
+  If the device is changed while the driver is still running, calling `cal?`
+  will update data.
+
+* `meas? [<type>]` -- measure and print data
+  type is "raw", "t_raw", "p_raw", "h_raw", "t", "p" or empty.
+
+The command set is a bit random, improvements are welcome!
 
 ### Driver `serial` -- Serial devices
 

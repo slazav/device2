@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my @buf;
+
+die "usage: $0 <txt file>\n" if $#ARGV!=0;
+my $fname = $ARGV[0];
+
+open IN, $fname or die "can't open $fname; $!\n";
+
+my $struct_name = $fname;
+$struct_name =~ s/.txt$//;
+
+my $num = 0;
+my @data = ("{64,0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff}") x 256;
+
+while (<IN>){
+  chomp;
+  next if /^\s*$/;
+  next if /^#/ ;
+
+  die "bad line count ($_, $#buf)" if /^[0-9]/ && $#buf!=-1;
+  if (/^([0-9]+)(\s|$)/) {
+    $num = $1;
+    next;
+  }
+  push @buf, $_;
+
+  next if $#buf!=7;
+
+  my @d = ("64");
+  #print("{");
+  for (my $i = 0; $i<8; $i++){
+    my $v = 0;
+    for (my $j = 7; $j>=0; $j--){
+      $v <<= 1;
+      $v++ if (length($buf[$j])>$i && substr($buf[$j], $i, 1) ne '.');
+    }
+    push @d, sprintf("0x%02x", $v);
+  }
+  $data[$num] = '{' . join(',', @d) . '}';
+  @buf = ();
+}
+
+
+my $n = $#data+1;
+print "// Generated with font_cnv script\n";
+print "const unsigned char display_${struct_name}[$n][9] = {\n";
+print join(",\n", @data);
+print("};\n");
