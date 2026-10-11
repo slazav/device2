@@ -38,11 +38,11 @@ in Helsinki and Lancaster. They helped and motivated me a lot.
 
 ## System components
 
-* [device_d](server/device_d.md) -- server program.
+* [device_d](src/device_d.md) -- server program.
 
-* [device_c](server/device_c.md) -- command-line client program.
+* [device_c](src/device_c.md) -- command-line client program.
 
-* [device_ping](server/device_ping.md) -- a tool for connecting to a device bypassing the server
+* [device_ping](src/device_ping.md) -- a tool for connecting to a device bypassing the server
 
 * [Basic TCL library](tcl/tcl.md)
 
@@ -72,43 +72,43 @@ for knowlege about devices. But exact balance is not clear.
 
 * [test] -- A dummy driver for tests. Repeats incoming messages. No parameters.
 
-* [spp](server/drv_spp.md) -- Communicating with programs via "Simple Pipe protocol"
+* [spp](src/drv_spp.md) -- Communicating with programs via "Simple Pipe protocol"
 
-* [usbtmc](server/drv_usbtmc.md) -- Using usbtmc kernel module (Agilent/Keysight USB devices, etc.)
+* [usbtmc](src/drv_usbtmc.md) -- Using usbtmc kernel module (Agilent/Keysight USB devices, etc.)
 
-* [serial](server/drv_serial.md) -- RS232 connections with full control of the serial port.
+* [serial](src/drv_serial.md) -- RS232 connections with full control of the serial port.
   Base for `serial_*` drivers.
 
-  * [serial_asm340](server/drv_serial_asm340.md) -- Pfeiffer Adixen ASM340 leak detector.
+  * [serial_asm340](src/drv_serial_asm340.md) -- Pfeiffer Adixen ASM340 leak detector.
 
-  * [serial_l300](server/drv_serial_l300.md) -- Phoenix/Leybold L300i leak detector.
+  * [serial_l300](src/drv_serial_l300.md) -- Phoenix/Leybold L300i leak detector.
 
-  * [serial_vs_ld](server/drv_serial_vs_ld.md) -- Agilent VS leak detector.
+  * [serial_vs_ld](src/drv_serial_vs_ld.md) -- Agilent VS leak detector.
 
-  * [serial_tenma_ps](server/drv_serial_tenma_ps.md) -- Korad/Velleman/Tenma power supplies.
+  * [serial_tenma_ps](src/drv_serial_tenma_ps.md) -- Korad/Velleman/Tenma power supplies.
 
-  * [serial_et](server/drv_serial_et.md) -- EastTester devices (e.g. E4502 LCR-meter).
+  * [serial_et](src/drv_serial_et.md) -- EastTester devices (e.g. E4502 LCR-meter).
 
-  * [serial_hm310t](server/drv_serial_hm310t.md) -- Hanmatec HM310T power supply.
+  * [serial_hm310t](src/drv_serial_hm310t.md) -- Hanmatec HM310T power supply.
 
-  * [serial_jds6600](server/drv_serial_jds6600.md) -- Junctek JDS6600 signal generator.
+  * [serial_jds6600](src/drv_serial_jds6600.md) -- Junctek JDS6600 signal generator.
 
-  * [serial_simple](server/drv_serial_simple.md) -- Serial driver with reasonable default settings.
+  * [serial_simple](src/drv_serial_simple.md) -- Serial driver with reasonable default settings.
     Works with old Agilent/HP and Keithley devices.
 
-* [net](server/drv_net.md) -- Network devices, LXI.
+* [net](src/drv_net.md) -- Network devices, LXI.
 
-  * [net_gpib_prologix](server/drv_net_gpib_prologix.md) -- Prologix gpib2eth converter.
+  * [net_gpib_prologix](src/drv_net_gpib_prologix.md) -- Prologix gpib2eth converter.
 
-* [gpib](server/drv_gpib.md) -- GPIB devices via linux-gpib library.
+* [gpib](src/drv_gpib.md) -- GPIB devices via linux-gpib library.
 
-* [vxi](server/drv_vxi.md) -- VXI-11 network devices.
+* [vxi](src/drv_vxi.md) -- VXI-11 network devices.
 
-* [i2c](server/drv_i2c.md) -- Communication with linux i2c bus via text commands. Base for `i2c_*` drivers
+* [i2c](src/drv_i2c.md) -- Communication with linux i2c bus via text commands. Base for `i2c_*` drivers
 
-  * [i2c_bmp280](server/drv_i2c_bmp280.md) -- BMP280 pressure/temperature sensor via i2c
+  * [i2c_bmp280](src/drv_i2c_bmp280.md) -- BMP280 pressure/temperature sensor via i2c
 
-  * [i2c_ssd1306](server/drv_i2c_ssd1306.md) -- SSD1306 i2c display controller via i2c (128x64, 128x32 OLED displays)
+  * [i2c_ssd1306](src/drv_i2c_ssd1306.md) -- SSD1306 i2c display controller via i2c (128x64, 128x32 OLED displays)
 
 ---
 V.Zavjalov, 2020-2026, vl.zavjalov at gmail dot com
