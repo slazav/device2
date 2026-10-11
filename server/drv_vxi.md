@@ -1,4 +1,4 @@
-## Driver "vxi" -- VXI-11 network devices
+## Driver `vxi` -- VXI-11 network devices
 
 Works, but has not been tested much.
 

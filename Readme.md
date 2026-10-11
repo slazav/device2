@@ -3,9 +3,8 @@
 
 ## Overview
 
-This is a client-server system for accessing devices and programs in
-experimental setups. Previous version was a tcl library (
-https://github.com/slazav/tcl-device ) with a few annoying limitations.
+This is my client-server system for accessing devices and programs in an
+experimental lab.
 
 There is a server which works with "devices". They can be physical devices
 connected in various ways or programs with special interface. Each device
@@ -35,18 +34,13 @@ use `ssh` for this), or by attaching the remote client program in
 `use_dev` mode, `ssh -T device_c use_dev <name>` to the local server as
 a device.
 
-The server support devices connected via linux-gpib and usbtmc kernel
-drivers; serial and network devices (including VXI11 and raw LXI);
-programs with SPP interface.
-
 ## Server
 
 ### HTTP communication with the server
 
 Clients communicate with the server using GET requests of HTTP protocol.
 URLs with up to three components are used: `<action>/<device>/<message>`.
-(Note that symbol `/` is not allowed in device names). For example, a
-request to `http://<server>:<port>/ask/generator/FREQ?`" sends phrase
+For example, a request to `http://<server>:<port>/ask/generator/FREQ?`" sends phrase
 `FREQ?` to the device `generator` and returns answer.
 
 On success a response with code 200 and answer of the device in the
@@ -162,9 +156,12 @@ Options:
 * `-h, --help`          -- Print help message and exit.
 * `--pod`               -- Print help message in POD format and exit.
 
-Configuration file: Server configuration file can be used to override
-default values for some of the command-line options. Following parameters
-can be set in the configuration file: `addr`, `port`, `logfile`,
+
+### Server configuration file
+
+The default configuration file is `/etc/device/device_d.cfg`. It
+can be used to override default values for some of the command-line options.
+Following parameters can be set there: `addr`, `port`, `logfile`,
 `pidfile`, `devfile`, `user`, `verbose`
 
 The file contains one line per parameter. Empty lines and comments (starting
@@ -177,13 +174,8 @@ should have the form:
 <parameter name> <parameter value>
 ```
 
-Signal handling: server exits on SIGTERM, SIGINT, SIGQUIT signals. Device
-list is re-read on SIGHUP signal. If `device_d` program is called with
-`--stop`/`--reload` parameter it will send SIGTERM/SIGHUP to a running
-server (found by pid-file). Reloading can be also done by any client
-with `reload` action.
 
-### Device list file
+### Device configuration file
 
 Default location of the device configuration file is
 `/etc/device2/devices.cfg` It can be changed with server command-line
@@ -209,66 +201,73 @@ keep old configuration (if any). If after starting the server you see no
 devices in the `list` action output, try to do `reload` and see error
 message.
 
+### Signal handling
+
+Server exits on SIGTERM, SIGINT, SIGQUIT signals. Device
+list is re-read on SIGHUP signal. If `device_d` program is called with
+`--stop`/`--reload` parameter it will send SIGTERM/SIGHUP to a running
+server (found by pid-file). Reloading can be also done by any client
+with `reload` action.
 
 ### Available drivers:
 
 * `test` -- A dummy driver for tests. Repeats incoming messages. No parameters.
 
 * `spp` -- Communicating with programs via "Simple Pipe protocol"
-[DOC](server/drv_spp.md)
+[[Documentation...]](server/drv_spp.md)
 
 * `usbtmc` -- Using usbtmc kernel module (Agilent/Keysight USB devices, etc.)
-[DOC](server/drv_usbtmc.md)
+[[Documentation...]](server/drv_usbtmc.md)
 
 * `serial` -- RS232 connections with full control of the serial
 port. Base for other serial_* drivers.
-[DOC](server/drv_serial.md)
+[[Documentation...]](server/drv_serial.md)
 
   * `serial_asm340` -- Pfeiffer Adixen ASM340 leak detector.
-    [DOC](server/drv_serial_asm340.md)
+    [[Documentation...]](server/drv_serial_asm340.md)
 
   * `serial_l300` -- Phoenix/Leybold L300i leak detector.
-    [DOC](server/drv_serial_l300.md)
+    [[Documentation...]](server/drv_serial_l300.md)
 
   * `serial_vs_ld` -- Agilent VS leak detector.
-    [DOC](server/drv_serial_vs_ld.md)
+    [[Documentation...]](server/drv_serial_vs_ld.md)
 
   * `serial_tenma_ps` -- Korad/Velleman/Tenma power supplies.
-    [DOC](server/drv_serial_tenma_ps.md)
+    [[Documentation...]](server/drv_serial_tenma_ps.md)
 
   * `serial_et` -- EastTester devices (e.g. E4502 LCR-meter).
-    [DOC](server/drv_serial_et.md)
+    [[Documentation...]](server/drv_serial_et.md)
 
   * `serial_hm310t` -- Hanmatec HM310T power supply.
-    [DOC](server/drv_serial_hm310t.md)
+    [[Documentation...]](server/drv_serial_hm310t.md)
 
   * `serial_jds6600` -- Junctek JDS6600 signal generator.
-    [DOC](server/drv_serial_jds6600.md)
+    [[Documentation...]](server/drv_serial_jds6600.md)
 
   * `serial_simple` -- Serial driver with reasonable default settings.
     Works with old Agilent/HP and Keithley devices.
-    [DOC](server/drv_serial_simple.md)
+    [[Documentation...]](server/drv_serial_simple.md)
 
 * `net` -- Network devices, LXI.
-    [DOC](server/drv_net.md)
+    [[Documentation...]](server/drv_net.md)
 
   * `net_gpib_prologix` -- Prologix gpib2eth converter.
-    [DOC](server/drv_net_gpib_prologix.md)
+    [[Documentation...]](server/drv_net_gpib_prologix.md)
 
 * `gpib` -- GPIB devices via linux-gpib library.
-  [DOC](server/drv_gpib.md)
+  [[Documentation...]](server/drv_gpib.md)
 
 * `vxi` -- VXI-11 network devices.
-  [DOC](server/drv_vxi.md)
+  [[Documentation...]](server/drv_vxi.md)
 
 * `i2c` -- Communication with linux i2c bus via text commands.
-  [DOC](server/drv_i2c.md)
+  [[Documentation...]](server/drv_i2c.md)
 
   * `i2c_bmp280` -- BMP280 pressure/temperature sensor via i2c
-    [DOC](server/drv_i2c_bmp280.md)
+    [[Documentation...]](server/drv_i2c_bmp280.md)
 
   * `i2c_ssd1306` -- SSD1306 i2c display controller via i2c (128x64, 128x32 OLED displays)
-    [DOC](server/drv_i2c_ssd1306.md)
+    [[Documentation...]](server/drv_i2c_ssd1306.md)
 
 ---
 ## Client

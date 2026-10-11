@@ -39,9 +39,9 @@ void usage(const GetOptSet & options, bool pod=false){
   pr.head(1, "Options:");
   pr.opts({"DEVSERV"});
 
-  pr.par("Client program: device_c(1).");
+  pr.par("See also: device_c(1).");
   pr.par("Homepage, documentation: https://github.com/slazav/device2");
-  pr.par("V.Zavjalov, 2020, slazav at altlinux dot org");
+  pr.par("V.Zavjalov, 2020-2026, vl_zavjalov at gmail dot com");
   throw Err();
 }
 
