@@ -2,7 +2,10 @@
 
 All i2c_* drivers can share a single i2c bus or a single device without collisions.
 
-TODO: Humidity calibration for BME280 is not implemented
+TODO: Humidity calibration for BME280 is not implemented.
+
+TODO: BMP180 can be included too, but it will require quite complicated logic,
+maybe a separate driver will be better
 
 ### Parameters:
 
@@ -41,7 +44,11 @@ The command set is a bit random, improvements are welcome!
 
 ### i2c registers
 
-Registers for BMP280 and BME280
+#### BMP280 and BME280
+
+i1c Address:
+* 0x76 if SDO conected to GND,
+* 0x77 if SDO conected to VDDIO
 
 * 0x88-0xA1: `calib00 - calib25` -- Calibration data
   - 0x88/0x89 - `dig_T1` (uint16_t)
@@ -63,6 +70,7 @@ Registers for BMP280 and BME280
   - BME280: 0xE5[7:4]/0xE6 - `dig_H5` (int16_t)
 
 * 0xD0: `id`
+  - BMP180: 0x55
   - BMP280: 0x58
   - BME280: 0x60
 
@@ -131,3 +139,26 @@ Filtered data is calculated as V_new = (V_old*(K-1) + V_adc)/K.
 Filter is reset when writing to `config` register
 
 Calibration functions can be found in the datasheets.
+
+#### Registers for BMP180
+
+i2c address 0x77
+
+* 0xAA-0xBF: `calib00 - calib25` -- Calibration data (11 )
+* 0xD0: `id` - BMP180: 0x55
+* 0xE0: `reset` - write 0xB6 to do software reset
+* 0xF4: `ctrl_meas`
+  - bits 0-4: measurement control ?
+    - 0xE - measure temperature
+    - 0x4 - measure pressure
+  - bit 5: `sco`  -- status bit 1 during conversion, 0 when conversion is done
+  - bits 6-7: `oss` -- oversampling (only for pressure?)
+    - 00 - oversampling 1
+    - 01 - oversampling 2
+    - 10 - oversampling 4
+    - 11 - oversampling 8
+* 0xF6,0xF7,0xF8 -- `press_msb, press_lsb, press_xlsb`
+
+
+
+
