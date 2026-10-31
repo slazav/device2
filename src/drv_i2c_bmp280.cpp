@@ -135,10 +135,11 @@ Driver_i2c_bmp280::ask(const std::string & msg) {
     return std::string();
   }
 
-  // quick init (set ctrl_meas 0xFF, config to 0x00)
+  // quick init (set ctrl_meas 0xFF, config to 0x00), re-read calibration data
   if (v[0] == "init"){
     const unsigned char data[] = {0xF4,0xFF,0xF5,0x00};
     i2c_write(data, sizeof(data));
+    get_cal();
     return std::string();
   }
 

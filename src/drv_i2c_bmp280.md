@@ -29,8 +29,10 @@ maybe a separate driver will be better
 * `ctrl_hum <value>` -- set ctrl_meas byte (BME280 only)
 * `config?` -- read config byte 0xF5
 * `config <value>` -- set config byte
-* `init` -- quick init (set ctrl_meas 0xFF, config to 0x00, continuous measurement with maxinin oversampling)
 * `reset` -- software reset
+
+* `init` -- quick init: set ctrl_meas to 0xFF, config to 0x00 (continuous
+  measurement with maxinin oversampling), re-read calibration data.
 
 * `cal?` -- re-read and print calibration data.
   Normally calibration data is updated once, before the first measurement.
