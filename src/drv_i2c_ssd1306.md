@@ -34,12 +34,18 @@ The command set is a bit random, improvements are welcome!
 
 ### i2c commands
 
+Address 0x3C, can be changed to 0x3D.
+
 Every write should start with a control byte. If it is 0x80, then next
 single byte is a command (or its argument), then next control byte can
 follow. Example: to send command 0x81 and its argument 0xFF four
 bytes should be sent: 0x80 0x81 0x80 0xFF. If control byte is 0x40, then
 multiple data bytes are expected after it, until end of the write
 transaction.
+
+The controller can accept very long writes, as I have seen using it with
+a microcontroller. With CP2112 usb-to-i2c addapter I have a limit of 60 bytes for
+one transaction.
 
 Reading gives a status byte. Datasheet specifies only bit6 for ON/OFF status.
 For my 128x32 display it is 0x42 when off, 0x02 when on,

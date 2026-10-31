@@ -108,7 +108,7 @@ for knowlege about devices. But exact balance is not clear.
 
   * [i2c_bmp280](src/drv_i2c_bmp280.md) -- BMP280 pressure/temperature sensor via i2c
 
-  * [i2c_ssd1306](src/drv_i2c_ssd1306.md) -- SSD1306 i2c display controller via i2c (128x64, 128x32 OLED displays)
+  * [i2c_ssd1306](src/drv_i2c_ssd1306.md) -- SSD1306 display controller (128x64, 128x32 OLED displays) via i2c
 
 ---
 V.Zavjalov, 2020-2026, vl.zavjalov at gmail dot com
