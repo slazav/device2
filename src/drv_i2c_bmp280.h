@@ -33,6 +33,9 @@ public:
   double cal_data[12];
   void get_cal();
 
+  double tcal(int t_raw); // temperature calibration
+  double pcal(int p_raw, double T); // pressure calibration
+
   std::string ask(const std::string & msg) override;
 };
 

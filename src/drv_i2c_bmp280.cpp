@@ -25,6 +25,30 @@ Driver_i2c_bmp280::get_cal(){
   cal_flag = true;
 }
 
+double
+Driver_i2c_bmp280::tcal(int t_raw){
+  if (!cal_flag) get_cal(); // update calibration if needed
+
+  double var1 = t_raw/16384.0 - cal_data[0]/1024.0;
+  return (var1*cal_data[1] + var1*var1*cal_data[2]/64.0) / 5120.0;
+}
+
+double
+Driver_i2c_bmp280::pcal(int p_raw, double T){
+  if (!cal_flag) get_cal(); // update calibration if needed
+
+  double var1 = (T - 25.0)*2560.0;
+  double var2 = cal_data[6]*65536.0 + var1 * cal_data[7]/2.0 + var1*var1 * cal_data[8]/131072.0;
+
+  var1 = (var1*var1 * cal_data[5]/524288.0 + cal_data[4]*var1) / 524288.0;
+  var1 = (1.0 + var1/32768.0) * cal_data[3];
+
+  double P = 1048576.0 - p_raw;
+  P = (P - (var2/4096.0))*6250.0/var1;
+
+  return  P + cal_data[9]/16.0 + P*cal_data[10]/524288.0 + cal_data[11]*P*P/34359738368;
+}
+
 
 std::string
 Driver_i2c_bmp280::ask(const std::string & msg) {
@@ -161,6 +185,20 @@ Driver_i2c_bmp280::ask(const std::string & msg) {
     return ret;
   }
 
+  // temperature calibration
+  if (v[0] == "tcal"){
+    if (v.size()!=2) throw Err() << "tcal: argument expected: p_raw";
+    auto T = tcal(str_to_type<uint32_t>(v[1]));
+    return type_to_str(T);
+  }
+
+  // pressure calibration
+  if (v[0] == "pcal"){
+    if (v.size()!=3) throw Err() << "tcal: two arguments expected: p_raw, T[C]";
+    auto P = pcal(str_to_type<uint32_t>(v[1]), str_to_type<double>(v[2]));
+    return type_to_str(P);
+  }
+
   // read temperature
   // read? [<type>], type is T_raw, P_raw, raw, T, P
   if (v[0] == "meas?"){
@@ -184,30 +222,15 @@ Driver_i2c_bmp280::ask(const std::string & msg) {
                           + " " + type_to_str((uint32_t)p_raw)
                           + (bme? (" " + type_to_str((uint32_t)h_raw)) : "");
 
-    if (!cal_flag) get_cal(); // update calibration if needed
-
-    // convert temperature
-    double var1 = t_raw/16384.0 - cal_data[0]/1024.0;
-    double t_fine = var1*cal_data[1] + var1*var1/64.0*cal_data[2];
-    double T = t_fine/5120.0;
-
-    double var2;
+    // calibrate temperature
+    double T = tcal(t_raw);
     if (type=="t") return type_to_str(T);
-    if (type=="t_fine") return type_to_str(t_fine);
 
-    var1 = (t_fine/2.0) - 64000.0;
-    var2 = var1 * (var1 * cal_data[8]/32768.0);
-    var2 = var2 + (var1 * cal_data[7] * 2.0);
-    var2 = (var2/4.0)+(cal_data[6]*65536.0);
-    var1 = (cal_data[5]*var1*var1/524288.0 + cal_data[4]*var1) / 524288.0;
-    var1 = (1.0 + var1/32768.0) * cal_data[3];
-    double P = 1048576.0 - p_raw;
-    P = (P - (var2/4096.0))*6250.0/var1;
-    var1 = cal_data[11]*P*P/2147483648.0;
-    var2 = P*cal_data[10]/32768.0;
-    P = P + (var1+var2+cal_data[9])/16.0;
-
+    // calibrate pressure
+    double P = pcal(p_raw, T);
     if (type=="p") return type_to_str(P);
+
+    // default output: temperature and pressure
     return type_to_str(T) + " " + type_to_str(P);
   }
 

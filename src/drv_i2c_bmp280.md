@@ -39,6 +39,9 @@ maybe a separate driver will be better
   If the device is changed while the driver is still running, calling `cal?`
   will update data.
 
+* `tcal <t_raw>` -- temperature calibration, convert raw ADC value to degrees C
+* `pcal <p_raw> <T>` -- pressure calibration and thermal correction, convert raw ADC value to Pa
+
 * `meas? [<type>]` -- measure and print data
   type is "raw", "t_raw", "p_raw", "h_raw", "t", "p" or empty.
 
