@@ -85,7 +85,7 @@ main(int argc, char ** argv) {
       " (default: " STR(DEF_VERB) ").");
     options.add("logfile", 1,'l', "DEVSERV", "Log file, '-' for stdout. "
       "(default: " DEF_LOGFILE " in daemon mode, '-' in console mode.");
-    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: " DEF_PIDFILE ")");
+    options.add("pidfile", 1,'P', "DEVSERV", "Pid file (default: " DEF_PIDFILE "), can be empty");
     options.add("test",    0,0,   "DEVSERV", "Test mode with connection number limited to 1.");
     options.add("help",    0,'h', "DEVSERV", "Print help message and exit.");
     options.add("pod",     0,0,   "DEVSERV", "Print help message in POD format and exit.");
@@ -154,6 +154,7 @@ main(int argc, char ** argv) {
 
     // stop running daemon
     if (stop || reload) {
+      if (pidfile=="") throw Err() << "empty pid-file name";
       std::ifstream pf(pidfile);
       if (pf.fail())
         throw Err() << "can't open pid-file: " << pidfile;
@@ -178,7 +179,7 @@ main(int argc, char ** argv) {
     }
 
     // check pid file
-    {
+    if (pidfile!="") {
       std::ifstream pf(pidfile);
       if (!pf.fail()){
         int pid;
@@ -220,7 +221,7 @@ main(int argc, char ** argv) {
     }
 
     // write pidfile
-    {
+    if (pidfile!="") {
       pid_t pid = getpid();
       std::ofstream pf(pidfile);
       if (pf.fail())
