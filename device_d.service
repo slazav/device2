@@ -1,0 +1,21 @@
+[Unit]
+Description=Device server
+Documentation=https://github.com/slazav/device2
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/device_d --pidfile ""
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+RemainAfterExit=no
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=10
+TimeoutStopSec=10
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -44,7 +44,8 @@ mkdir -p %buildroot%_sharedstatedir/device_d
 %_bindir/device_d
 %_bindir/device_c
 %_bindir/device_ping
-%config %_initdir/device_d
+%config %_initdir/device_d.init
+%config %systemd_unitdir/device_d.service
 %dir %_sysconfdir/device2
 %config(noreplace) %_sysconfdir/device2/devices.cfg
 %config(noreplace) %_sysconfdir/device2/device_c.cfg
